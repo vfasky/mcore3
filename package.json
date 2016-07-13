@@ -1,0 +1,31 @@
+{
+  "name": "mcore3",
+  "version": "3.0.0",
+  "description": "virtual-dom ",
+  "main": "src/index.es6",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "es5": "webpack --config ./build/es5.js",
+    "ie8": "webpack --config ./build/ie8.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vfasky/mcore3.git"
+  },
+  "keywords": [
+    "mcore",
+    "mcore3"
+  ],
+  "author": "vfasky@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vfasky/mcore3/issues"
+  },
+  "homepage": "https://github.com/vfasky/mcore3#readme",
+  "devDependencies": {
+    "buble": "^0.12.5",
+    "es5-shim": "^4.5.9",
+    "object-assign": "^4.1.0",
+    "webpack": "^1.13.1"
+  }
+}
