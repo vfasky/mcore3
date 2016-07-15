@@ -1,6 +1,7 @@
 'use strict';
 
-require('es5-shim');
-require('es5-shim/es5-sham');
+import 'es5-shim';
+import 'es5-shim/es5-sham';
 
-module.exports = require('./index.es6');
+import mcore from './es5';
+export {mcore as default};

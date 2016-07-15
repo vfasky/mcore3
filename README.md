@@ -1,4 +1,12 @@
 使用 es6 重构 mcore
 
-- webpack
-- buble
+### dev
+
+-	webpack
+-	buble
+
+### run time
+
+#### 依赖
+
+-	jQuery 1.9+

@@ -5,7 +5,7 @@ var distPath = path.join(__dirname, '../dist');
 
 module.exports = {
     entry: {
-        mcore3: path.join(__dirname, '../src/index')
+        mcore3: path.join(__dirname, '../src/es5')
     },
     output: {
         path: distPath,
@@ -13,16 +13,22 @@ module.exports = {
     },
     devtool: 'source-map',
     module: {
-        loaders: [
-            {
-                test: /\.es6$/,
-                loader: path.resolve(__dirname, '../loader/buble'),
-                exclude: /node_modules/
+        loaders: [{
+            test: /\.es6$/,
+            loader: 'babel-loader',
+            exclude: /node_modules/,
+            query: {
+                presets: ['es2015'],
+                cacheDirectory: true
             }
-        ]
+        }]
     },
     resolve: {
         modulesDirectories: ['node_modules', 'src'],
-        extensions: ['', '.es6', '.js']
+        extensions: ['', '.es6', '.js'],
+        jquery: 'jQuery'
+    },
+    externals: {
+        jquery: 'jQuery'
     }
 };
