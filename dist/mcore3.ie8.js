@@ -46,8 +46,10 @@
 
 	'use strict';
 	
-	exports.__esModule = true;
-	exports.default = undefined;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports['default'] = undefined;
 	
 	__webpack_require__(1);
 	
@@ -56,10 +58,10 @@
 	var _es = __webpack_require__(3);
 	
 	var _es2 = _interopRequireDefault(_es);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	exports.default = _es2.default;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	exports['default'] = _es2['default'];
 
 /***/ },
 /* 1 */
@@ -2712,18 +2714,20 @@
 	 **/
 	"use strict";
 	
-	exports.__esModule = true;
-	exports.default = undefined;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports["default"] = undefined;
 	
 	__webpack_require__(4);
 	
 	var _index = __webpack_require__(7);
 	
 	var _index2 = _interopRequireDefault(_index);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	exports.default = _index2.default;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	exports["default"] = _index2["default"];
 
 /***/ },
 /* 4 */
@@ -3327,11 +3331,11 @@
 	
 	var _util2 = _interopRequireDefault(_util);
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	module.exports = {
 	  version: '3',
-	  util: _util2.default
+	  util: _util2['default']
 	};
 
 /***/ },
@@ -3347,17 +3351,19 @@
 	
 	//let $ = require('jquery');
 	
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	exports.isNumber = isNumber;
 	
 	var _jquery = __webpack_require__(9);
 	
 	var _jquery2 = _interopRequireDefault(_jquery);
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
 	function isNumber(x) {
-	  return _jquery2.default.isNumeric(x);
+	  return _jquery2["default"].isNumeric(x);
 	}
 
 /***/ },

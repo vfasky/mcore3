@@ -5,7 +5,7 @@
  **/
 "use strict";
 
-import util from './util';
+import * as util from './util';
 
 module.exports = {
     version: '3',

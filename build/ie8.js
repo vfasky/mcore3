@@ -11,9 +11,8 @@ config.module.loaders[0] = {
     loader: 'babel-loader',
     exclude: /node_modules/,
     query: {
-        presets: ['es2015-loose', 'stage-0'],
-        plugins: ['transform-runtime'],
-        cacheDirectory: true
+        "presets": ["stage-0", "es2015"],
+        "plugins": ["transform-es3-property-literals", "transform-es3-member-expression-literals"],
     }
 };
 

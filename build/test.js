@@ -1,15 +1,19 @@
-'use strict';
+/**
+ *
+ *
+ * @author vfasky <vfasky@gmail.com>
+ **/
+"use strict";
 
 var path = require('path');
-var distPath = path.join(__dirname, '../dist');
+var distPath = path.join(__dirname, '../test');
 
 module.exports = {
-    entry: {
-        mcore3: path.join(__dirname, '../src/es5')
-    },
+    entry: 'mocha!' + path.join(__dirname, '../test/index.es6'),
     output: {
         path: distPath,
-        filename: '[name].es5.js'
+        publicPath: '/assets/',
+        filename: 'bundle.js'
     },
     devtool: 'source-map',
     module: {
