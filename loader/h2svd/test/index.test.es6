@@ -9,9 +9,10 @@ import h2svd from '../index.es6';
 
 describe('h2svd', ()=>{
     it('pase html', ()=>{
-        // h2svd('ok? {test | toString | add 123 \'xxx\'}');
+        h2svd('<ul><li mc-for="v in scope.list" mc-on-click="showCode(v)">{v.title}</li></ul>');
         h2svd(`
             <!--test-->
+            {test | toString | add 123 \'xxx\' attr['ok'] v[0] scope.format('test')}
             <span mc-for="v, k in scope.list" mc-on-click="test(v)" mc-if="k > 0"> {k} - {v.id | toString 123} </span>
             <div mc-show="scope.isShow || scope.id > 0" class="test" id="ok" mc-test="'xx' | toString | add 123 'xxx'">
                 <!--test2-->

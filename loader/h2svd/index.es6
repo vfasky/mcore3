@@ -53,6 +53,7 @@ export default (html, options = {})=>{
             };
             var __mc__tree = [];
             ${forCode}
+            return __mc__tree;
         })(scope, view);
     `;
 

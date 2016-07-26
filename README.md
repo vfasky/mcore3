@@ -3,7 +3,7 @@
 ### dev
 
 -	webpack
--	buble
+-	babel
 
 ### run time
 
