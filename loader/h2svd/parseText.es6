@@ -6,6 +6,7 @@
 "use strict";
 
 import parseFormatters from './parseFormatters';
+import {variable} from './config';
 
 let _signReg = /\{([^}]+)\}/g;
 let _strEndReg = /[^]+""$/;
@@ -13,10 +14,10 @@ let _strEndReg = /[^]+""$/;
 export default (domAttr)=>{
     domAttr.data = domAttr.data.replace(/\n/g, ' ');
     let text = domAttr.data;
-    let code = 'function(__mc__rootScope, __mc__tree, __mc__util, __mc_path, __mc__ctx){';
+    let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.utilName}, ${variable.pathName}){`;
 
     if(_signReg.test(text)){
-        code += 'var __mc_str_val = {}';
+        code += `var ${variable.strValsName} = {}`;
         let mapTree = [];
         let mapTreeId = 0;
         let runtimeCode = text.replace(_signReg, (key, val)=>{
@@ -25,7 +26,7 @@ export default (domAttr)=>{
                 key: reKey,
                 val: val
             });
-            return `" + __mc_str_val['${reKey}'] + "`;
+            return `" + ${variable.strValsName}['${reKey}'] + "`;
         });
 
         runtimeCode = '"' + runtimeCode;
@@ -34,19 +35,23 @@ export default (domAttr)=>{
         }
 
         mapTree.forEach((v)=>{
-            code += parseFormatters(v.key, v.val, '__mc_str_val');
+            code += parseFormatters(v.key, v.val, variable.strValsName);
         });
 
         code += `
             /* [formatter] ${text.trim()} */
-            var __mc_str = ${runtimeCode};
-            __mc__tree.push(__mc_str, __mc_path);
+            var ${variable.strName} = ${runtimeCode};
+            var ${variable.dynamicAttrName} = {text: ${variable.strName}};
+            ${variable.treeName}.push(${variable.utilName}.build(
+                '_textNode', ${variable.pathName}, {},
+                ${variable.dynamicAttrName}, {}, []}
+            ));
         `;
 
     }
     else{
         code += `
-            __mc__tree.push('${text}', __mc_path);
+            ${variable.treeName}.push('${text}');
         `;
     }
 

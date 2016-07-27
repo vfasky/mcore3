@@ -6,29 +6,30 @@
 "use strict";
 import util from 'util';
 import parseFormatters from './parseFormatters';
+import {variable} from './config';
+
 let _funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/;
 
 /**
  * 解释动态属性
  */
-let parseDynamicAttr = (name, dynamicVal, dynamicAttrName, utilName = '__mc__util')=>{
+let parseDynamicAttr = (name, dynamicVal, dynamicAttrName)=>{
     name = name.replace('mc-', '');
     if(dynamicVal.indexOf(' | ') !== -1){
-        return parseFormatters(name, dynamicVal, dynamicAttrName, utilName);
+        return parseFormatters(name, dynamicVal, dynamicAttrName, variable.utilName);
     }
     let code = `
-        ${dynamicAttrName}['${name}'] = ${utilName}.parseDynamicVal((${dynamicVal}), '${dynamicVal.replace(/'/g, "\\'")}');
+        ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal((${dynamicVal}), '${dynamicVal.replace(/'/g, "\\'")}');
     `;
     return code;
 };
 
-export default (domAttr, attrName = '__mc__attr', dynamicAttrName = '__mc__dynamicAttr',
-                ctxName = '__mc__ctx', rootScopeName = '__mc__rootScope', utilName = '__mc__util')=>{
+export default (domAttr)=>{
     let attrKeys = Object.keys(domAttr.attribs);
 
     let igKeys = ['mc-for', 'mc-if', 'mc-unless'];
 
-    let code = 'var __mc__attr = {}, __mc__dynamicAttr = {}, __mc__event = {};';
+    let code = `var ${variable.attrName} = {}, ${variable.dynamicAttrName} = {}, ${variable.eventName} = {};`;
 
     attrKeys.forEach((v)=>{
         if(igKeys.indexOf(v) != -1){
@@ -47,7 +48,7 @@ export default (domAttr, attrName = '__mc__attr', dynamicAttrName = '__mc__dynam
                 funName = eventFunCode;
             }
             code += `
-                __mc__event['${v.replace('mc-on-', '')}'] = {
+                ${variable.eventName}['${v.replace('mc-on-', '')}'] = {
                     'funName': '${funName}',
                     'args': [${args.join(', ')}]
                 };
@@ -57,11 +58,11 @@ export default (domAttr, attrName = '__mc__attr', dynamicAttrName = '__mc__dynam
         //解释静态属性
         if(v.indexOf('mc-') !== 0){
             code += `
-                ${attrName}['${v}'] = '${domAttr.attribs[v]}';
+                ${variable.attrName}['${v}'] = '${domAttr.attribs[v]}';
             `;
         }
         else {
-            code += parseDynamicAttr(v, domAttr.attribs[v], dynamicAttrName, utilName);
+            code += parseDynamicAttr(v, domAttr.attribs[v], variable.dynamicAttrName);
         }
     });
 

@@ -7,9 +7,9 @@
 
 import filter from './filter';
 import util from 'util';
-import parseAttr from './parseAttr';
 import parseFor from './parseFor';
 import parseText from './parseText';
+import {variable} from './config';
 
 
 /**
@@ -20,7 +20,7 @@ export default (domAttr)=>{
     if(domAttr.type === 'text'){
         return parseText(domAttr);
     }
-    let code = `function(__mc__rootScope, __mc__tree, __mc__util, __mc_path){
+    let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.pathName}){
 
         %s
 

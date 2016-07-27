@@ -6,10 +6,11 @@
 "use strict";
 
 import util from 'util';
+import {variable} from './config';
 
 let _formattersArgsReg = /[^\s']+|'([^']|'[^\s])*'|"([^"]|"[^\s])*"/g;
 
-export default (name, dynamicVal, dynamicAttrName, utilName = '__mc__util')=>{
+export default (name, dynamicVal, dynamicAttrName)=>{
     let funcs = dynamicVal.split(' | ');
     let startVal = funcs.shift();
 
@@ -93,7 +94,7 @@ export default (name, dynamicVal, dynamicAttrName, utilName = '__mc__util')=>{
         args[0] = 'x';
 
         formatterCode += `
-            x = ${utilName}.callFormatter('${formatter}')(${args.join(',')});
+            x = ${variable.utilName}.callFormatter('${formatter}')(${args.join(',')});
         `;
     });
 

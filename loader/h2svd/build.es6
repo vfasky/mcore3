@@ -7,24 +7,29 @@
 
 import paseDomDef from './parseDomDef.es6';
 import filter from './filter';
+import {variable} from './config';
 
-export default (domAttr, key, treeName = '__mc__tree', childrenName = '__mc__children',
-                attrName = '__mc__attr', dynamicAttrName = '__mc__dynamicAttr', eventName = '__mc__event',
-                utilName = '__mc__util')=>{
+
+export default (domAttr, key)=>{
 
     let forCode = '';
 
     if(Array.isArray(domAttr.children)){
         filter(domAttr.children).forEach((attr, k)=>{
             // console.log(attr);
-            forCode += `(${paseDomDef(attr)})(__mc__scope, ${childrenName}, ${utilName}, ${key} + '.${k}', {});`;
+            forCode += `(${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${key} + '.${k}');`;
         });
     }
 
     let code = `
-        ${childrenName} = [];
+        ${variable.childrenName} = [];
         ${forCode}
-        ${treeName}.push(${utilName}.build('${domAttr.name}', ${key}, ${attrName}, ${dynamicAttrName}, ${eventName}, ${childrenName}));
+        ${variable.treeName}.push(
+            ${variable.utilName}.build(
+                '${domAttr.name}', ${key}, ${variable.attrName},
+                ${variable.dynamicAttrName}, ${variable.eventName}, ${variable.childrenName}
+            )
+        );
     `;
 
     return code;

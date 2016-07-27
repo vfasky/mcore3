@@ -34,6 +34,7 @@
     "babel-preset-stage-0": "^6.5.0",
     "chai": "^3.5.0",
     "es5-shim": "^4.5.9",
+    "eventemitter3": "^1.2.0",
     "mocha": "^2.5.3",
     "mocha-loader": "^0.7.1",
     "native-promise-only": "^0.8.1",
