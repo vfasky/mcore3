@@ -14,7 +14,7 @@ let _strEndReg = /[^]+""$/;
 export default (domAttr)=>{
     domAttr.data = domAttr.data.replace(/\n/g, ' ');
     let text = domAttr.data;
-    let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.utilName}, ${variable.pathName}){`;
+    let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.pathName}){`;
 
     if(_signReg.test(text)){
         code += `var ${variable.strValsName} = {}`;
@@ -50,8 +50,12 @@ export default (domAttr)=>{
 
     }
     else{
+        // code += `
+        //     ${variable.treeName}.push('${text}');
+        // `;
         code += `
-            ${variable.treeName}.push('${text}');
+            var ${variable.attrName} = {text:'${text}'};
+            ${variable.treeName}.push(${variable.utilName}.build('_textNode', ${variable.pathName}, ${variable.attrName}));
         `;
     }
 

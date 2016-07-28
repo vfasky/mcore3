@@ -7,27 +7,31 @@
 
 import h2svd from '../index.es6';
 import {expect} from 'chai';
+import jsdom from 'mocha-jsdom';
+
+import {getFun} from './util';
+import mcore from '../../../src/index';
+var $;
 
 describe('h2svd', ()=>{
-    it('parse formatter', ()=>{
-        h2svd('{scope.test | toNunmber | add scope.i[\'ix\']} <span mc-id="scope.id | test">123</span>');
+    jsdom();
+
+    before(()=>{
+        $ = require('jquery');
     });
 
+    it('parse html to element', ()=>{
 
-    // it('parse html', ()=>{
-    //     h2svd('<ul><li mc-for="v in scope.list" mc-on-click="showCode(v)">{v.title}</li></ul>');
-    //     h2svd(`
-    //         <!--test-->
-    //         {test | toString | add 123 \'xxx\' attr['ok'] v[0] scope.format('test')}
-    //         <span mc-for="v, k in scope.list" mc-on-click="test(v)" mc-if="k > 0"> {k} - {v.id | toString 123} </span>
-    //         <div mc-show="scope.isShow || scope.id > 0" class="test" id="ok" mc-test="'xx' | toString | add 123 'xxx'">
-    //             <!--test2-->
-    //             <span mc-for="v, k in scope.list" mc-unless="v.id == 0 && k > 1"> {k} - {v.id | toString 123} </span>
-    //         </div>
-    //         <span mc-for="v in scope.list"> {k} - {v.id | toString 123} </span>
-    //         <span mc-for="k of scope.data"> {k} - {v.id | toString 123} </span>
-    //         <span mc-for="k, v of scope.data" mc-if="v.id == 100 || v.id == -1"> {k} - {v.id | toString 123} </span>
-    //         <test>ok?</test>
-    //     `);
-    // });
+        let build = getFun(h2svd('<span mc-id="scope.id" class="dddd" mc-class-test="true" mc-class-ok="" mc-class-yes="1">123</span>'));
+        let scope = {
+            id: 123
+        };
+        let tree = build(scope, null, mcore);
+        let $root = $('<div></div>');
+        tree.forEach((el)=>{
+            $root.append(el.render());
+        });
+        console.log($root.html());
+    });
+
 });

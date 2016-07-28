@@ -5,33 +5,61 @@
  **/
 "use strict";
 
-import $ from 'jquery';
+// import $ from 'jquery';
+let $;
+
+export function get$(){
+    if($){
+        return $;
+    }
+    if(window.$){
+        $ = window.$;
+        return window.$;
+    }
+    $ = require('jquery');
+    return $;
+}
+
 
 export function isNumber(x){
-    return $.isNumeric(x);
+    return get$().isNumeric(x);
 }
 
 export function isArray(x){
-    return $.isArray(x);
+    return get$().isArray(x);
+}
+
+export function isString(x){
+    return get$().type(x) === 'string';
+}
+
+export function type(x){
+    return get$().type(x);
+}
+
+export function isFunction(x){
+    return get$().isFunction(x);
 }
 
 /**
  * 兼容 mcore 2
  */
 export function isObject(x){
-    return $.isPlainObject(x);
+    return get$().isPlainObject(x);
 }
 
 export function isPlainObject(x){
-    return $.isPlainObject(x);
+    return get$().isPlainObject(x);
 }
 
 export function extend(x){
     if(isArray(x)){
-        return $.extend(true, [], x);
+        return get$().extend(true, [], x);
     }
-    return $.extend(true, {}, x);
+    return get$().extend(true, {}, x);
 }
+
+
 
 /**
  * 放到下一帧执行

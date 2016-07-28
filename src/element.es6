@@ -7,7 +7,7 @@
 import Template from './template';
 
 export default class Element {
-    constructor(tagName, key, props = {}, dynamicProps = {}, children = [], events = {}) {
+    constructor(tagName, key, props = {}, dynamicProps = {}, children = [], events = {}, view = null) {
         this.tagName = tagName.trim().toLowerCase();
         this.key = key;
         //静态属性
@@ -23,6 +23,12 @@ export default class Element {
         //上级 element
         this.parentElement = null;
 
+        //所属的view
+        this.view = view;
+
+        if(false === Array.isArray(children)){
+            children = [];
+        }
 
         let count = 0;
         children.forEach((child, i)=>{
@@ -42,6 +48,6 @@ export default class Element {
 
     render(){
         this.template = new Template(this);
-        this.template.render();
+        return this.template.render();
     }
 }

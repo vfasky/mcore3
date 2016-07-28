@@ -25,15 +25,15 @@ export default (html, options = {})=>{
         forCode += `(${paseDomDef(domAttr)})(${variable.scopeName}, ${variable.treeName}, '0.${k}');`;
     });
 
-    let code = `
-        return function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){
+    let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){
+
             if(!${variable.mcoreName}){
                 ${variable.mcoreName} = require('${options.moduleName}');
             }
             var ${variable.utilName} = {
                 clone: ${variable.mcoreName}.util.clone,
                 build: function(tagName, key, attr, dynamicAttr, events, children){
-
+                    return new ${variable.mcoreName}.Element(tagName, key, attr, dynamicAttr, children, events, ${variable.viewName});
                 },
                 parseDynamicVal: function(dynamicCode, dynamicCodeStr){
                     if(typeof dynamicCode !== 'undefined' && (false === dynamicCode instanceof window.Element)){
@@ -62,6 +62,6 @@ export default (html, options = {})=>{
     code = beautify(code,{
         indent_size: 4
     });
-    console.log(code);
+    //console.log(code);
     return code;
 };

@@ -15,6 +15,9 @@ let _funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/;
  */
 let parseDynamicAttr = (name, dynamicVal, dynamicAttrName)=>{
     name = name.replace('mc-', '');
+    if(!dynamicVal){
+        dynamicVal = "''";
+    }
     if(dynamicVal.indexOf(' | ') !== -1){
         return parseFormatters(name, dynamicVal, dynamicAttrName, variable.utilName);
     }

@@ -6,8 +6,14 @@
 "use strict";
 
 import * as util from './util';
+import Element from './element';
+import Template from './template';
+import EventEmitter from './eventEmitter';
 
-module.exports = {
+export default {
     version: '3',
     util: util,
+    Element: Element,
+    Template: Template,
+    EventEmitter: EventEmitter,
 };
