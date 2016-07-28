@@ -22,7 +22,7 @@ export default (html, options = {})=>{
     let forCode = '';
 
     domTree.forEach((domAttr, k)=>{
-        forCode += `(${paseDomDef(domAttr)})(${variable.scopeName}, ${variable.treeName}, '0.${k}');`;
+        forCode += `(${paseDomDef(domAttr)})(${variable.scopeName}, ${variable.treeName}, '${k}');`;
     });
 
     let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){

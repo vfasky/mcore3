@@ -44,7 +44,7 @@ export default (domAttr)=>{
             var ${variable.dynamicAttrName} = {text: ${variable.strName}};
             ${variable.treeName}.push(${variable.utilName}.build(
                 '_textNode', ${variable.pathName}, {},
-                ${variable.dynamicAttrName}, {}, []}
+                ${variable.dynamicAttrName}, {}, []
             ));
         `;
 

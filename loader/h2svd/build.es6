@@ -17,7 +17,8 @@ export default (domAttr, key)=>{
     if(Array.isArray(domAttr.children)){
         filter(domAttr.children).forEach((attr, k)=>{
             // console.log(attr);
-            forCode += `(${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${key} + '.${k}');`;
+            // forCode += `(${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${key} + '.${k}');`;
+            forCode += `(${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${key} );`;
         });
     }
 
