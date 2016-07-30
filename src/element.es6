@@ -50,4 +50,11 @@ export default class Element {
         this.template = new Template(this);
         return this.template.render();
     }
+
+    destroy(notRemove){
+        if(this.template){
+            this.template.destroy(notRemove);
+        }
+    }
+
 }

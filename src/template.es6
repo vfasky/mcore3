@@ -19,6 +19,17 @@ export default class Template extends EventEmitter {
         //子元素的自定义组件
         this.childrenComponent = [];
     }
+
+    destroy(notRemove){
+        // 移除自身
+        if(!notRemove){
+
+        }
+        console.log(this.res + 'remove');
+
+    }
+
+
     /**
      * 渲染 node
      * @method render
@@ -34,11 +45,13 @@ export default class Template extends EventEmitter {
             else{
                 node = document.createTextNode(this.element.props.text);
             }
+            node._key = this.element.key;
             this.refs = node;
             // node._element = this.element;
             return node;
         }
         node = document.createElement(this.element.tagName);
+        node._key = this.element.key;
         this.refs = node;
         node._element = this.element;
 
@@ -55,6 +68,7 @@ export default class Template extends EventEmitter {
             });
 
             this.element._component = new Template.components[this.element.tagName](node, this.element);
+            node._element._noDiffChild = true;
             node._component = this.element._component;
             //TODO 兼容mcore2 可能要开启
             // Object.keys(this.element.dynamicProps).forEach((attr)=>{
@@ -133,6 +147,17 @@ export default class Template extends EventEmitter {
     }
 
     /**
+     * 通知更新的值
+     */
+    update(attr, value, status){
+        if(this.element._component){
+            this.element._component.update(attr, value, status);
+        }
+        this.emit(status, attr, value);
+        this.emit('change:' + attr, value);
+    }
+
+    /**
      * 设置 node 属性
      * @method setAttr
      * @param  {String}  attr
@@ -163,6 +188,9 @@ export default class Template extends EventEmitter {
                         }
                     }
                 }
+            }
+            if(status != 'init'){
+                this.update(attr, value, status);
             }
         }
         if(attr === 'class'){
