@@ -15,6 +15,9 @@ import binders from './template/binders';
 export default class Template extends EventEmitter {
     constructor(element) {
         super();
+        //标记是否监听事件
+        this._isWatchEvent = false;
+
         this.element = element;
         //子元素的自定义组件
         this.childrenComponent = [];
@@ -23,9 +26,11 @@ export default class Template extends EventEmitter {
     destroy(notRemove){
         // 移除自身
         if(!notRemove){
-
+            if(this.refs && this.refs.parentNode && this.refs.parentNode.removeChild){
+                this.refs.parentNode.removeChild(this.refs);
+            }
         }
-        console.log(this.res + 'remove');
+        this.emit('destroy');
 
     }
 

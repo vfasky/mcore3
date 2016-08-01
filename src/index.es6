@@ -9,6 +9,7 @@ import * as util from './util';
 import Element from './element';
 import Template from './template';
 import EventEmitter from './eventEmitter';
+import Component from './component';
 
 export default {
     version: '3',
@@ -16,4 +17,5 @@ export default {
     Element: Element,
     Template: Template,
     EventEmitter: EventEmitter,
+    Component: Component,
 };

@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "htmlparser2": "^3.9.1",
-    "js-beautify": "^1.6.3"
+    "js-beautify": "^1.6.3",
+    "loader-utils": "^0.2.15"
   }
 }

@@ -38,8 +38,9 @@ function dfsWalk(oldNode, newNode, index, patches){
         if(newNode != oldNode){
             currentPatch.push({
                 type: patch.TEXT,
-                content: String(oldNode._element.dynamicProps.text || oldNode._element.props.text || ''),
+                content: String(newNode.dynamicProps.text || newNode.props.text || ''),
             });
+
         }
 
     }
@@ -53,7 +54,7 @@ function dfsWalk(oldNode, newNode, index, patches){
             });
         }
         // 没有声明不要 diff 子元素
-        if(!oldNode._element._noDiffChild){
+        if(!oldNode || !oldNode._noDiffChild){
             diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
         }
     }
@@ -135,5 +136,6 @@ function diffProps(oldNode, newNode){
 export default function diff(oldTree, newTree){
     let index = 0;
     let patches = {};
-
+    dfsWalk(oldTree, newTree, index, patches);
+    return patches;
 }

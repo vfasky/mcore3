@@ -14,7 +14,7 @@ const PROPS = 2;
 // 文字
 const TEXT = 3;
 
-function dfsWalk (node, walker, patches){
+function dfsWalk (node, walker, patches = {}){
     let currentPatches = patches[walker.index];
     //计算子节点数量
     let len;

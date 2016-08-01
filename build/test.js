@@ -24,6 +24,9 @@ module.exports = {
             query: {
                 presets: ['es2015'],
             }
+        },{
+            test: /\.html$/,
+            loader: path.resolve(__dirname, '../loader/h2svd/loader.es6'),
         }]
     },
     resolve: {

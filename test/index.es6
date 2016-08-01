@@ -7,6 +7,7 @@
 import mcore from '../src/es5';
 import {expect} from 'chai';
 
+const $ = mcore.util.get$();
 
 describe('util', ()=>{
     it('isNumber', ()=>{

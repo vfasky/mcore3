@@ -13,11 +13,13 @@ import {variable} from './config';
 
 let buildArray = (domAttr, iName, vName)=>{
     let code = `
+        var ${variable.pathIName} = 0;
         ${variable.forArrayName}.forEach(function(${vName}, ${iName}){
             %s
                 var ${variable.childrenName};
                 %s
-                ${build(domAttr, variable.pathName + ' + \'.\' + ' + iName)}
+                ${build(domAttr, variable.pathName + ' + \'.\' + ' + variable.pathIName)}
+                ${variable.pathIName}++;
             %s
         });
     `;
@@ -26,12 +28,14 @@ let buildArray = (domAttr, iName, vName)=>{
 
 let buildObject = (domAttr, kName, vName, oName)=>{
     let code = `
+        var ${variable.pathIName} = 0;
         ${variable.forObjKeysName}.forEach(function(${kName}, ${variable.forIName}){
             var ${vName} = ${oName}[${kName}];
             %s
                 var ${variable.childrenName};
                 %s
-                ${build(domAttr, variable.pathName + ' + \'.\' + ' + variable.forIName)}
+                ${build(domAttr, variable.pathName + ' + \'.\' + ' + variable.pathIName)}
+                ${variable.pathIName}++;
             %s
         });
     `;

@@ -81,7 +81,67 @@ describe('h2svd', ()=>{
         let $ul = $root.find('ul');
 
         expect($ul.find('li').length).to.equal(2);
-        console.log($root.html());
+        // console.log($root.html());
+    });
+
+    it('component', (done)=>{
+        let html = `<ul><li mc-for="v in scope.list" mc-if="v >= 4">{v}</li></ul>`;
+        let $root = $('<div></div>');
+        let component = new mcore.Component($root[0]);
+        component.render(getFun(h2svd(html)),{
+            list: [1,2,3,4,5]
+        }).then((refs)=>{
+            // console.log($root.html());
+
+            component.set('list', [5,6,7,8,9], (refs)=>{
+                let $ul = $root.find('ul');
+                // console.log($root.html());
+                expect($ul.find('li').length).to.equal(5);
+                done();
+            });
+        });
+
+    });
+
+    it('component more child', (done)=>{
+        let html = `<span mc-for="v in scope.list" mc-if="v >= 4">{v}</span>`;
+        let $root = $('<div></div>');
+        let component = new mcore.Component($root[0]);
+        component.render(getFun(h2svd(html)),{
+            list: [1,2,3,4,5]
+        }).then((refs)=>{
+            // console.log($root.html());
+
+            component.set('list', [5,6,7,8,9], (refs)=>{
+                let $span = $root.find('span');
+                expect($span.length).to.equal(5);
+                done();
+            });
+        });
+    });
+
+    it('component render promise', (done)=>{
+        let html = `<span mc-for="v in scope.list" mc-if="v >= 4">{v}</span>`;
+        let $root = $('<div></div>');
+        let component = new mcore.Component($root[0]);
+        component.render(getFun(h2svd(html)),{
+            list: new Promise((resolve)=>{
+                setTimeout(()=>{
+                    resolve([5,6,7]);
+                }, 5);
+            })
+        }).then((refs)=>{
+
+            component.set('list', new Promise((resolve)=>{
+                setTimeout(()=>{
+                    resolve([5,6,7,8,9]);
+                }, 5);
+            }), (refs)=>{
+                let $span = $root.find('span');
+                expect($span.length).to.equal(5);
+                done();
+            });
+        });
     });
 
 });

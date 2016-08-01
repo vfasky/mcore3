@@ -23,4 +23,5 @@ export const variable = {
     strName: '__mc__str',
     mcoreName: '__mc__mcore',
     viewName: '__mc__view',
+    pathIName: '__mc__pathI',
 };
