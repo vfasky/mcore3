@@ -73,6 +73,8 @@ export default class Template extends EventEmitter {
             });
 
             this.element._component = new Template.components[this.element.tagName](node, this.element);
+            this.element.children = [];
+            this.element.count = 0;
             node._element._noDiffChild = true;
             node._component = this.element._component;
             //TODO 兼容mcore2 可能要开启

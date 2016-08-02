@@ -83,8 +83,16 @@ describe('h2svd', ()=>{
         expect($ul.find('li').length).to.equal(2);
         // console.log($root.html());
     });
+});
 
-    it('component', (done)=>{
+describe('component', ()=>{
+    jsdom();
+
+    before(()=>{
+        $ = require('jquery');
+    });
+
+    it('base', (done)=>{
         let html = `<ul><li mc-for="v in scope.list" mc-if="v >= 4">{v}</li></ul>`;
         let $root = $('<div></div>');
         let component = new mcore.Component($root[0]);
@@ -141,6 +149,73 @@ describe('h2svd', ()=>{
                 expect($span.length).to.equal(5);
                 done();
             });
+        });
+    });
+
+    it('component diff other tagName', (done)=>{
+        let html = `<span mc-for="v in scope.list" mc-if="v >= 4">{v}</span>`;
+        let $root = $('<div></div>');
+        let component = new mcore.Component($root[0]);
+        component.render(getFun(h2svd(html)),{
+            list: [1,2,3,4,5]
+        }).then((refs)=>{
+            // console.log($root.html());
+            let $span = $root.find('span');
+            expect($span.length).to.equal(2);
+
+            let html = `<ul><li mc-for="v in scope.list" mc-if="v >= 2">{v}</li></ul>`;
+            component.render(getFun(h2svd(html)),{
+                list: [1,2,3,4,5]
+            }).then((refs)=>{
+                let $ul = $root.find('ul');
+                expect($ul.find('li').length).to.equal(4);
+                done();
+            });
+        });
+    });
+
+    it('component get events', (done)=>{
+        let html = `
+            <ul mc-on-click="test">
+                <li mc-on-click="click(v)" mc-for="v in scope.list">
+                    ix: {v}
+                </li>
+            </ul>
+        `;
+        let $root = $('<div></div>');
+        let component = new mcore.Component($root[0]);
+
+        component.render(getFun(h2svd(html)),{
+            list: [1,2,3,4,5]
+        }).then((refs)=>{
+            expect(component.events.click.length).to.equal(6);
+            done();
+        });
+    });
+
+    it('component event test', (done)=>{
+        let html = `
+            <ul mc-on-click="test">
+                <li mc-on-click="click(v)" mc-for="v in scope.list">
+                    ix: {v}
+                </li>
+            </ul>
+        `;
+        let $root = $('<div></div>');
+        let component = new mcore.Component($root[0]);
+
+        component.click = (event, el, v)=>{
+            expect(v).to.equal(3);
+        };
+
+        component.test = (event, el)=>{
+            done();
+        };
+
+        component.render(getFun(h2svd(html)),{
+            list: [1,2,3,4,5]
+        }).then((refs)=>{
+            $root.find('li').eq(2).click();
         });
     });
 

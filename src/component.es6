@@ -12,8 +12,11 @@ import Element from './element';
 import diff from './diff';
 import patch from './patch';
 
+
 const isFunction = util.isFunction;
 const nextTick = util.nextTick;
+const getEvents = util.getEvents;
+const getComponents = util.getComponents;
 
 const templateHelper = {
     Template: Template,
@@ -22,10 +25,10 @@ const templateHelper = {
 };
 
 export default class Component extends EventEmitter {
-    constructor(node, element = {}) {
+    constructor(parentNode, parentElement = {}) {
         super();
-        this.el = node;
-        this.element = element;
+        this.el = parentNode;
+        this.parentElement = parentElement;
         // 渲染完成，回调队列
         this._queueCallbacks = [];
         // 正在排队的渲染队列id
@@ -34,9 +37,9 @@ export default class Component extends EventEmitter {
         this.virtualDom = null;
 
         // 模板 scope
-        this.scope = element.props || {};
-        Object.keys(element.dynamicProps || {}).forEach((attr)=>{
-            this.scope[attr] = element.dynamicProps[attr];
+        this.scope = parentElement.props || {};
+        Object.keys(parentElement.dynamicProps || {}).forEach((attr)=>{
+            this.scope[attr] = parentElement.dynamicProps[attr];
         });
 
         this.init();
@@ -52,13 +55,27 @@ export default class Component extends EventEmitter {
         }
     }
 
+    destroy(){
+        if(this.$refs){
+            this.$refs.remove();
+            this.$refs = null;
+        }
+        getComponents(this.virtualDom).forEach((component)=>{
+            component.destroy();
+        });
+
+        // 渲染完成，回调队列
+        this._queueCallbacks = [];
+
+    }
+
     /**
      * 取调用自定组件的上级view
      * @method parent
      * @return {View}
      */
-    parent(){
-        return this.element.view;
+    parentView(){
+        return this.parentElement.view;
     }
 
     /**
@@ -69,9 +86,9 @@ export default class Component extends EventEmitter {
      * @return {Void}
      */
     emitEvent(eventName, args){
-        let parentView = this.parent();
-        if(parentView && this.element.events.hasOwnProperty(eventName)){
-            let eventCtx = this.element.events[eventName];
+        let parentView = this.parentView();
+        if(parentView && this.parentElement.events.hasOwnProperty(eventName)){
+            let eventCtx = this.parentElement.events[eventName];
             let callback = parentView[eventCtx.funName];
             if(!isFunction(callback)){
                 return;
@@ -124,6 +141,8 @@ export default class Component extends EventEmitter {
         if(!this.virtualDomDefine){
             return;
         }
+        const $ = util.get$();
+
         let virtualDoms = this.virtualDomDefine(this.scope, this, templateHelper);
         let virtualDom;
         if(virtualDoms.length == 1){
@@ -137,16 +156,22 @@ export default class Component extends EventEmitter {
         if(this.virtualDom === null){
             this.virtualDom = virtualDom;
             this.refs = this.virtualDom.render();
+            this.$refs = $(this.refs);
             this.mount();
         }
         else{
             let patches = diff(this.virtualDom, virtualDom);
+            //先移除事件绑定
+            if(this.$refs){
+                this.$refs.off();
+            }
             //更新dom
             patch(this.refs, patches);
-
+            this.$refs = $(this.refs);
             this.virtualDom = virtualDom;
         }
-        //TODO watch event
+        // 绑定事件
+        this.bindEvents();
 
         this.emit('rendered', this.refs);
         this._queueCallbacks.forEach((done, ix)=>{
@@ -157,6 +182,36 @@ export default class Component extends EventEmitter {
         });
 
         return this.refs;
+    }
+
+    bindEvents(){
+        if(!this.$refs){
+            return;
+        }
+        const $ = util.get$();
+        this.events = getEvents(this.virtualDom);
+
+        Object.keys(this.events).forEach((eventName)=>{
+            let eventData = this.events[eventName];
+            this.$refs.on(eventName, (event)=>{
+                var res = null;
+                let target = event.target;
+                $.each(eventData, (ix, ctx)=>{
+                    if(ctx.target === target || $.contains(ctx.target, target)){
+                        let callback = this[ctx.funName];
+                        if(isFunction(callback)){
+                            let args = [event, ctx.target];
+                            ctx.args.forEach((v)=>{
+                                args.push(v);
+                            });
+                            res = callback.apply(this, args);
+                            return res;
+                        }
+                    }
+                });
+                return res;
+            });
+        });
     }
 
     /**
