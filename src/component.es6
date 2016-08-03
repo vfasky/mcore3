@@ -11,7 +11,7 @@ import Template from './template';
 import Element from './element';
 import diff from './diff';
 import patch from './patch';
-
+import Watch from './watch';
 
 const isFunction = util.isFunction;
 const nextTick = util.nextTick;
@@ -27,7 +27,7 @@ const templateHelper = {
 export default class Component extends EventEmitter {
     constructor(parentNode, parentElement = {}) {
         super();
-        this.el = parentNode;
+        this.parentNode = parentNode;
         this.parentElement = parentElement;
         // 渲染完成，回调队列
         this._queueCallbacks = [];
@@ -42,13 +42,18 @@ export default class Component extends EventEmitter {
             this.scope[attr] = parentElement.dynamicProps[attr];
         });
 
+        // 观察scope, 如果改动，渲染模板
+        this.watchScope = new Watch(this.scope, (path)=>{
+            this.renderQueue();
+        });
+
         this.init();
         this.watch();
     }
     init(){}
     watch(){}
 
-    mount(parentEl = this.el){
+    mount(parentEl = this.parentNode){
         if(this.refs && parentEl.appendChild){
             parentEl.appendChild(this.refs);
             this.emit('mount', this.refs);
@@ -56,6 +61,8 @@ export default class Component extends EventEmitter {
     }
 
     destroy(){
+        this.watchScope.unwatch();
+        
         if(this.$refs){
             this.$refs.remove();
             this.$refs = null;

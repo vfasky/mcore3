@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/vfasky/mcore3#readme",
   "devDependencies": {
+    "array.observe": "0.0.1",
     "babel-cli": "^6.10.1",
     "babel-core": "^6.10.4",
     "babel-loader": "^6.2.4",
@@ -43,6 +44,7 @@
     "mocha-loader": "^0.7.1",
     "native-promise-only": "^0.8.1",
     "object-assign": "^4.1.0",
+    "object.observe": "^0.2.6",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   },

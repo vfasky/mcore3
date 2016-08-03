@@ -219,4 +219,46 @@ describe('component', ()=>{
         });
     });
 
+    it('component diy tag', (done)=>{
+
+        let $root = $('<div></div>');
+
+        class Test extends mcore.Component {
+            constructor(parentNode, parentElement) {
+                super(parentNode, parentElement);
+                let html = `
+                    <ul mc-on-click="test">
+                        <li mc-on-click="click(v)" mc-for="v in scope.list">
+                            ix: {v}
+                        </li>
+                    </ul>
+
+                `;
+                this.render(getFun(h2svd(html)),{
+                    list: [1,2,3,4,5]
+                });
+            }
+
+            destroy(){
+                super.destroy();
+                done();
+            }
+
+            click(event, el, v){
+                expect(v).to.equal(3);
+            }
+        }
+
+        mcore.Template.components.test = Test;
+
+        let html = '<test></test>';
+        let component = new mcore.Component($root[0]);
+        component.render(getFun(h2svd(html))).then(()=>{
+            setTimeout(()=>{
+                $root.find('li').eq(2).click();
+                component.destroy();
+            }, 20);
+        });
+    });
+
 });
