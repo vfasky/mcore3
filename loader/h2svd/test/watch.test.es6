@@ -7,8 +7,15 @@
 
 import Watch from '../../../src/watch';
 import {expect} from 'chai';
+import jsdom from 'mocha-jsdom';
+var $;
 
 describe('watch', ()=>{
+    jsdom();
+
+    before(()=>{
+        $ = require('jquery');
+    });
 
     it('watch object', (done)=>{
         var tObj = {
