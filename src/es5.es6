@@ -6,5 +6,8 @@
 "use strict";
 
 import "native-promise-only";
+import {shim as arrayFromShim} from 'array.from';
+arrayFromShim();
+
 import mcore from './index';
 export {mcore as default};

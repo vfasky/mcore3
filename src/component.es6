@@ -24,6 +24,9 @@ const templateHelper = {
     Element: Element,
 };
 
+let $_win = null;
+let $_body = null;
+
 export default class Component extends EventEmitter {
     constructor(parentNode, parentElement = {}) {
         super();
@@ -36,6 +39,21 @@ export default class Component extends EventEmitter {
 
         this.virtualDom = null;
 
+        // 存放 window 及 body 引用
+        if($_win === null || $_body === null){
+            $_win = util.get$()(window);
+            $_body = util.get$()('body');
+        }
+        this.$win = $_win;
+        this.$body = $_body;
+
+        this.util = util;
+        this.nextTick = util.nextTick;
+        // 是否在微信中打开
+        this.isWeixinBrowser = util.isWeixinBrowser();
+        // 是否在ios中打开
+        this.isIOS = util.isIOS();
+
         // 模板 scope
         this.scope = parentElement.props || {};
         Object.keys(parentElement.dynamicProps || {}).forEach((attr)=>{
@@ -47,26 +65,31 @@ export default class Component extends EventEmitter {
             this.renderQueue();
         });
 
+        this.beforeInit();
         this.init();
         this.watch();
     }
+    beforeInit(){}
     init(){}
     watch(){}
 
     mount(parentEl = this.parentNode){
-        if(this.refs && parentEl.appendChild){
+        if(this.refs && parentEl.appendChild && !(util.get$().contains(parentEl, this.refs))){
             parentEl.appendChild(this.refs);
             this.emit('mount', this.refs);
         }
     }
 
-    destroy(){
+    destroy(notRemove){
         this.watchScope.unwatch();
-        
-        if(this.$refs){
+
+        if(!notRemove && this.$refs){
             this.$refs.remove();
             this.$refs = null;
         }
+        // else if(this.$refs){
+        //     this.$refs.off();
+        // }
         getComponents(this.virtualDom).forEach((component)=>{
             component.destroy();
         });
@@ -158,9 +181,8 @@ export default class Component extends EventEmitter {
         else{
             virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms);
         }
-
         // 未渲染，不用对比
-        if(this.virtualDom === null){
+        if(!this.virtualDom){
             this.virtualDom = virtualDom;
             this.refs = this.virtualDom.render();
             this.$refs = $(this.refs);

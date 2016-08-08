@@ -7,6 +7,22 @@
 
 // import $ from 'jquery';
 let $;
+let _isIOS = null;
+let _isWeixinBrowser = null;
+
+export function isIOS(){
+    if(_isIOS === null){
+        _isIOS = (/iphone|ipad/gi).test(window.navigator.appVersion);
+    }
+    return _isIOS;
+}
+
+export function isWeixinBrowser() {
+    if(_isWeixinBrowser === null){
+        _isWeixinBrowser = (/MicroMessenger/i).test(window.navigator.userAgent);
+    }
+    return _isWeixinBrowser;
+}
 
 export function get$(){
     if($){
@@ -20,6 +36,11 @@ export function get$(){
     return $;
 }
 
+export function each(arr, callback){
+    get$().each(arr, (k, v)=>{
+        return callback(v, k);
+    });
+}
 
 export function isNumber(x){
     return get$().isNumeric(x);
@@ -91,6 +112,7 @@ export function getComponents(element, components = []){
 
     return components;
 }
+
 
 /**
  * 放到下一帧执行
