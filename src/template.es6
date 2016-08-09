@@ -238,3 +238,14 @@ Template.binders = binders;
  * @type {Object}
  */
 Template.formatters = {};
+
+//兼容mcore2
+Template.strToFun = (el, value)=>{
+    if(!el._element || !el._element.view || !el._element.view[value]){
+        return ()=>{};
+    }
+    return el._element.view[value];
+};
+Template.getEnv = (el)=>{
+    return el._element.view;
+};

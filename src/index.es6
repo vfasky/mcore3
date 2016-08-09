@@ -13,11 +13,13 @@ import Component from './component';
 import * as route from './route';
 import View from './view';
 import App from './app';
+import http from './http';
 
 export default {
     version: '3',
     util: util,
     route: route,
+    http: http,
     Element: Element,
     Template: Template,
     EventEmitter: EventEmitter,
