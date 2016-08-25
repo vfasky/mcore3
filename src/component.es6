@@ -26,6 +26,9 @@ const templateHelper = {
 
 let $_win = null;
 let $_body = null;
+let _id = 0;
+
+const notProxyEvents = ['focus', 'blur'];
 
 export default class Component extends EventEmitter {
     constructor(parentNode, parentElement = {}) {
@@ -42,6 +45,8 @@ export default class Component extends EventEmitter {
         this._regEvents = [];
 
         this._initWatchScope = false;
+
+        this.id = _id++;
 
         this.virtualDom = null;
 
@@ -230,34 +235,48 @@ export default class Component extends EventEmitter {
         return this.refs;
     }
 
+    callEvent(event, eventName){
+        const $ = util.get$();
+        var res = null;
+        let target = event.target;
+        let eventData = this.events[eventName];
+        // console.log(eventData, eventName);
+        for(let i = 0, len = eventData.length; i < len; i++){
+            let ctx = eventData[i];
+            let ctxTarget = ctx.target();
+            // console.log(ctxTarget, target);
+            if(ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))){
+                let callback = this[ctx.funName];
+                // console.log(callback);
+                if(isFunction(callback)){
+                    let args = [event, ctxTarget];
+                    args = args.concat(ctx.args);
+                    // console.log(ctx.element);
+                    res = callback.apply(this, args);
+                    if(false === res){
+                        break;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
     regEvent(eventName){
         const $ = util.get$();
         if(this._regEvents.indexOf(eventName) === -1){
             this._regEvents.push(eventName);
 
-            let eventData = this.events[eventName];
-            this.$refs.on(eventName, (event)=>{
-                var res = null;
-                let target = event.target;
-                for(let i = eventData.length - 1; i >= 0; i--){
-                    let ctx = eventData[i];
-                    let ctxTarget = ctx.target();
-                    if(ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))){
-                        // console.log(ctxTarget, target);
-                        let callback = this[ctx.funName];
-                        if(isFunction(callback)){
-                            let args = [event, ctxTarget];
-                            args = args.concat(ctx.args);
-                            // console.log(ctx.element);
-                            res = callback.apply(this, args);
-                            if(false === res){
-                                break;
-                            }
-                        }
-                    }
-                }
-                return res;
-            });
+            if(notProxyEvents.indexOf(eventName) === -1){
+                this.$refs.on(eventName, (event)=>{
+                    return this.callEvent(event, eventName);
+                });
+            }
+            else if(['focus', 'blur'].indexOf(eventName) !== -1){
+                this.$refs.on(eventName, 'input, textarea, select, [tabindex]', (event)=>{
+                    return this.callEvent(event, eventName);
+                });
+            }
         }
     }
 

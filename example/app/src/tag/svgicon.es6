@@ -1,5 +1,5 @@
 /**
- * Before change the DOM , We have to encapsulate it into mcore.Component 
+ * Before change the DOM , We have to encapsulate it into mcore.Component
  * svg icon
  * @author vfasky <vfasky@gmail.com>
  **/
@@ -10,6 +10,7 @@ import $ from 'jquery';
 
 export default class Svgicon extends mcore.Component {
     init() {
+        // console.log(this);
         this.$parentNode = $(this.parentNode);
         this.buildSVG();
     }

@@ -63,7 +63,7 @@
 	
 	var app = new _mcore2.default.App((0, _jquery2.default)('#main'));
 	
-	app.route('/table', __webpack_require__(25).default).route('/', __webpack_require__(23).default).run();
+	app.route('/table', __webpack_require__(25).default).route('/removeItem', __webpack_require__(28).default).route('/changeItem', __webpack_require__(30).default).route('/', __webpack_require__(23).default).run();
 
 /***/ },
 /* 1 */
@@ -389,7 +389,23 @@
 	    }
 	
 	    _createClass(Element, [{
-	        key: "render",
+	        key: 'cloneElement',
+	        value: function cloneElement(element) {
+	            var _this2 = this;
+	
+	            this._component = element._component;
+	            this.template = element.template;
+	            this.template.element = this;
+	            this.refs = element.refs;
+	
+	            //设置动态属性
+	            Object.keys(this.dynamicProps).forEach(function (attr) {
+	                // console.log(attr);
+	                _this2.template.setAttr(attr.toLowerCase(), _this2.dynamicProps[attr], true, 'update');
+	            });
+	        }
+	    }, {
+	        key: 'render',
 	        value: function render() {
 	            this.template = new _template2.default(this);
 	            this.refs = this.template.render();
@@ -397,7 +413,7 @@
 	            return this.refs;
 	        }
 	    }, {
-	        key: "destroy",
+	        key: 'destroy',
 	        value: function destroy(notRemove) {
 	            if (this.template) {
 	                this.template.destroy(notRemove);
@@ -514,34 +530,23 @@
 	                // node._element = this.element;
 	                return node;
 	            }
-	            if (!oldNode) {
-	                node = document.createElement(this.element.tagName);
-	            } else {
-	                node = oldNode;
-	            }
+	            node = document.createElement(this.element.tagName);
+	
 	            node._key = this.element.key;
 	            this.refs = node;
 	            node._element = this.element;
 	
 	            // 自定义组件初始化，子元素由 自定义组件 自己管理
 	            if (Template.components.hasOwnProperty(this.element.tagName)) {
-	                if (!oldNode) {
-	                    // 自定义组件，先设置静态属性
-	                    Object.keys(this.element.props).forEach(function (attr) {
-	                        _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
-	                    });
-	                    //设置动态属性
-	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
-	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
-	                    });
-	                    this.element._component = new Template.components[this.element.tagName](node, this.element);
-	                } else {
-	                    //设置动态属性
-	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
-	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true, 'update');
-	                    });
-	                    this.element._component = oldNode._component;
-	                }
+	                // 自定义组件，先设置静态属性
+	                Object.keys(this.element.props).forEach(function (attr) {
+	                    _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
+	                });
+	                //设置动态属性
+	                Object.keys(this.element.dynamicProps).forEach(function (attr) {
+	                    _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
+	                });
+	                this.element._component = new Template.components[this.element.tagName](node, this.element);
 	
 	                this.element._noDiffChild = true;
 	                this.element.children = [];
@@ -553,7 +558,7 @@
 	                // });
 	            }
 	            // 非自定义组件，渲染子元素
-	            else if (!oldNode) {
+	            else {
 	                    this.element.children.forEach(function (child) {
 	                        if (child.render) {
 	                            var childNode = child.render();
@@ -586,12 +591,8 @@
 	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
 	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
 	                    });
-	                } else {
-	                    //设置动态属性
-	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
-	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true, 'update');
-	                    });
 	                }
+	
 	            return node;
 	        }
 	
@@ -1274,6 +1275,9 @@
 	
 	var $_win = null;
 	var $_body = null;
+	var _id = 0;
+	
+	var notProxyEvents = ['focus', 'blur'];
 	
 	var Component = function (_EventEmitter) {
 	    _inherits(Component, _EventEmitter);
@@ -1297,6 +1301,8 @@
 	        _this._regEvents = [];
 	
 	        _this._initWatchScope = false;
+	
+	        _this.id = _id++;
 	
 	        _this.virtualDom = null;
 	
@@ -1505,39 +1511,51 @@
 	            return this.refs;
 	        }
 	    }, {
+	        key: 'callEvent',
+	        value: function callEvent(event, eventName) {
+	            var $ = util.get$();
+	            var res = null;
+	            var target = event.target;
+	            var eventData = this.events[eventName];
+	            // console.log(eventData, eventName);
+	            for (var i = 0, len = eventData.length; i < len; i++) {
+	                var ctx = eventData[i];
+	                var ctxTarget = ctx.target();
+	                // console.log(ctxTarget, target);
+	                if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
+	                    var callback = this[ctx.funName];
+	                    // console.log(callback);
+	                    if (isFunction(callback)) {
+	                        var args = [event, ctxTarget];
+	                        args = args.concat(ctx.args);
+	                        // console.log(ctx.element);
+	                        res = callback.apply(this, args);
+	                        if (false === res) {
+	                            break;
+	                        }
+	                    }
+	                }
+	            }
+	            return res;
+	        }
+	    }, {
 	        key: 'regEvent',
 	        value: function regEvent(eventName) {
 	            var _this4 = this;
 	
 	            var $ = util.get$();
 	            if (this._regEvents.indexOf(eventName) === -1) {
-	                (function () {
-	                    _this4._regEvents.push(eventName);
+	                this._regEvents.push(eventName);
 	
-	                    var eventData = _this4.events[eventName];
-	                    _this4.$refs.on(eventName, function (event) {
-	                        var res = null;
-	                        var target = event.target;
-	                        for (var i = eventData.length - 1; i >= 0; i--) {
-	                            var ctx = eventData[i];
-	                            var ctxTarget = ctx.target();
-	                            if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
-	                                // console.log(ctxTarget, target);
-	                                var callback = _this4[ctx.funName];
-	                                if (isFunction(callback)) {
-	                                    var args = [event, ctxTarget];
-	                                    args = args.concat(ctx.args);
-	                                    // console.log(ctx.element);
-	                                    res = callback.apply(_this4, args);
-	                                    if (false === res) {
-	                                        break;
-	                                    }
-	                                }
-	                            }
-	                        }
-	                        return res;
+	                if (notProxyEvents.indexOf(eventName) === -1) {
+	                    this.$refs.on(eventName, function (event) {
+	                        return _this4.callEvent(event, eventName);
 	                    });
-	                })();
+	                } else if (['focus', 'blur'].indexOf(eventName) !== -1) {
+	                    this.$refs.on(eventName, 'input, textarea, select, [tabindex]', function (event) {
+	                        return _this4.callEvent(event, eventName);
+	                    });
+	                }
 	            }
 	        }
 	    }, {
@@ -1768,7 +1786,9 @@
 	                        });
 	                    }
 	                    if (!newNode.refs && oldNode.refs) {
-	                        newNode.render(oldNode.refs);
+	                        // newNode.render(oldNode.refs);
+	                        newNode.cloneElement(oldNode);
+	                        // console.log(newNode);
 	                    }
 	                    // if(!newNode.template && oldNode.template){
 	                    //     newNode.template = oldNode.template;
@@ -4429,6 +4449,10 @@
 	                        title: 'Remove',
 	                        subTitle: 'Remove Item',
 	                        url: '#/removeItem'
+	                    }, {
+	                        title: 'Change',
+	                        subTitle: 'Change Item',
+	                        url: '#/changeItem'
 	                    }]
 	                }]
 	            });
@@ -6325,7 +6349,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * Before change the DOM , We have to encapsulate it into mcore.Component 
+	 * Before change the DOM , We have to encapsulate it into mcore.Component
 	 * svg icon
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
@@ -6365,6 +6389,7 @@
 	    _createClass(Svgicon, [{
 	        key: 'init',
 	        value: function init() {
+	            // console.log(this);
 	            this.$parentNode = (0, _jquery2.default)(this.parentNode);
 	            this.buildSVG();
 	        }
@@ -6399,6 +6424,796 @@
 	
 	
 	_mcore2.default.Template.components.svgicon = Svgicon;
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * remove
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _mcore = __webpack_require__(2);
+	
+	var _mcore2 = _interopRequireDefault(_mcore);
+	
+	var _svgicon = __webpack_require__(27);
+	
+	var _svgicon2 = _interopRequireDefault(_svgicon);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var RemoveItem = function (_mcore$View) {
+	    _inherits(RemoveItem, _mcore$View);
+	
+	    function RemoveItem() {
+	        _classCallCheck(this, RemoveItem);
+	
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(RemoveItem).apply(this, arguments));
+	    }
+	
+	    _createClass(RemoveItem, [{
+	        key: 'run',
+	        value: function run() {
+	            this.render(__webpack_require__(29), {
+	                list: ['hello #0', 'hello #1', 'hello #2', 'hello #3', 'hello #4']
+	            });
+	        }
+	    }, {
+	        key: 'remove',
+	        value: function remove(event, el, v) {
+	            // console.log(v);
+	            var ix = this.scope.list.indexOf(v);
+	            if (ix !== -1) {
+	                this.scope.list.splice(this.scope.list.indexOf(v), 1);
+	            }
+	            return false;
+	        }
+	    }]);
+	
+	    return RemoveItem;
+	}(_mcore2.default.View);
+	
+	exports.default = RemoveItem;
+	
+	
+	RemoveItem.viewName = 'removeItem';
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(scope, __mc__view, __mc__mcore) {
+	
+	    if (!__mc__mcore) {
+	        __mc__mcore = __webpack_require__(2);
+	    }
+	    var __mc__util = {
+	        clone: __mc__mcore.util.clone,
+	        build: function(tagName, key, attr, dynamicAttr, events, children) {
+	            return new __mc__mcore.Element(tagName, key, attr, dynamicAttr, children, events, __mc__view);
+	        },
+	        parseDynamicVal: function(dynamicCode, dynamicCodeStr) {
+	            var _varReg = /(^[a-zA-Z0-9_-]+)$/;
+	            if (typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)) {
+	                return dynamicCode;
+	            } else if (typeof __mc__view[dynamicCode] != 'undefined') {
+	                return __mc__view[dynamicCode];
+	            } else if (_varReg.test(dynamicCodeStr)) {
+	                return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+	            } else {
+	                return '';
+	            }
+	        },
+	        callFormatter: function(formatterName) {
+	            if (__mc__mcore.Template.formatters.hasOwnProperty(formatterName)) {
+	                return __mc__mcore.Template.formatters[formatterName];
+	            };
+	            return function() {};
+	        },
+	    };
+	    var __mc__tree = [];
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        var __mc__forArr = [0];
+	
+	
+	        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	            __mc__attr['class'] = 'list';
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                /* [for-in] v in scope.list */
+	                var __mc__forArr = scope.list;
+	                if (false == Array.isArray(__mc__forArr)) {
+	                    __mc__forArr = [];
+	                }
+	
+	
+	                __mc__forArr.forEach(function(v, __mc__$ix_) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['icon'] = 'print';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'svgicon', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	                        var __mc__strVal = {}
+	                        var __mc__tmpAttr;
+	                        try {
+	                            __mc__tmpAttr = v;
+	                        } catch (err) {}
+	
+	                        __mc__strVal['rp_0'] = (function(x) {
+	
+	                            return x;
+	                        })(__mc__tmpAttr);
+	
+	                        /* [formatter] {v} */
+	                        var __mc__str = "         " + __mc__strVal['rp_0'] + "         ";
+	                        var __mc__dynamicAttr = {
+	                            text: __mc__str
+	                        };
+	                        __mc__tree.push(__mc__util.build(
+	                            '_textNode', __mc_path, {},
+	                            __mc__dynamicAttr, {}, []
+	                        ));
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	                                    __mc__attr['class'] = 'iconfont icon-close';
+	
+	                                    __mc__event['click'] = {
+	                                        'funName': 'remove',
+	                                        'args': [v]
+	                                    };
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'i', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'a', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'li', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'ul', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	
+	    })(scope, __mc__tree, '0');
+	
+	    return __mc__tree;
+	};
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * change
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _removeItem = __webpack_require__(28);
+	
+	var _removeItem2 = _interopRequireDefault(_removeItem);
+	
+	var _svgicon = __webpack_require__(27);
+	
+	var _svgicon2 = _interopRequireDefault(_svgicon);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var ChangeItem = function (_View) {
+	    _inherits(ChangeItem, _View);
+	
+	    function ChangeItem() {
+	        _classCallCheck(this, ChangeItem);
+	
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(ChangeItem).apply(this, arguments));
+	    }
+	
+	    _createClass(ChangeItem, [{
+	        key: 'run',
+	        value: function run() {
+	            this.render(__webpack_require__(31), {
+	                list: [{
+	                    edit: false,
+	                    title: 'click edit 0'
+	                }, {
+	                    edit: false,
+	                    title: 'click edit 1'
+	                }, {
+	                    edit: false,
+	                    title: 'click edit 2'
+	                }, {
+	                    edit: false,
+	                    title: 'click edit 3'
+	                }, {
+	                    edit: false,
+	                    title: 'click edit 4'
+	                }]
+	            });
+	        }
+	    }, {
+	        key: 'save',
+	        value: function save(event, el, v) {
+	            v.title = el.value;
+	            return false;
+	        }
+	    }, {
+	        key: 'edit',
+	        value: function edit(event, el, v) {
+	            v.edit = true;
+	            return false;
+	        }
+	    }, {
+	        key: 'hideEdit',
+	        value: function hideEdit(event, el, v) {
+	            v.edit = false;
+	            return false;
+	        }
+	    }]);
+	
+	    return ChangeItem;
+	}(_removeItem2.default);
+	
+	exports.default = ChangeItem;
+	
+	
+	ChangeItem.viewName = 'changeItem';
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(scope, __mc__view, __mc__mcore) {
+	
+	    if (!__mc__mcore) {
+	        __mc__mcore = __webpack_require__(2);
+	    }
+	    var __mc__util = {
+	        clone: __mc__mcore.util.clone,
+	        build: function(tagName, key, attr, dynamicAttr, events, children) {
+	            return new __mc__mcore.Element(tagName, key, attr, dynamicAttr, children, events, __mc__view);
+	        },
+	        parseDynamicVal: function(dynamicCode, dynamicCodeStr) {
+	            var _varReg = /(^[a-zA-Z0-9_-]+)$/;
+	            if (typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)) {
+	                return dynamicCode;
+	            } else if (typeof __mc__view[dynamicCode] != 'undefined') {
+	                return __mc__view[dynamicCode];
+	            } else if (_varReg.test(dynamicCodeStr)) {
+	                return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+	            } else {
+	                return '';
+	            }
+	        },
+	        callFormatter: function(formatterName) {
+	            if (__mc__mcore.Template.formatters.hasOwnProperty(formatterName)) {
+	                return __mc__mcore.Template.formatters[formatterName];
+	            };
+	            return function() {};
+	        },
+	    };
+	    var __mc__tree = [];
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        var __mc__forArr = [0];
+	
+	
+	        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	            __mc__attr['class'] = 'list';
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                /* [for-in] v in scope.list */
+	                var __mc__forArr = scope.list;
+	                if (false == Array.isArray(__mc__forArr)) {
+	                    __mc__forArr = [];
+	                }
+	
+	
+	                __mc__forArr.forEach(function(v, __mc__$ix_) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__dynamicAttr['show'] = __mc__util.parseDynamicVal((!v.edit), '!v.edit');
+	
+	                            __mc__event['click'] = {
+	                                'funName': 'edit',
+	                                'args': [v]
+	                            };
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	                                    __mc__attr['icon'] = 'print';
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'svgicon', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	                                var __mc__strVal = {}
+	                                var __mc__tmpAttr;
+	                                try {
+	                                    __mc__tmpAttr = v.title;
+	                                } catch (err) {}
+	
+	                                __mc__strVal['rp_0'] = (function(x) {
+	
+	                                    return x;
+	                                })(__mc__tmpAttr);
+	
+	                                /* [formatter] {v.title} */
+	                                var __mc__str = "             " + __mc__strVal['rp_0'] + "             ";
+	                                var __mc__dynamicAttr = {
+	                                    text: __mc__str
+	                                };
+	                                __mc__tree.push(__mc__util.build(
+	                                    '_textNode', __mc_path, {},
+	                                    __mc__dynamicAttr, {}, []
+	                                ));
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                        var __mc__forArr = [0];
+	
+	
+	                                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                            var __mc__children;
+	
+	                                            var __mc__attr = {},
+	                                                __mc__dynamicAttr = {},
+	                                                __mc__event = {};
+	
+	
+	                                            __mc__attr['class'] = 'iconfont icon-close';
+	
+	                                            __mc__event['click'] = {
+	                                                'funName': 'remove',
+	                                                'args': [v]
+	                                            };
+	
+	
+	
+	                                            __mc__children = [];
+	
+	
+	
+	
+	                                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                            __mc__tree.push(
+	                                                __mc__util.build(
+	                                                    'i', __mc__pathSubI, __mc__attr,
+	                                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                                )
+	                                            );
+	
+	
+	                                        });
+	
+	
+	
+	                                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'a', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'div', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['type'] = 'text';
+	
+	                            __mc__dynamicAttr['value'] = __mc__util.parseDynamicVal((v.title), 'v.title');
+	
+	                            __mc__dynamicAttr['show'] = __mc__util.parseDynamicVal((v.edit), 'v.edit');
+	
+	                            __mc__event['change'] = {
+	                                'funName': 'save',
+	                                'args': [v]
+	                            };
+	
+	                            __mc__event['blur'] = {
+	                                'funName': 'hideEdit',
+	                                'args': [v]
+	                            };
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'input', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'li', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'ul', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	
+	    })(scope, __mc__tree, '0');
+	
+	    return __mc__tree;
+	};
 
 /***/ }
 /******/ ]);

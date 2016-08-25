@@ -46,6 +46,20 @@ export default class Element {
         this.count = count;
     }
 
+    cloneElement(element){
+
+        this._component = element._component;
+        this.template = element.template;
+        this.template.element = this;
+        this.refs = element.refs;
+
+        //设置动态属性
+        Object.keys(this.dynamicProps).forEach((attr)=>{
+            // console.log(attr);
+            this.template.setAttr(attr.toLowerCase(), this.dynamicProps[attr], true, 'update');
+        });
+    }
+
     render(){
         this.template = new Template(this);
         this.refs = this.template.render();

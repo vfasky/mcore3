@@ -54,7 +54,9 @@ function dfsWalk(oldNode, newNode, index, patches){
             });
         }
         if(!newNode.refs && oldNode.refs){
-            newNode.render(oldNode.refs);
+            // newNode.render(oldNode.refs);
+            newNode.cloneElement(oldNode);
+            // console.log(newNode);
         }
         // if(!newNode.template && oldNode.template){
         //     newNode.template = oldNode.template;

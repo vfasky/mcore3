@@ -2068,7 +2068,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    _createClass(Element, [{
-	        key: "render",
+	        key: 'cloneElement',
+	        value: function cloneElement(element) {
+	            var _this2 = this;
+	
+	            this._component = element._component;
+	            this.template = element.template;
+	            this.template.element = this;
+	            this.refs = element.refs;
+	
+	            //设置动态属性
+	            Object.keys(this.dynamicProps).forEach(function (attr) {
+	                // console.log(attr);
+	                _this2.template.setAttr(attr.toLowerCase(), _this2.dynamicProps[attr], true, 'update');
+	            });
+	        }
+	    }, {
+	        key: 'render',
 	        value: function render() {
 	            this.template = new _template2.default(this);
 	            this.refs = this.template.render();
@@ -2076,7 +2092,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return this.refs;
 	        }
 	    }, {
-	        key: "destroy",
+	        key: 'destroy',
 	        value: function destroy(notRemove) {
 	            if (this.template) {
 	                this.template.destroy(notRemove);
@@ -2108,6 +2124,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _util = __webpack_require__(30);
 	
+	var util = _interopRequireWildcard(_util);
+	
 	var _eventEmitter = __webpack_require__(34);
 	
 	var _eventEmitter2 = _interopRequireDefault(_eventEmitter);
@@ -2118,11 +2136,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var getComponents = util.getComponents;
 	
 	/**
 	 * 模板引擎
@@ -2149,6 +2171,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _createClass(Template, [{
 	        key: 'destroy',
 	        value: function destroy(notRemove) {
+	
+	            getComponents(this.element).forEach(function (component) {
+	                component.destroy();
+	            });
+	
 	            // 移除自身
 	            if (!notRemove) {
 	                if (this.refs && this.refs.parentNode && this.refs.parentNode.removeChild) {
@@ -2182,34 +2209,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // node._element = this.element;
 	                return node;
 	            }
-	            if (!oldNode) {
-	                node = document.createElement(this.element.tagName);
-	            } else {
-	                node = oldNode;
-	            }
+	            node = document.createElement(this.element.tagName);
+	
 	            node._key = this.element.key;
 	            this.refs = node;
 	            node._element = this.element;
 	
 	            // 自定义组件初始化，子元素由 自定义组件 自己管理
 	            if (Template.components.hasOwnProperty(this.element.tagName)) {
-	                if (!oldNode) {
-	                    // 自定义组件，先设置静态属性
-	                    Object.keys(this.element.props).forEach(function (attr) {
-	                        _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
-	                    });
-	                    //设置动态属性
-	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
-	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
-	                    });
-	                    this.element._component = new Template.components[this.element.tagName](node, this.element);
-	                } else {
-	                    //设置动态属性
-	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
-	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true, 'update');
-	                    });
-	                    this.element._component = oldNode._component;
-	                }
+	                // 自定义组件，先设置静态属性
+	                Object.keys(this.element.props).forEach(function (attr) {
+	                    _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
+	                });
+	                //设置动态属性
+	                Object.keys(this.element.dynamicProps).forEach(function (attr) {
+	                    _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
+	                });
+	                this.element._component = new Template.components[this.element.tagName](node, this.element);
 	
 	                this.element._noDiffChild = true;
 	                this.element.children = [];
@@ -2221,7 +2237,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // });
 	            }
 	            // 非自定义组件，渲染子元素
-	            else if (!oldNode) {
+	            else {
 	                    this.element.children.forEach(function (child) {
 	                        if (child.render) {
 	                            var childNode = child.render();
@@ -2254,12 +2270,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
 	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
 	                    });
-	                } else {
-	                    //设置动态属性
-	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
-	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true, 'update');
-	                    });
 	                }
+	
 	            return node;
 	        }
 	
@@ -2942,6 +2954,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var $_win = null;
 	var $_body = null;
+	var _id = 0;
+	
+	var notProxyEvents = ['focus', 'blur'];
 	
 	var Component = function (_EventEmitter) {
 	    _inherits(Component, _EventEmitter);
@@ -2954,6 +2969,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
 	
 	        _this.parentNode = parentNode;
+	        //兼容mcore2
+	        _this.el = parentNode;
 	        _this.parentElement = parentElement;
 	        // 渲染完成，回调队列
 	        _this._queueCallbacks = [];
@@ -2963,6 +2980,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this._regEvents = [];
 	
 	        _this._initWatchScope = false;
+	
+	        _this.id = _id++;
 	
 	        _this.virtualDom = null;
 	
@@ -3023,10 +3042,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!notRemove && this.$refs) {
 	                this.$refs.remove();
 	                this.$refs = null;
+	            } else if (this.$refs) {
+	                this.$refs.off();
 	            }
-	            // else if(this.$refs){
-	            //     this.$refs.off();
-	            // }
+	            // console.log(getComponents(this.virtualDom));
 	            getComponents(this.virtualDom).forEach(function (component) {
 	                component.destroy();
 	            });
@@ -3171,39 +3190,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return this.refs;
 	        }
 	    }, {
+	        key: 'callEvent',
+	        value: function callEvent(event, eventName) {
+	            var $ = util.get$();
+	            var res = null;
+	            var target = event.target;
+	            var eventData = this.events[eventName];
+	            // console.log(eventData, eventName);
+	            for (var i = 0, len = eventData.length; i < len; i++) {
+	                var ctx = eventData[i];
+	                var ctxTarget = ctx.target();
+	                // console.log(ctxTarget, target);
+	                if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
+	                    var callback = this[ctx.funName];
+	                    // console.log(callback);
+	                    if (isFunction(callback)) {
+	                        var args = [event, ctxTarget];
+	                        args = args.concat(ctx.args);
+	                        // console.log(ctx.element);
+	                        res = callback.apply(this, args);
+	                        if (false === res) {
+	                            break;
+	                        }
+	                    }
+	                }
+	            }
+	            return res;
+	        }
+	    }, {
 	        key: 'regEvent',
 	        value: function regEvent(eventName) {
 	            var _this4 = this;
 	
 	            var $ = util.get$();
 	            if (this._regEvents.indexOf(eventName) === -1) {
-	                (function () {
-	                    _this4._regEvents.push(eventName);
+	                this._regEvents.push(eventName);
 	
-	                    var eventData = _this4.events[eventName];
-	                    _this4.$refs.on(eventName, function (event) {
-	                        var res = null;
-	                        var target = event.target;
-	                        for (var i = eventData.length - 1; i > 0; i--) {
-	                            var ctx = eventData[i];
-	                            var ctxTarget = ctx.target();
-	                            if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
-	                                // console.log(ctxTarget, target);
-	                                var callback = _this4[ctx.funName];
-	                                if (isFunction(callback)) {
-	                                    var args = [event, ctxTarget];
-	                                    args = args.concat(ctx.args);
-	                                    // console.log(ctx.element);
-	                                    res = callback.apply(_this4, args);
-	                                    if (false === res) {
-	                                        break;
-	                                    }
-	                                }
-	                            }
-	                        }
-	                        return res;
+	                if (notProxyEvents.indexOf(eventName) === -1) {
+	                    this.$refs.on(eventName, function (event) {
+	                        return _this4.callEvent(event, eventName);
 	                    });
-	                })();
+	                } else if (['focus', 'blur'].indexOf(eventName) !== -1) {
+	                    this.$refs.on(eventName, 'input, textarea, select, [tabindex]', function (event) {
+	                        return _this4.callEvent(event, eventName);
+	                    });
+	                }
 	            }
 	        }
 	    }, {
@@ -3225,6 +3256,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            this.events = getEvents(this.virtualDom);
 	            var curEvents = Object.keys(this.events);
+	            // console.log(curEvents, this.events);
 	
 	            this._regEvents.forEach(function (regEventName) {
 	                if (curEvents.indexOf(regEventName) === -1) {
@@ -3433,7 +3465,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        });
 	                    }
 	                    if (!newNode.refs && oldNode.refs) {
-	                        newNode.render(oldNode.refs);
+	                        // newNode.render(oldNode.refs);
+	                        newNode.cloneElement(oldNode);
+	                        // console.log(newNode);
 	                    }
 	                    // if(!newNode.template && oldNode.template){
 	                    //     newNode.template = oldNode.template;
@@ -3592,10 +3626,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        newNode = document.createTextNode(currentPatch.node);
 	                    }
 	                    if (newNode) {
-	                        if (node._element && node._element.destroy) {
-	                            node._element.destroy(true);
-	                        }
+	                        var element = node._element;
 	                        node.parentNode.replaceChild(newNode, node);
+	                        if (element && element.destroy) {
+	                            element.destroy();
+	                        }
 	                    }
 	                    break;
 	                // 重新排序
@@ -5554,7 +5589,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(View).call(this, $el[0]));
 	
 	        _this.$el = $el;
-	        _this.el = $el[0];
+	        // this.el = $el[0];
 	
 	        return _this;
 	    }
