@@ -13,33 +13,31 @@ import {variable} from './config';
 
 let buildArray = (domAttr, iName, vName)=>{
     let code = `
-        var ${variable.pathIName} = 0;
+
         ${variable.forArrayName}.forEach(function(${vName}, ${iName}){
-            %s
+            ${ifBegin(domAttr)}
                 var ${variable.childrenName};
-                %s
-                ${build(domAttr, variable.pathName + ' + \'.\' + ' + variable.pathIName)}
-                ${variable.pathIName}++;
-            %s
+                ${parseAttr(domAttr)}
+                ${build(domAttr, variable.pathName + ' + \'.\' + (' + variable.treeName + '.length)')}
+            ${ifEnd(domAttr)}
         });
     `;
-    return util.format(code, ifBegin(domAttr), parseAttr(domAttr), ifEnd(domAttr));
+    return code;
 };
 
 let buildObject = (domAttr, kName, vName, oName)=>{
     let code = `
-        var ${variable.pathIName} = 0;
+
         ${variable.forObjKeysName}.forEach(function(${kName}, ${variable.forIName}){
             var ${vName} = ${oName}[${kName}];
-            %s
+            ${ifBegin(domAttr)}
                 var ${variable.childrenName};
-                %s
+                ${parseAttr(domAttr)}
                 ${build(domAttr, variable.pathName + ' + \'.\' + ' + variable.pathIName)}
-                ${variable.pathIName}++;
-            %s
+            ${ifEnd(domAttr)}
         });
     `;
-    return util.format(code, ifBegin(domAttr), parseAttr(domAttr), ifEnd(domAttr));
+    return code;
 };
 
 export default (domAttr)=>{
@@ -48,7 +46,8 @@ export default (domAttr)=>{
     if(!domAttr.attribs['mc-for']){
         code = `
             var ${variable.forArrayName} = [0];
-            ${buildArray(domAttr, variable.forIName, variable.forVName)}
+            ${buildArray(domAttr, variable.forIName, variable.forVName, variable.pathStaticIName)}
+
         `;
     }
     else{

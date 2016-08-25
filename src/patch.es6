@@ -49,10 +49,11 @@ function applyPatches(node, currentPatches){
                     newNode = document.createTextNode(currentPatch.node);
                 }
                 if(newNode){
-                    if(node._element && node._element.destroy){
-                        node._element.destroy(true);
-                    }
+                    let element = node._element;
                     node.parentNode.replaceChild(newNode, node);
+                    if(element && element.destroy){
+                        element.destroy();
+                    }
                 }
                 break;
             // 重新排序
@@ -69,7 +70,14 @@ function applyPatches(node, currentPatches){
                         node._element.template.setAttr(attr.toLowerCase(), value, true, status);
                     }
                 }
+                else if(node.textContent){
+                    node.textContent = currentPatch.content;
+                }
+                else if(node.nodeValue){
+                    node.nodeValue = currentPatch.content;
+                }
                 else {
+                    console.log(node);
                     throw new Error('not mcore Element:' + node);
                 }
                 break;
@@ -103,9 +111,9 @@ function reorderChildren(node, moves){
         if(node._element && node._element.key){
             key = node._element.key;
         }
-        if(key === null && node.nodeType === 1){
-            key = node.getAttribute('_key');
-        }
+        // if(key === null && node.nodeType === 1){
+        //     key = node.getAttribute('_key');
+        // }
         if(key){
             maps[key] = node;
         }
@@ -116,16 +124,19 @@ function reorderChildren(node, moves){
             // remove item
             if(staticNodeList[index] == node.childNodes[index]){
                 let childNode = node.childNodes[index];
-                if(childNode._element){
-                    childNode._element.destroy(true);
+                if(childNode){
+                    if(childNode._element){
+                        childNode._element.destroy(true);
+                    }
+                    node.removeChild(childNode);
                 }
-                node.removeChild(childNode);
             }
         }
         else if(move.type === 1){
             let insertNode;
+            let oldNode = maps[move.item.key];
             // 使用旧节点
-            if(maps[move.item.key]){
+            if(oldNode && oldNode._element == move.item){
                 insertNode = maps[move.item.key];
                 if(insertNode._element && insertNode._element.template){
                     insertNode._element.template.emit('reorder', node);
@@ -139,8 +150,10 @@ function reorderChildren(node, moves){
             else {
                 insertNode = document.createTextNode(String(move.item));
             }
-            staticNodeList.splice(index, 0, insertNode);
-            node.insertBefore(insertNode, (node.childNodes[index] || null));
+            if(insertNode && node.insertBefore){
+                staticNodeList.splice(index, 0, insertNode);
+                node.insertBefore(insertNode, (node.childNodes[index] || null));
+            }
         }
     });
 

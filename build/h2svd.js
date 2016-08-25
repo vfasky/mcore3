@@ -5,14 +5,15 @@ var distPath = path.join(__dirname, '../dist');
 
 module.exports = {
     entry: {
-        mcore3: path.join(__dirname, '../src/es5')
+        'h2svd-loader': path.join(__dirname, '../loader/h2svd/loader.es6')
     },
     output: {
         path: distPath,
-        libraryTarget: 'umd',
-        filename: '[name].es5.js'
+        filename: '[name].js',
+        libraryTarget: 'commonjs2',
     },
     devtool: 'source-map',
+    // target: 'node',
     module: {
         loaders: [{
             test: /\.es6$/,
@@ -26,9 +27,11 @@ module.exports = {
     resolve: {
         modulesDirectories: ['node_modules', 'src'],
         extensions: ['', '.es6', '.js'],
-        jquery: 'jQuery'
     },
     externals: {
-        jquery: 'jQuery'
+        htmlparser2: 'htmlparser2',
+        'js-beautify': 'js-beautify',
+        util: 'util',
+        'loader-utils': 'loader-utils',
     }
 };

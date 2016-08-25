@@ -1,0 +1,45 @@
+<button class="btn btn-primary" mc-on-click="changeTable">
+    <svgicon mc-icon="scope.icon"></svgicon> &nbsp; Change Table
+</button>
+
+<div class="table-wrap table-v2 m-t-10">
+    <table class="table" mc-if="scope.showIx == 0">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Bookings</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr mc-for="v in scope.data">
+                <td>{v[0]}</td>
+                <td>{v[1]}</td>
+                <th>
+                    <svgicon mc-icon="scope.icon"></svgicon>
+                </th>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table" mc-if="scope.showIx == 1">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Bookings</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>New Customer</td>
+                <td>19</td>
+                <td>Freddy</td>
+            </tr>
+            <tr mc-for="v, k in scope.data">
+                <td>{v[0]}</td>
+                <td>{v[1] + k}</td>
+                <td>{v[2]} <svgicon mc-icon="scope.icon"></svgicon></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

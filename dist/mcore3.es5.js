@@ -1,4 +1,14 @@
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("jQuery"));
+	else if(typeof define === 'function' && define.amd)
+		define(["jQuery"], factory);
+	else {
+		var a = typeof exports === 'object' ? factory(require("jQuery")) : factory(root["jQuery"]);
+		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+	}
+})(this, function(__WEBPACK_EXTERNAL_MODULE_31__) {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -51,11 +61,6 @@
 	 **/
 	"use strict";
 	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = undefined;
-	
 	__webpack_require__(1);
 	
 	var _array = __webpack_require__(4);
@@ -68,7 +73,7 @@
 	
 	(0, _array.shim)();
 	
-	exports.default = _index2.default;
+	module.exports = _index2.default;
 
 /***/ },
 /* 1 */
@@ -1774,6 +1779,22 @@
 	
 	var _component2 = _interopRequireDefault(_component);
 	
+	var _route = __webpack_require__(45);
+	
+	var route = _interopRequireWildcard(_route);
+	
+	var _view = __webpack_require__(48);
+	
+	var _view2 = _interopRequireDefault(_view);
+	
+	var _app = __webpack_require__(49);
+	
+	var _app2 = _interopRequireDefault(_app);
+	
+	var _http = __webpack_require__(50);
+	
+	var _http2 = _interopRequireDefault(_http);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -1781,10 +1802,14 @@
 	exports.default = {
 	    version: '3',
 	    util: util,
+	    route: route,
+	    http: _http2.default,
 	    Element: _element2.default,
 	    Template: _template2.default,
 	    EventEmitter: _eventEmitter2.default,
-	    Component: _component2.default
+	    Component: _component2.default,
+	    View: _view2.default,
+	    App: _app2.default
 	};
 
 /***/ },
@@ -1803,7 +1828,10 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.isIOS = isIOS;
+	exports.isWeixinBrowser = isWeixinBrowser;
 	exports.get$ = get$;
+	exports.each = each;
 	exports.isNumber = isNumber;
 	exports.isArray = isArray;
 	exports.isString = isString;
@@ -1816,6 +1844,22 @@
 	exports.getComponents = getComponents;
 	exports.nextTick = nextTick;
 	var $ = void 0;
+	var _isIOS = null;
+	var _isWeixinBrowser = null;
+	
+	function isIOS() {
+	    if (_isIOS === null) {
+	        _isIOS = /iphone|ipad/gi.test(window.navigator.appVersion);
+	    }
+	    return _isIOS;
+	}
+	
+	function isWeixinBrowser() {
+	    if (_isWeixinBrowser === null) {
+	        _isWeixinBrowser = /MicroMessenger/i.test(window.navigator.userAgent);
+	    }
+	    return _isWeixinBrowser;
+	}
 	
 	function get$() {
 	    if ($) {
@@ -1827,6 +1871,12 @@
 	    }
 	    $ = __webpack_require__(31);
 	    return $;
+	}
+	
+	function each(arr, callback) {
+	    get$().each(arr, function (k, v) {
+	        return callback(v, k);
+	    });
 	}
 	
 	function isNumber(x) {
@@ -1870,10 +1920,11 @@
 	function getEvents(element) {
 	    var events = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	
-	
-	    element.children.forEach(function (child) {
-	        getEvents(child, events);
-	    });
+	    if (element.children) {
+	        element.children.forEach(function (child) {
+	            getEvents(child, events);
+	        });
+	    }
 	
 	    Object.keys(element.events).forEach(function (name) {
 	        var curEvent = element.events[name];
@@ -1883,7 +1934,11 @@
 	        events[name].push({
 	            funName: curEvent.funName,
 	            args: curEvent.args,
-	            target: element.template.refs
+	            target: function target() {
+	                // console.log(element);
+	                return element.refs;
+	            },
+	            element: element
 	        });
 	    });
 	
@@ -1893,9 +1948,14 @@
 	function getComponents(element) {
 	    var components = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 	
-	    element.children.forEach(function (child) {
-	        getComponents(child, components);
-	    });
+	    if (!element) {
+	        return components;
+	    }
+	    if (element.children) {
+	        element.children.forEach(function (child) {
+	            getComponents(child, components);
+	        });
+	    }
 	
 	    if (element._component) {
 	        components.push(element._component);
@@ -1930,7 +1990,7 @@
 /* 31 */
 /***/ function(module, exports) {
 
-	module.exports = jQuery;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_31__;
 
 /***/ },
 /* 32 */
@@ -2011,7 +2071,9 @@
 	        key: "render",
 	        value: function render() {
 	            this.template = new _template2.default(this);
-	            return this.template.render();
+	            this.refs = this.template.render();
+	            // console.log(this.refs);
+	            return this.refs;
 	        }
 	    }, {
 	        key: "destroy",
@@ -2104,7 +2166,7 @@
 	
 	    }, {
 	        key: 'render',
-	        value: function render() {
+	        value: function render(oldNode) {
 	            var _this2 = this;
 	
 	            var node = void 0;
@@ -2120,24 +2182,35 @@
 	                // node._element = this.element;
 	                return node;
 	            }
-	            node = document.createElement(this.element.tagName);
+	            if (!oldNode) {
+	                node = document.createElement(this.element.tagName);
+	            } else {
+	                node = oldNode;
+	            }
 	            node._key = this.element.key;
 	            this.refs = node;
 	            node._element = this.element;
 	
 	            // 自定义组件初始化，子元素由 自定义组件 自己管理
 	            if (Template.components.hasOwnProperty(this.element.tagName)) {
+	                if (!oldNode) {
+	                    // 自定义组件，先设置静态属性
+	                    Object.keys(this.element.props).forEach(function (attr) {
+	                        _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
+	                    });
+	                    //设置动态属性
+	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
+	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
+	                    });
+	                    this.element._component = new Template.components[this.element.tagName](node, this.element);
+	                } else {
+	                    //设置动态属性
+	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
+	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true, 'update');
+	                    });
+	                    this.element._component = oldNode._component;
+	                }
 	
-	                // 自定义组件，先设置静态属性
-	                Object.keys(this.element.props).forEach(function (attr) {
-	                    _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
-	                });
-	                //设置动态属性
-	                Object.keys(this.element.dynamicProps).forEach(function (attr) {
-	                    _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
-	                });
-	
-	                this.element._component = new Template.components[this.element.tagName](node, this.element);
 	                this.element._noDiffChild = true;
 	                this.element.children = [];
 	                this.element.count = 0;
@@ -2148,7 +2221,7 @@
 	                // });
 	            }
 	            // 非自定义组件，渲染子元素
-	            else {
+	            else if (!oldNode) {
 	                    this.element.children.forEach(function (child) {
 	                        if (child.render) {
 	                            var childNode = child.render();
@@ -2180,6 +2253,11 @@
 	                    //设置动态属性
 	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
 	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
+	                    });
+	                } else {
+	                    //设置动态属性
+	                    Object.keys(this.element.dynamicProps).forEach(function (attr) {
+	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true, 'update');
 	                    });
 	                }
 	            return node;
@@ -2338,6 +2416,19 @@
 	 * @type {Object}
 	 */
 	Template.formatters = {};
+	
+	//兼容mcore2
+	Template.strToFun = function (el, value) {
+	    if (!el._element || !el._element.view || !el._element.view[value]) {
+	        return function () {};
+	    }
+	    return function () {
+	        return el._element.view[value].call(el._element.view, arguments);
+	    };
+	};
+	Template.getEnv = function (el) {
+	    return el._element.view;
+	};
 
 /***/ },
 /* 34 */
@@ -2659,7 +2750,7 @@
 
 /***/ },
 /* 36 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 *
@@ -2671,6 +2762,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	
+	var _util = __webpack_require__(30);
+	
 	var binders = {};
 	
 	binders.show = function (el, value) {
@@ -2735,6 +2829,49 @@
 	    }
 	};
 	
+	binders['load-data'] = {
+	    init: function init(el, data) {
+	        if (el.tagName.toLowerCase() !== 'form' || !el._element) {
+	            return el.setAttribute('load-data', data);
+	        }
+	        var $ = (0, _util.get$)();
+	        var $form = $(el);
+	        Object.keys(data).forEach(function (k) {
+	            var v = data[k];
+	            var $el = $form.find('[name=' + k + ']');
+	            if ($el.is('[type=checkbox],[type=radio]')) {
+	                $el.prop('checked', String($el.val()) == String(v));
+	            } else {
+	                $el.val(v);
+	            }
+	        });
+	    }
+	};
+	
+	binders.sync = {
+	    init: function init(el, dataKey) {
+	        if (el.tagName.toLowerCase() !== 'form' || !el._element || !el._element.view) {
+	            return el.setAttribute('symc', dataKey);
+	        }
+	        var view = el._element.view;
+	        var $ = (0, _util.get$)();
+	        var $form = $(el);
+	
+	        $form.on('change', '[name]', function () {
+	            var $el = $(this);
+	            var name = $el.attr('name');
+	            if (name && view.scope[dataKey]) {
+	                if ($el.is('[type=checkbox],[type=radio]')) {
+	                    var val = $el.prop('checked') ? this.value : '';
+	                    view.scope[dataKey][name] = val;
+	                } else {
+	                    view.scope[dataKey][name] = this.value;
+	                }
+	            }
+	        });
+	    }
+	};
+	
 	exports.default = binders;
 
 /***/ },
@@ -2751,8 +2888,6 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -2805,6 +2940,9 @@
 	    Element: _element2.default
 	};
 	
+	var $_win = null;
+	var $_body = null;
+	
 	var Component = function (_EventEmitter) {
 	    _inherits(Component, _EventEmitter);
 	
@@ -2821,8 +2959,27 @@
 	        _this._queueCallbacks = [];
 	        // 正在排队的渲染队列id
 	        _this._queueId = null;
+	        // 存放注册事件
+	        _this._regEvents = [];
+	
+	        _this._initWatchScope = false;
 	
 	        _this.virtualDom = null;
+	
+	        // 存放 window 及 body 引用
+	        if ($_win === null || $_body === null) {
+	            $_win = util.get$()(window);
+	            $_body = util.get$()('body');
+	        }
+	        _this.$win = $_win;
+	        _this.$body = $_body;
+	
+	        _this.util = util;
+	        _this.nextTick = util.nextTick;
+	        // 是否在微信中打开
+	        _this.isWeixinBrowser = util.isWeixinBrowser();
+	        // 是否在ios中打开
+	        _this.isIOS = util.isIOS();
 	
 	        // 模板 scope
 	        _this.scope = parentElement.props || {};
@@ -2830,17 +2987,17 @@
 	            _this.scope[attr] = parentElement.dynamicProps[attr];
 	        });
 	
-	        // 观察scope, 如果改动，渲染模板
-	        _this.watchScope = new _watch2.default(_this.scope, function (path) {
-	            _this.renderQueue();
-	        });
-	
+	        _this.beforeInit();
 	        _this.init();
 	        _this.watch();
+	
 	        return _this;
 	    }
 	
 	    _createClass(Component, [{
+	        key: 'beforeInit',
+	        value: function beforeInit() {}
+	    }, {
 	        key: 'init',
 	        value: function init() {}
 	    }, {
@@ -2851,20 +3008,25 @@
 	        value: function mount() {
 	            var parentEl = arguments.length <= 0 || arguments[0] === undefined ? this.parentNode : arguments[0];
 	
-	            if (this.refs && parentEl.appendChild) {
+	            if (this.refs && parentEl.appendChild && !util.get$().contains(parentEl, this.refs)) {
 	                parentEl.appendChild(this.refs);
 	                this.emit('mount', this.refs);
 	            }
 	        }
 	    }, {
 	        key: 'destroy',
-	        value: function destroy() {
-	            this.watchScope.unwatch();
+	        value: function destroy(notRemove) {
+	            if (this._initWatchScope) {
+	                this.watchScope.unwatch();
+	            }
 	
-	            if (this.$refs) {
+	            if (!notRemove && this.$refs) {
 	                this.$refs.remove();
 	                this.$refs = null;
 	            }
+	            // else if(this.$refs){
+	            //     this.$refs.off();
+	            // }
 	            getComponents(this.virtualDom).forEach(function (component) {
 	                component.destroy();
 	            });
@@ -2969,9 +3131,8 @@
 	            } else {
 	                virtualDom = new _element2.default('mc-vd', '0', {}, {}, virtualDoms);
 	            }
-	
 	            // 未渲染，不用对比
-	            if (this.virtualDom === null) {
+	            if (!this.virtualDom) {
 	                this.virtualDom = virtualDom;
 	                this.refs = this.virtualDom.render();
 	                this.$refs = $(this.refs);
@@ -2979,12 +3140,13 @@
 	            } else {
 	                var patches = (0, _diff2.default)(this.virtualDom, virtualDom);
 	                //先移除事件绑定
-	                if (this.$refs) {
-	                    this.$refs.off();
-	                }
+	                // if(this.$refs){
+	                //     this.$refs.off();
+	                // }
 	                //更新dom
 	                (0, _patch2.default)(this.refs, patches);
-	                this.$refs = $(this.refs);
+	                // console.log(this.refs);
+	                // this.$refs = $(this.refs);
 	                this.virtualDom = virtualDom;
 	            }
 	            // 绑定事件
@@ -2998,45 +3160,80 @@
 	                }
 	            });
 	
+	            if (!this._initWatchScope) {
+	                this._initWatchScope = true;
+	                // 观察scope, 如果改动，渲染模板
+	                this.watchScope = new _watch2.default(this.scope, function (path) {
+	                    _this3.renderQueue();
+	                });
+	            }
+	
 	            return this.refs;
+	        }
+	    }, {
+	        key: 'regEvent',
+	        value: function regEvent(eventName) {
+	            var _this4 = this;
+	
+	            var $ = util.get$();
+	            if (this._regEvents.indexOf(eventName) === -1) {
+	                (function () {
+	                    _this4._regEvents.push(eventName);
+	
+	                    var eventData = _this4.events[eventName];
+	                    _this4.$refs.on(eventName, function (event) {
+	                        var res = null;
+	                        var target = event.target;
+	                        for (var i = eventData.length - 1; i > 0; i--) {
+	                            var ctx = eventData[i];
+	                            var ctxTarget = ctx.target();
+	                            if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
+	                                // console.log(ctxTarget, target);
+	                                var callback = _this4[ctx.funName];
+	                                if (isFunction(callback)) {
+	                                    var args = [event, ctxTarget];
+	                                    args = args.concat(ctx.args);
+	                                    // console.log(ctx.element);
+	                                    res = callback.apply(_this4, args);
+	                                    if (false === res) {
+	                                        break;
+	                                    }
+	                                }
+	                            }
+	                        }
+	                        return res;
+	                    });
+	                })();
+	            }
+	        }
+	    }, {
+	        key: 'unRegEvent',
+	        value: function unRegEvent(eventName) {
+	            this.$refs.off(eventName);
 	        }
 	    }, {
 	        key: 'bindEvents',
 	        value: function bindEvents() {
-	            var _this4 = this;
+	            var _this5 = this;
 	
 	            if (!this.$refs) {
 	                return;
 	            }
 	            var $ = util.get$();
+	            if (this.events) {
+	                this.oldEvents = this.events;
+	            }
 	            this.events = getEvents(this.virtualDom);
+	            var curEvents = Object.keys(this.events);
 	
-	            Object.keys(this.events).forEach(function (eventName) {
-	                var eventData = _this4.events[eventName];
-	                _this4.$refs.on(eventName, function (event) {
-	                    var res = null;
-	                    var target = event.target;
-	                    $.each(eventData, function (ix, ctx) {
-	                        if (ctx.target === target || $.contains(ctx.target, target)) {
-	                            var callback = _this4[ctx.funName];
-	                            if (isFunction(callback)) {
-	                                var _ret = function () {
-	                                    var args = [event, ctx.target];
-	                                    ctx.args.forEach(function (v) {
-	                                        args.push(v);
-	                                    });
-	                                    res = callback.apply(_this4, args);
-	                                    return {
-	                                        v: res
-	                                    };
-	                                }();
+	            this._regEvents.forEach(function (regEventName) {
+	                if (curEvents.indexOf(regEventName) === -1) {
+	                    _this5.unRegEvent(regEventName);
+	                }
+	            });
 	
-	                                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	                            }
-	                        }
-	                    });
-	                    return res;
-	                });
+	            curEvents.forEach(function (eventName) {
+	                _this5.regEvent(eventName);
 	            });
 	        }
 	
@@ -3051,7 +3248,7 @@
 	    }, {
 	        key: 'set',
 	        value: function set(attr, value) {
-	            var _this5 = this;
+	            var _this6 = this;
 	
 	            var doneOrAsync = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 	
@@ -3065,7 +3262,7 @@
 	                this.renderQueue(doneOrAsync);
 	            } else {
 	                return value.then(function (val) {
-	                    _this5.set(attr, val, doneOrAsync);
+	                    _this6.set(attr, val, doneOrAsync);
 	                });
 	            }
 	        }
@@ -3130,7 +3327,7 @@
 	    }, {
 	        key: 'render',
 	        value: function render(virtualDomDefine) {
-	            var _this6 = this;
+	            var _this7 = this;
 	
 	            var scope = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	            var doneOrAsync = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
@@ -3143,15 +3340,15 @@
 	            });
 	            return Promise.all(promiseVals).then(function (results) {
 	                scopeKeys.forEach(function (attr, ix) {
-	                    _this6.set(attr, results[ix]);
+	                    _this7.set(attr, results[ix]);
 	                });
 	
 	                //马上渲染
 	                if (doneOrAsync === true) {
-	                    return _this6.renderQueue(doneOrAsync);
+	                    return _this7.renderQueue(doneOrAsync);
 	                }
 	                return new Promise(function (resolve) {
-	                    _this6.renderQueue(function (refs) {
+	                    _this7.renderQueue(function (refs) {
 	                        if (isFunction(doneOrAsync)) {
 	                            doneOrAsync(refs);
 	                        }
@@ -3235,8 +3432,16 @@
 	                            props: propsPatches
 	                        });
 	                    }
+	                    if (!newNode.refs && oldNode.refs) {
+	                        newNode.render(oldNode.refs);
+	                    }
+	                    // if(!newNode.template && oldNode.template){
+	                    //     newNode.template = oldNode.template;
+	                    //     newNode.template.element = newNode;
+	                    // }
 	                    // 没有声明不要 diff 子元素
-	                    if (!oldNode || !oldNode._noDiffChild) {
+	                    // console.log(newNode._noDiffChild);
+	                    if (!oldNode || !oldNode._noDiffChild || !newNode._noDiffChild) {
 	                        diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
 	                    }
 	                }
@@ -3427,7 +3632,12 @@
 	                                }
 	                            }
 	                        }
+	                    } else if (node.textContent) {
+	                        node.textContent = currentPatch.content;
+	                    } else if (node.nodeValue) {
+	                        node.nodeValue = currentPatch.content;
 	                    } else {
+	                        console.log(node);
 	                        throw new Error('not mcore Element:' + node);
 	                    }
 	                    break;
@@ -3474,9 +3684,9 @@
 	        if (node._element && node._element.key) {
 	            key = node._element.key;
 	        }
-	        if (key === null && node.nodeType === 1) {
-	            key = node.getAttribute('_key');
-	        }
+	        // if(key === null && node.nodeType === 1){
+	        //     key = node.getAttribute('_key');
+	        // }
 	        if (key) {
 	            maps[key] = node;
 	        }
@@ -3487,15 +3697,18 @@
 	            // remove item
 	            if (staticNodeList[index] == node.childNodes[index]) {
 	                var childNode = node.childNodes[index];
-	                if (childNode._element) {
-	                    childNode._element.destroy(true);
+	                if (childNode) {
+	                    if (childNode._element) {
+	                        childNode._element.destroy(true);
+	                    }
+	                    node.removeChild(childNode);
 	                }
-	                node.removeChild(childNode);
 	            }
 	        } else if (move.type === 1) {
 	            var insertNode = void 0;
+	            var oldNode = maps[move.item.key];
 	            // 使用旧节点
-	            if (maps[move.item.key]) {
+	            if (oldNode && oldNode._element == move.item) {
 	                insertNode = maps[move.item.key];
 	                if (insertNode._element && insertNode._element.template) {
 	                    insertNode._element.template.emit('reorder', node);
@@ -3509,8 +3722,10 @@
 	                else {
 	                        insertNode = document.createTextNode(String(move.item));
 	                    }
-	            staticNodeList.splice(index, 0, insertNode);
-	            node.insertBefore(insertNode, node.childNodes[index] || null);
+	            if (insertNode && node.insertBefore) {
+	                staticNodeList.splice(index, 0, insertNode);
+	                node.insertBefore(insertNode, node.childNodes[index] || null);
+	            }
 	        }
 	    });
 	}
@@ -4666,6 +4881,1161 @@
 	})(Object, Array);
 
 
+/***/ },
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * 路由
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Route = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	exports.pathToObject = pathToObject;
+	
+	var _pathToRegexp = __webpack_require__(46);
+	
+	var _pathToRegexp2 = _interopRequireDefault(_pathToRegexp);
+	
+	var _util = __webpack_require__(30);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function pathToObject(path) {
+	    var url = String(path).trim();
+	    var argStr = '';
+	    var attr = [];
+	    if (url.indexOf('?') !== -1) {
+	        argStr = url.split('?').pop();
+	    } else if (url.indexOf('&') !== -1) {
+	        argStr = url;
+	    }
+	
+	    if (argStr === '') {
+	        return {};
+	    }
+	
+	    var args = argStr.split('&');
+	    var data = {};
+	    var keys = [];
+	
+	    args.forEach(function (v) {
+	        if (v.indexOf('=') === -1) {
+	            return;
+	        }
+	        v = v.split('=');
+	        if (v.length !== 2) {
+	            return;
+	        }
+	
+	        var key = v[0].trim();
+	        var value = decodeValue(v[1]);
+	        data[key] = value;
+	    });
+	
+	    return data;
+	}
+	
+	function decodeValue(value) {
+	    if ((0, _util.isNumber)(value) && String(value).length < 14) {
+	        value = Number(value);
+	    } else if (value) {
+	        value = decodeURIComponent(value);
+	    } else {
+	        value = null;
+	    }
+	    return value;
+	}
+	
+	var Route = exports.Route = function () {
+	    function Route() {
+	        var hashchange = arguments.length <= 0 || arguments[0] === undefined ? Route.changeByLocationHash : arguments[0];
+	        var sensitive = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	        var strict = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+	
+	        _classCallCheck(this, Route);
+	
+	        this.hashchange = hashchange;
+	        this.sensitive = sensitive;
+	        this.strict = strict;
+	        this.rule = [];
+	    }
+	
+	    _createClass(Route, [{
+	        key: 'run',
+	        value: function run() {
+	            var _this = this;
+	
+	            this.hashchange(function (url) {
+	                _this.match(url);
+	            });
+	        }
+	    }, {
+	        key: 'add',
+	        value: function add(path, fn) {
+	            var keys = [];
+	            var reg = (0, _pathToRegexp2.default)(path, keys, this.sensitive, this.strict);
+	            this.rule.push({
+	                path: path,
+	                reg: reg,
+	                keys: keys,
+	                fn: fn
+	            });
+	            return this;
+	        }
+	    }, {
+	        key: 'toUrl',
+	        value: function toUrl(path) {
+	            var args = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	
+	            return _pathToRegexp2.default.compile(path)(args, options);
+	        }
+	    }, {
+	        key: 'match',
+	        value: function match(url) {
+	            var path = String(url);
+	            var fullPath = path;
+	            var argStr = '';
+	            var getIx = path.indexOf('?');
+	            var isMatch = false;
+	            if (getIx === -1) {
+	                getIx = path.indexOf('&');
+	            }
+	
+	            if (getIx !== -1) {
+	                argStr = path.substring(getIx);
+	                path = path.substring(0, getIx);
+	            }
+	
+	            (0, _util.each)(this.rule, function (v) {
+	                var res = v.reg.exec(path);
+	                if (null === res) {
+	                    return;
+	                }
+	                isMatch = true;
+	                var context = pathToObject(argStr);
+	                var data = {};
+	                var args = [];
+	                for (var i = 1, len = res.length; i < len; i++) {
+	                    var k = v.keys[i - 1];
+	                    var value = decodeValue(res[i]);
+	
+	                    if (k && k.name) {
+	                        data[k.name] = value;
+	                    }
+	                    args.push(value);
+	                }
+	
+	                if (isMatch) {
+	                    var env = {
+	                        url: fullPath,
+	                        path: path,
+	                        args: argStr,
+	                        rule: v.path,
+	                        context: context,
+	                        keys: v.keys,
+	                        data: data
+	                    };
+	                    v.fn.apply(env, args);
+	                    return false;
+	                }
+	            });
+	
+	            return this;
+	        }
+	    }]);
+	
+	    return Route;
+	}();
+	
+	Route.changeByLocationHash = function (emit) {
+	    var hashChanged = function hashChanged() {
+	        emit(window.location.hash.substring(1));
+	    };
+	    if (window.addEventListener) {
+	        window.addEventListener('hashchange', hashChanged, false);
+	    } else if (window.attachEven) {
+	        window.attachEven('onhashchange', hashChanged);
+	    } else {
+	        throw new Error('window not support hashchange event');
+	    }
+	    hashChanged();
+	};
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isarray = __webpack_require__(47)
+	
+	/**
+	 * Expose `pathToRegexp`.
+	 */
+	module.exports = pathToRegexp
+	module.exports.parse = parse
+	module.exports.compile = compile
+	module.exports.tokensToFunction = tokensToFunction
+	module.exports.tokensToRegExp = tokensToRegExp
+	
+	/**
+	 * The main path matching regexp utility.
+	 *
+	 * @type {RegExp}
+	 */
+	var PATH_REGEXP = new RegExp([
+	  // Match escaped characters that would otherwise appear in future matches.
+	  // This allows the user to escape special characters that won't transform.
+	  '(\\\\.)',
+	  // Match Express-style parameters and un-named parameters with a prefix
+	  // and optional suffixes. Matches appear as:
+	  //
+	  // "/:test(\\d+)?" => ["/", "test", "\d+", undefined, "?", undefined]
+	  // "/route(\\d+)"  => [undefined, undefined, undefined, "\d+", undefined, undefined]
+	  // "/*"            => ["/", undefined, undefined, undefined, undefined, "*"]
+	  '([\\/.])?(?:(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?|(\\*))'
+	].join('|'), 'g')
+	
+	/**
+	 * Parse a string for the raw tokens.
+	 *
+	 * @param  {string} str
+	 * @return {!Array}
+	 */
+	function parse (str) {
+	  var tokens = []
+	  var key = 0
+	  var index = 0
+	  var path = ''
+	  var res
+	
+	  while ((res = PATH_REGEXP.exec(str)) != null) {
+	    var m = res[0]
+	    var escaped = res[1]
+	    var offset = res.index
+	    path += str.slice(index, offset)
+	    index = offset + m.length
+	
+	    // Ignore already escaped sequences.
+	    if (escaped) {
+	      path += escaped[1]
+	      continue
+	    }
+	
+	    var next = str[index]
+	    var prefix = res[2]
+	    var name = res[3]
+	    var capture = res[4]
+	    var group = res[5]
+	    var modifier = res[6]
+	    var asterisk = res[7]
+	
+	    // Push the current path onto the tokens.
+	    if (path) {
+	      tokens.push(path)
+	      path = ''
+	    }
+	
+	    var partial = prefix != null && next != null && next !== prefix
+	    var repeat = modifier === '+' || modifier === '*'
+	    var optional = modifier === '?' || modifier === '*'
+	    var delimiter = res[2] || '/'
+	    var pattern = capture || group || (asterisk ? '.*' : '[^' + delimiter + ']+?')
+	
+	    tokens.push({
+	      name: name || key++,
+	      prefix: prefix || '',
+	      delimiter: delimiter,
+	      optional: optional,
+	      repeat: repeat,
+	      partial: partial,
+	      asterisk: !!asterisk,
+	      pattern: escapeGroup(pattern)
+	    })
+	  }
+	
+	  // Match any characters still remaining.
+	  if (index < str.length) {
+	    path += str.substr(index)
+	  }
+	
+	  // If the path exists, push it onto the end.
+	  if (path) {
+	    tokens.push(path)
+	  }
+	
+	  return tokens
+	}
+	
+	/**
+	 * Compile a string to a template function for the path.
+	 *
+	 * @param  {string}             str
+	 * @return {!function(Object=, Object=)}
+	 */
+	function compile (str) {
+	  return tokensToFunction(parse(str))
+	}
+	
+	/**
+	 * Prettier encoding of URI path segments.
+	 *
+	 * @param  {string}
+	 * @return {string}
+	 */
+	function encodeURIComponentPretty (str) {
+	  return encodeURI(str).replace(/[\/?#]/g, function (c) {
+	    return '%' + c.charCodeAt(0).toString(16).toUpperCase()
+	  })
+	}
+	
+	/**
+	 * Encode the asterisk parameter. Similar to `pretty`, but allows slashes.
+	 *
+	 * @param  {string}
+	 * @return {string}
+	 */
+	function encodeAsterisk (str) {
+	  return encodeURI(str).replace(/[?#]/g, function (c) {
+	    return '%' + c.charCodeAt(0).toString(16).toUpperCase()
+	  })
+	}
+	
+	/**
+	 * Expose a method for transforming tokens into the path function.
+	 */
+	function tokensToFunction (tokens) {
+	  // Compile all the tokens into regexps.
+	  var matches = new Array(tokens.length)
+	
+	  // Compile all the patterns before compilation.
+	  for (var i = 0; i < tokens.length; i++) {
+	    if (typeof tokens[i] === 'object') {
+	      matches[i] = new RegExp('^(?:' + tokens[i].pattern + ')$')
+	    }
+	  }
+	
+	  return function (obj, opts) {
+	    var path = ''
+	    var data = obj || {}
+	    var options = opts || {}
+	    var encode = options.pretty ? encodeURIComponentPretty : encodeURIComponent
+	
+	    for (var i = 0; i < tokens.length; i++) {
+	      var token = tokens[i]
+	
+	      if (typeof token === 'string') {
+	        path += token
+	
+	        continue
+	      }
+	
+	      var value = data[token.name]
+	      var segment
+	
+	      if (value == null) {
+	        if (token.optional) {
+	          // Prepend partial segment prefixes.
+	          if (token.partial) {
+	            path += token.prefix
+	          }
+	
+	          continue
+	        } else {
+	          throw new TypeError('Expected "' + token.name + '" to be defined')
+	        }
+	      }
+	
+	      if (isarray(value)) {
+	        if (!token.repeat) {
+	          throw new TypeError('Expected "' + token.name + '" to not repeat, but received `' + JSON.stringify(value) + '`')
+	        }
+	
+	        if (value.length === 0) {
+	          if (token.optional) {
+	            continue
+	          } else {
+	            throw new TypeError('Expected "' + token.name + '" to not be empty')
+	          }
+	        }
+	
+	        for (var j = 0; j < value.length; j++) {
+	          segment = encode(value[j])
+	
+	          if (!matches[i].test(segment)) {
+	            throw new TypeError('Expected all "' + token.name + '" to match "' + token.pattern + '", but received `' + JSON.stringify(segment) + '`')
+	          }
+	
+	          path += (j === 0 ? token.prefix : token.delimiter) + segment
+	        }
+	
+	        continue
+	      }
+	
+	      segment = token.asterisk ? encodeAsterisk(value) : encode(value)
+	
+	      if (!matches[i].test(segment)) {
+	        throw new TypeError('Expected "' + token.name + '" to match "' + token.pattern + '", but received "' + segment + '"')
+	      }
+	
+	      path += token.prefix + segment
+	    }
+	
+	    return path
+	  }
+	}
+	
+	/**
+	 * Escape a regular expression string.
+	 *
+	 * @param  {string} str
+	 * @return {string}
+	 */
+	function escapeString (str) {
+	  return str.replace(/([.+*?=^!:${}()[\]|\/\\])/g, '\\$1')
+	}
+	
+	/**
+	 * Escape the capturing group by escaping special characters and meaning.
+	 *
+	 * @param  {string} group
+	 * @return {string}
+	 */
+	function escapeGroup (group) {
+	  return group.replace(/([=!:$\/()])/g, '\\$1')
+	}
+	
+	/**
+	 * Attach the keys as a property of the regexp.
+	 *
+	 * @param  {!RegExp} re
+	 * @param  {Array}   keys
+	 * @return {!RegExp}
+	 */
+	function attachKeys (re, keys) {
+	  re.keys = keys
+	  return re
+	}
+	
+	/**
+	 * Get the flags for a regexp from the options.
+	 *
+	 * @param  {Object} options
+	 * @return {string}
+	 */
+	function flags (options) {
+	  return options.sensitive ? '' : 'i'
+	}
+	
+	/**
+	 * Pull out keys from a regexp.
+	 *
+	 * @param  {!RegExp} path
+	 * @param  {!Array}  keys
+	 * @return {!RegExp}
+	 */
+	function regexpToRegexp (path, keys) {
+	  // Use a negative lookahead to match only capturing groups.
+	  var groups = path.source.match(/\((?!\?)/g)
+	
+	  if (groups) {
+	    for (var i = 0; i < groups.length; i++) {
+	      keys.push({
+	        name: i,
+	        prefix: null,
+	        delimiter: null,
+	        optional: false,
+	        repeat: false,
+	        partial: false,
+	        asterisk: false,
+	        pattern: null
+	      })
+	    }
+	  }
+	
+	  return attachKeys(path, keys)
+	}
+	
+	/**
+	 * Transform an array into a regexp.
+	 *
+	 * @param  {!Array}  path
+	 * @param  {Array}   keys
+	 * @param  {!Object} options
+	 * @return {!RegExp}
+	 */
+	function arrayToRegexp (path, keys, options) {
+	  var parts = []
+	
+	  for (var i = 0; i < path.length; i++) {
+	    parts.push(pathToRegexp(path[i], keys, options).source)
+	  }
+	
+	  var regexp = new RegExp('(?:' + parts.join('|') + ')', flags(options))
+	
+	  return attachKeys(regexp, keys)
+	}
+	
+	/**
+	 * Create a path regexp from string input.
+	 *
+	 * @param  {string}  path
+	 * @param  {!Array}  keys
+	 * @param  {!Object} options
+	 * @return {!RegExp}
+	 */
+	function stringToRegexp (path, keys, options) {
+	  var tokens = parse(path)
+	  var re = tokensToRegExp(tokens, options)
+	
+	  // Attach keys back to the regexp.
+	  for (var i = 0; i < tokens.length; i++) {
+	    if (typeof tokens[i] !== 'string') {
+	      keys.push(tokens[i])
+	    }
+	  }
+	
+	  return attachKeys(re, keys)
+	}
+	
+	/**
+	 * Expose a function for taking tokens and returning a RegExp.
+	 *
+	 * @param  {!Array}  tokens
+	 * @param  {Object=} options
+	 * @return {!RegExp}
+	 */
+	function tokensToRegExp (tokens, options) {
+	  options = options || {}
+	
+	  var strict = options.strict
+	  var end = options.end !== false
+	  var route = ''
+	  var lastToken = tokens[tokens.length - 1]
+	  var endsWithSlash = typeof lastToken === 'string' && /\/$/.test(lastToken)
+	
+	  // Iterate over the tokens and create our regexp string.
+	  for (var i = 0; i < tokens.length; i++) {
+	    var token = tokens[i]
+	
+	    if (typeof token === 'string') {
+	      route += escapeString(token)
+	    } else {
+	      var prefix = escapeString(token.prefix)
+	      var capture = '(?:' + token.pattern + ')'
+	
+	      if (token.repeat) {
+	        capture += '(?:' + prefix + capture + ')*'
+	      }
+	
+	      if (token.optional) {
+	        if (!token.partial) {
+	          capture = '(?:' + prefix + '(' + capture + '))?'
+	        } else {
+	          capture = prefix + '(' + capture + ')?'
+	        }
+	      } else {
+	        capture = prefix + '(' + capture + ')'
+	      }
+	
+	      route += capture
+	    }
+	  }
+	
+	  // In non-strict mode we allow a slash at the end of match. If the path to
+	  // match already ends with a slash, we remove it for consistency. The slash
+	  // is valid at the end of a path match, not in the middle. This is important
+	  // in non-ending mode, where "/test/" shouldn't match "/test//route".
+	  if (!strict) {
+	    route = (endsWithSlash ? route.slice(0, -2) : route) + '(?:\\/(?=$))?'
+	  }
+	
+	  if (end) {
+	    route += '$'
+	  } else {
+	    // In non-ending mode, we need the capturing groups to match as much as
+	    // possible by using a positive lookahead to the end or next path segment.
+	    route += strict && endsWithSlash ? '' : '(?=\\/|$)'
+	  }
+	
+	  return new RegExp('^' + route, flags(options))
+	}
+	
+	/**
+	 * Normalize the given path string, returning a regular expression.
+	 *
+	 * An empty array can be passed in for the keys, which will hold the
+	 * placeholder key descriptions. For example, using `/user/:id`, `keys` will
+	 * contain `[{ name: 'id', delimiter: '/', optional: false, repeat: false }]`.
+	 *
+	 * @param  {(string|RegExp|Array)} path
+	 * @param  {(Array|Object)=}       keys
+	 * @param  {Object=}               options
+	 * @return {!RegExp}
+	 */
+	function pathToRegexp (path, keys, options) {
+	  keys = keys || []
+	
+	  if (!isarray(keys)) {
+	    options = /** @type {!Object} */ (keys)
+	    keys = []
+	  } else if (!options) {
+	    options = {}
+	  }
+	
+	  if (path instanceof RegExp) {
+	    return regexpToRegexp(path, /** @type {!Array} */ (keys))
+	  }
+	
+	  if (isarray(path)) {
+	    return arrayToRegexp(/** @type {!Array} */ (path), /** @type {!Array} */ (keys), options)
+	  }
+	
+	  return stringToRegexp(/** @type {string} */ (path), /** @type {!Array} */ (keys), options)
+	}
+
+
+/***/ },
+/* 47 */
+/***/ function(module, exports) {
+
+	module.exports = Array.isArray || function (arr) {
+	  return Object.prototype.toString.call(arr) == '[object Array]';
+	};
+
+
+/***/ },
+/* 48 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * view
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _component = __webpack_require__(37);
+	
+	var _component2 = _interopRequireDefault(_component);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var _$iframe = null;
+	
+	var View = function (_Component) {
+	    _inherits(View, _Component);
+	
+	    function View($el, app) {
+	        _classCallCheck(this, View);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(View).call(this, $el[0]));
+	
+	        _this.$el = $el;
+	        _this.el = $el[0];
+	
+	        return _this;
+	    }
+	
+	    _createClass(View, [{
+	        key: 'setTitle',
+	        value: function setTitle(title) {
+	            var _this2 = this;
+	
+	            this.title = title;
+	            if (document.title === title) {
+	                return;
+	            }
+	            document.title = title;
+	            if (this.isWeixinBrowser && this.isIOS) {
+	                (function () {
+	                    if (_$iframe === null) {
+	                        _$iframe = _this2.util.get$()('<iframe style="width: 0; height: 0" src="/favicon.ico"></iframe>');
+	                    }
+	                    var $iframe = _$iframe;
+	                    $iframe.one('load', function () {
+	                        _this2.nextTick(function () {
+	                            $iframe.remove();
+	                        });
+	                    }).appendTo(_this2.$body);
+	                })();
+	            }
+	        }
+	    }, {
+	        key: 'back',
+	        value: function back() {
+	            if (window.history.length >= 1) {
+	                window.history.back();
+	            } else {
+	                window.location.href = '#';
+	            }
+	            return false;
+	        }
+	
+	        // destroy(notRemove){
+	        //     super.destroy(notRemove);
+	        // }
+	
+	    }, {
+	        key: 'run',
+	        value: function run() {}
+	    }, {
+	        key: 'afterRun',
+	        value: function afterRun() {}
+	    }]);
+	
+	    return View;
+	}(_component2.default);
+	
+	exports.default = View;
+
+/***/ },
+/* 49 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * app es6
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _route = __webpack_require__(45);
+	
+	var _eventEmitter = __webpack_require__(34);
+	
+	var _eventEmitter2 = _interopRequireDefault(_eventEmitter);
+	
+	var _util = __webpack_require__(30);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var App = function (_EventEmitter) {
+	    _inherits(App, _EventEmitter);
+	
+	    function App($el) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	
+	        _classCallCheck(this, App);
+	
+	        var $ = (0, _util.get$)();
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this));
+	
+	        _this.$el = $el;
+	        _this.options = $.extend({
+	            viewClass: 'mcore-app-view',
+	            routeChange: _route.Route.changeByLocationHash
+	        }, options);
+	        // 路由
+	        _this.router = new _route.Route(_this.options.routeChange);
+	
+	        // 当前的 view
+	        _this.curView = null;
+	
+	        // 中间件
+	        _this._middlewares = [];
+	
+	        // url map
+	        _this._viewUrlMap = {};
+	
+	        // 过场动画
+	        _this._changeViewEvent = {
+	            // 移除 view 之前
+	            before: function before(oldView, done, app) {
+	                done();
+	            },
+	            // 插入新 view 之后
+	            after: function after(newView, done, app) {
+	                done();
+	            }
+	        };
+	        return _this;
+	    }
+	
+	    _createClass(App, [{
+	        key: 'route',
+	        value: function route(path, View) {
+	            var _this2 = this;
+	
+	            if (!this._viewUrlMap.hasOwnProperty(View.viewName)) {
+	                this._viewUrlMap[View.viewName] = [];
+	            }
+	            this._viewUrlMap[View.viewName].push({
+	                path: path,
+	                toUrl: function toUrl(args, options) {
+	                    return _this2.router.toUrl(path, args, options);
+	                }
+	            });
+	
+	            var self = this;
+	            this.router.add(path, function () {
+	                self.runView(View, this, arguments);
+	            });
+	            return this;
+	        }
+	
+	        // 添加中间件
+	
+	    }, {
+	        key: 'use',
+	        value: function use(middleware) {
+	            this._middlewares.push(middleware);
+	            return this;
+	        }
+	    }, {
+	        key: '_runView',
+	        value: function _runView(done, err) {
+	            this.curView.instantiate.route = this.env.route;
+	            this.curView.instantiate.context = this.env.context;
+	            this.curView.instantiate.run.apply(this.curView.instantiate, this.env.args);
+	            this.emit('runView', this.curView);
+	            // console.log(this.curView.instantiate);
+	            done(err, this.curView.instantiate);
+	        }
+	    }, {
+	        key: 'stack',
+	        value: function stack() {
+	            var ix = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	
+	            var _this3 = this;
+	
+	            var err = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+	            var done = arguments.length <= 2 || arguments[2] === undefined ? function () {} : arguments[2];
+	
+	            if (ix >= this._middlewares.length) {
+	                return this._runView(done, err);
+	            }
+	            var middleware = this._middlewares[ix];
+	            var nextIx = ix + 1;
+	            var next = function next(err) {
+	                _this3.stack(nextIx, err, done);
+	            };
+	            this.env.view = this.curView.instantiate;
+	            middleware.call(this.env, err, next);
+	        }
+	
+	        // 调用中间件
+	
+	    }, {
+	        key: 'runMiddlewares',
+	        value: function runMiddlewares(done) {
+	            if (this._middlewares.length === 0) {
+	                return this._runView(done);
+	            }
+	            this.stack(0, null, done);
+	        }
+	    }, {
+	        key: '_initView',
+	        value: function _initView(View, viewName) {
+	            var _this4 = this;
+	
+	            var $el = (0, _util.get$)()('<div />');
+	            $el.attr('class', this.options.viewClass);
+	
+	            var instantiate = new View($el, this);
+	
+	            this.curView = {
+	                name: viewName,
+	                instantiate: instantiate
+	            };
+	
+	            this.runMiddlewares(function (err, instantiate) {
+	                instantiate.$el.appendTo(_this4.$el);
+	                if (!err) {
+	                    _this4._changeViewEvent.after(_this4.curView, function () {
+	                        instantiate.afterRun();
+	                    }, _this4);
+	                }
+	            });
+	        }
+	
+	        // 启动view
+	
+	    }, {
+	        key: 'runView',
+	        value: function runView(View, route, args) {
+	            var _this5 = this;
+	
+	            var viewName = View.viewName;
+	            if (!viewName) {
+	                throw new Error('View not viewName');
+	            }
+	
+	            this.env = {
+	                route: route,
+	                context: route.context,
+	                args: args,
+	                viewName: viewName,
+	                app: this
+	            };
+	
+	            if (this.curView) {
+	                // 已经初始化，只调用run方法
+	                if (this.curView.name === viewName) {
+	                    this.runMiddlewares(function (err, instantiate) {
+	                        if (!err) {
+	                            instantiate.afterRun();
+	                        }
+	                    });
+	                    return;
+	                }
+	
+	                this._changeViewEvent.before(this.curView, function () {
+	                    _this5.emit('destroyView', _this5.curView);
+	
+	                    _this5.curView.instantiate.destroy();
+	                    _this5.curView.instantiate.$el.remove();
+	
+	                    _this5._initView(View, viewName);
+	                }, this);
+	            } else {
+	                this._initView(View, viewName);
+	            }
+	        }
+	    }, {
+	        key: 'run',
+	        value: function run() {
+	            this.router.run();
+	        }
+	    }]);
+	
+	    return App;
+	}(_eventEmitter2.default);
+	
+	exports.default = App;
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * http
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _util = __webpack_require__(30);
+	
+	// 兼容mcore2
+	if (typeof Promise.prototype.done == 'undefined') {
+	    Promise.prototype.done = function (onFulfilled, onRejected) {
+	        this.then(onFulfilled, onRejected).catch(function (error) {
+	            setTimeout(function () {
+	                throw error;
+	            }, 0);
+	        });
+	    };
+	}
+	if (typeof Promise.prototype.fail == 'undefined') {
+	    Promise.prototype.fail = function (onResolveOrReject) {
+	        return this.catch(function (reason) {
+	            return reason;
+	        }).then(onResolveOrReject);
+	    };
+	}
+	if (typeof Promise.prototype.always == 'undefined') {
+	    Promise.prototype.always = function (onResolveOrReject) {
+	        return this.then(onResolveOrReject, function (reason) {
+	            onResolveOrReject(reason);
+	            throw reason;
+	        });
+	    };
+	}
+	var _networkErrCallback = function _networkErrCallback(xhr, status, hideError) {
+	    var msg = 'Network Error';
+	    var $ = (0, _util.get$)();
+	
+	    // 后端是否返回错误信息
+	    if (xhr.responseText) try {
+	        var res = $.parseJSON(xhr.responseText);
+	        if (res.error) {
+	            msg = res.error;
+	        }
+	    } catch (error) {}
+	
+	    var httpCode = xhr.statusCode().status;
+	
+	    if (httpCode) {
+	        msg = msg + ' ( code: ' + httpCode + ' )';
+	    }
+	
+	    // 是否需要隐藏
+	    if (!hideError) {
+	        if (window.alert) {
+	            window.alert(msg);
+	        }
+	    } else {
+	        console.log(msg);
+	    }
+	};
+	
+	// 默认： 业务层面的出错处理
+	var _errCallback = function _errCallback() {
+	    var res = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	    var hideError = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	
+	    var msg = res.error || res.msg || 'An unknown error occurred';
+	    // 是否需要隐藏
+	    if (!hideError) {
+	        if (window.alert) {
+	            window.alert(msg);
+	        }
+	    } else {
+	        console.log(msg);
+	    }
+	};
+	
+	var http = {
+	    onBeforeSend: function onBeforeSend(xhr) {},
+	    sendDataFormat: function sendDataFormat(data) {
+	        return data;
+	    },
+	    // 返回数据的处理
+	    responseFormat: function responseFormat(res) {
+	        return res;
+	    },
+	    // 注册错误处理
+	    regErrCallback: function regErrCallback(type, fun) {
+	        if (type === 'network') {
+	            _networkErrCallback = fun;
+	        } else {
+	            _errCallback = fun;
+	        }
+	    },
+	    // 构造请求头
+	    buildHeaders: function buildHeaders() {
+	        return {};
+	    },
+	    // 判断请求是否成功
+	    isSuccess: function isSuccess(res) {
+	        return Number(res.code) === 1;
+	    },
+	    // 注册请求完成事件（无论成功与否）
+	    onComplete: function onComplete(xhr) {}
+	};
+	
+	exports.default = http;
+	
+	
+	function ajax(type, url, data) {
+	    var hideError = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+	    var timeout = arguments.length <= 4 || arguments[4] === undefined ? 10000 : arguments[4];
+	
+	    var $ = (0, _util.get$)();
+	    data = http.sendDataFormat(data);
+	
+	    var options = {
+	        cache: false,
+	        data: data,
+	        dataType: 'json',
+	        type: type || 'GET',
+	        timeout: timeout,
+	        headers: http.buildHeaders()
+	    };
+	
+	    if (window.FormData && data instanceof window.FormData) {
+	        options.processData = false;
+	        options.contentType = false;
+	    }
+	
+	    if (type === 'jsonp') {
+	        options.type = 'GET';
+	        options.dataType = 'jsonp';
+	    }
+	
+	    var xhr = $.ajax(url, options);
+	    xhr.sendData = options.data;
+	    http.onBeforeSend(xhr);
+	
+	    var promise = new Promise(function (resolve, reject) {
+	        xhr.then(function (res) {
+	            if (http.isSuccess(res, xhr)) {
+	                return resolve(http.responseFormat(res));
+	            } else {
+	                reject(res);
+	                return _errCallback(res, hideError, xhr);
+	            }
+	        }).fail(function (xhr, status) {
+	            reject(xhr, status);
+	            if (!xhr.statusCode().status) {
+	                _networkErrCallback(xhr, status, hideError);
+	            } else {
+	                var res = {};
+	                try {
+	                    res = $.parseJSON(xhr.responseText);
+	                } catch (error) {}
+	                _errCallback(res, hideError);
+	            }
+	        }).always(function () {
+	            http.onComplete(xhr);
+	        });
+	    });
+	    promise.xhr = xhr;
+	    promise.reject = Promise.reject;
+	    return promise;
+	}
+	
+	http.get = function (url, data) {
+	    var hideError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+	    var timeout = arguments.length <= 3 || arguments[3] === undefined ? 10000 : arguments[3];
+	
+	    return ajax('GET', url, data, hideError, timeout);
+	};
+	http.post = function (url, data) {
+	    var hideError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+	    var timeout = arguments.length <= 3 || arguments[3] === undefined ? 10000 : arguments[3];
+	
+	    return ajax('POST', url, data, hideError, timeout);
+	};
+	http.jsonp = function (url, data) {
+	    var hideError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+	    var timeout = arguments.length <= 3 || arguments[3] === undefined ? 10000 : arguments[3];
+	
+	    return ajax('jsonp', url, data, hideError, timeout);
+	};
+
 /***/ }
-/******/ ]);
+/******/ ])
+});
+;
 //# sourceMappingURL=mcore3.es5.js.map

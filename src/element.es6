@@ -48,7 +48,9 @@ export default class Element {
 
     render(){
         this.template = new Template(this);
-        return this.template.render();
+        this.refs = this.template.render();
+        // console.log(this.refs);
+        return this.refs;
     }
 
     destroy(notRemove){

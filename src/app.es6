@@ -97,13 +97,11 @@ export default class App extends EventEmitter {
         this.stack(0, null, done);
     }
 
-    _initView(View, viewName, parentNode, virtualDom, refs){
-        let $el = get$()(parentNode || '<div />');
+    _initView(View, viewName){
+        let $el = get$()('<div />');
         $el.attr('class', this.options.viewClass);
 
         let instantiate = new View($el, this);
-        instantiate.virtualDom = virtualDom;
-        instantiate.refs = refs;
 
         this.curView = {
             name: viewName,
@@ -111,9 +109,7 @@ export default class App extends EventEmitter {
         };
 
         this.runMiddlewares((err, instantiate)=>{
-            if(!parentNode){
-                instantiate.$el.appendTo(this.$el);
-            }
+            instantiate.$el.appendTo(this.$el);
             if(!err){
                 this._changeViewEvent.after(this.curView, ()=>{
                     instantiate.afterRun();
@@ -150,13 +146,12 @@ export default class App extends EventEmitter {
 
             this._changeViewEvent.before(this.curView, ()=>{
                 this.emit('destroyView', this.curView);
-                let virtualDom = this.curView.instantiate.virtualDom;
-                let refs = this.curView.instantiate.refs;
-                let parentNode = this.curView.instantiate.parentNode;
 
-                this.curView.instantiate.destroy(true);
 
-                this._initView(View, viewName, parentNode, virtualDom, refs);
+                this.curView.instantiate.destroy();
+                this.curView.instantiate.$el.remove();
+
+                this._initView(View, viewName);
             }, this);
         }
         else{

@@ -11,6 +11,7 @@ import filter from './filter';
 import paseDomDef from './parseDomDef';
 import {variable} from './config';
 
+
 export default (html, options = {})=>{
     if(!options.moduleName){
         options.moduleName = 'mcore3';
@@ -22,7 +23,9 @@ export default (html, options = {})=>{
     let forCode = '';
 
     domTree.forEach((domAttr, k)=>{
-        forCode += `(${paseDomDef(domAttr)})(${variable.scopeName}, ${variable.treeName}, '${k}');`;
+        forCode += `
+            (${paseDomDef(domAttr)})(${variable.scopeName}, ${variable.treeName}, '${k}');
+        `;
     });
 
     let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){
@@ -36,14 +39,19 @@ export default (html, options = {})=>{
                     return new ${variable.mcoreName}.Element(tagName, key, attr, dynamicAttr, children, events, ${variable.viewName});
                 },
                 parseDynamicVal: function(dynamicCode, dynamicCodeStr){
-                    if(typeof dynamicCode !== 'undefined' && (false === dynamicCode instanceof window.Element)){
+                    var _varReg = /(^[a-zA-Z0-9_-]+)$/;
+                    if(typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)){
                         return dynamicCode;
                     }
-                    else if(typeof ${variable.viewName}[dynamicCode] !== 'undefined'){
+                    else if(typeof ${variable.viewName}[dynamicCode] != 'undefined'){
                         return ${variable.viewName}[dynamicCode];
                     }
-                    else{
+
+                    else if(_varReg.test(dynamicCodeStr)){
                         return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+                    }
+                    else {
+                        return '';
                     }
                 },
                 callFormatter: function(formatterName){

@@ -6,7 +6,6 @@
 "use strict";
 
 import filter from './filter';
-import util from 'util';
 import parseFor from './parseFor';
 import parseText from './parseText';
 import {variable} from './config';
@@ -21,12 +20,9 @@ export default (domAttr)=>{
         return parseText(domAttr);
     }
     let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.pathName}){
-
-        %s
-
+        
+        ${parseFor(domAttr)}
     }`;
-
-    code = util.format(code, parseFor(domAttr));
 
     return code;
 };

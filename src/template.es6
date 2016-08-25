@@ -8,6 +8,8 @@
 import {isNumber, isString, isFunction} from './util';
 import EventEmitter from './eventEmitter';
 import binders from './template/binders';
+import * as util from './util';
+const getComponents = util.getComponents;
 
 /**
  * 模板引擎
@@ -24,6 +26,11 @@ export default class Template extends EventEmitter {
     }
 
     destroy(notRemove){
+
+        getComponents(this.element).forEach((component)=>{
+            component.destroy();
+        });
+
         // 移除自身
         if(!notRemove){
             if(this.refs && this.refs.parentNode && this.refs.parentNode.removeChild){
@@ -40,7 +47,7 @@ export default class Template extends EventEmitter {
      * @method render
      * @return {Element}
      */
-    render(){
+    render(oldNode){
         let node;
         if(this.element.tagName == '_textnode'){
 
@@ -55,24 +62,37 @@ export default class Template extends EventEmitter {
             // node._element = this.element;
             return node;
         }
-        node = document.createElement(this.element.tagName);
+        if(!oldNode){
+            node = document.createElement(this.element.tagName);
+        }
+        else{
+            node = oldNode;
+        }
         node._key = this.element.key;
         this.refs = node;
         node._element = this.element;
 
         // 自定义组件初始化，子元素由 自定义组件 自己管理
         if (Template.components.hasOwnProperty(this.element.tagName)){
+            if(!oldNode){
+                // 自定义组件，先设置静态属性
+                Object.keys(this.element.props).forEach((attr)=>{
+                    this.setAttr(attr.toLowerCase(), this.element.props[attr]);
+                });
+                //设置动态属性
+                Object.keys(this.element.dynamicProps).forEach((attr)=>{
+                    this.setAttr(attr.toLowerCase(), this.element.dynamicProps[attr], true);
+                });
+                this.element._component = new Template.components[this.element.tagName](node, this.element);
+            }
+            else{
+                //设置动态属性
+                Object.keys(this.element.dynamicProps).forEach((attr)=>{
+                    this.setAttr(attr.toLowerCase(), this.element.dynamicProps[attr], true, 'update');
+                });
+                this.element._component = oldNode._component;
+            }
 
-            // 自定义组件，先设置静态属性
-            Object.keys(this.element.props).forEach((attr)=>{
-                this.setAttr(attr.toLowerCase(), this.element.props[attr]);
-            });
-            //设置动态属性
-            Object.keys(this.element.dynamicProps).forEach((attr)=>{
-                this.setAttr(attr.toLowerCase(), this.element.dynamicProps[attr], true);
-            });
-
-            this.element._component = new Template.components[this.element.tagName](node, this.element);
             this.element._noDiffChild = true;
             this.element.children = [];
             this.element.count = 0;
@@ -83,7 +103,7 @@ export default class Template extends EventEmitter {
             // });
         }
         // 非自定义组件，渲染子元素
-        else{
+        else if(!oldNode){
             this.element.children.forEach((child)=>{
                 if(child.render){
                     let childNode = child.render();
@@ -117,6 +137,12 @@ export default class Template extends EventEmitter {
             //设置动态属性
             Object.keys(this.element.dynamicProps).forEach((attr)=>{
                 this.setAttr(attr.toLowerCase(), this.element.dynamicProps[attr], true);
+            });
+        }
+        else{
+            //设置动态属性
+            Object.keys(this.element.dynamicProps).forEach((attr)=>{
+                this.setAttr(attr.toLowerCase(), this.element.dynamicProps[attr], true, 'update');
             });
         }
         return node;
@@ -244,7 +270,10 @@ Template.strToFun = (el, value)=>{
     if(!el._element || !el._element.view || !el._element.view[value]){
         return ()=>{};
     }
-    return el._element.view[value];
+    return function(){
+        return el._element.view[value].call(el._element.view, arguments);
+    };
+
 };
 Template.getEnv = (el)=>{
     return el._element.view;

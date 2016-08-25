@@ -12,22 +12,32 @@ import {variable} from './config';
 
 export default (domAttr, key)=>{
 
-    let forCode = '';
+    let forCode = `
+
+        var ${variable.pathSubIName} = String(${key});
+    `;
 
     if(Array.isArray(domAttr.children)){
-        filter(domAttr.children).forEach((attr, k)=>{
-            // console.log(attr);
-            // forCode += `(${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${key} + '.${k}');`;
-            forCode += `(${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${key} );`;
+        let childrens = filter(domAttr.children);
+        let len = childrens.length;
+
+        childrens.forEach((attr, k)=>{
+            forCode += `
+                (${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${variable.pathSubIName});
+            `;
+
         });
     }
 
     let code = `
+
         ${variable.childrenName} = [];
+
+        
         ${forCode}
         ${variable.treeName}.push(
             ${variable.utilName}.build(
-                '${domAttr.name}', ${key}, ${variable.attrName},
+                '${domAttr.name}', ${variable.pathSubIName}, ${variable.attrName},
                 ${variable.dynamicAttrName}, ${variable.eventName}, ${variable.childrenName}
             )
         );

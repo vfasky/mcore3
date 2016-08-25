@@ -1,0 +1,12 @@
+    <div class="wrap" mc-for="v in scope.menu">
+        <h1>{v.title}</h1>
+
+        <ul class="list">
+            <li mc-for="s in v.menu">
+                <h2>
+                    <a mc-href="s.url">{s.title}</a>
+                </h2>
+                <p>{s.subTitle}</p>
+            </li>
+        </ul>
+    </div>

@@ -13,7 +13,7 @@ export default class View extends Component{
     constructor($el, app){
         super($el[0]);
         this.$el = $el;
-        this.el = $el[0];
+        // this.el = $el[0];
 
     }
 

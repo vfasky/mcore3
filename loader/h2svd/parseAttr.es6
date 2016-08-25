@@ -4,12 +4,11 @@
  * @author vfasky <vfasky@gmail.com>
  **/
 "use strict";
-import util from 'util';
 import parseFormatters from './parseFormatters';
 import {variable} from './config';
 
-let _funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/;
-
+const _funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/;
+const _varReg = /(^[a-zA-Z0-9_-]+)$/;
 /**
  * 解释动态属性
  */
@@ -21,10 +20,21 @@ let parseDynamicAttr = (name, dynamicVal, dynamicAttrName)=>{
     if(dynamicVal.indexOf(' | ') !== -1){
         return parseFormatters(name, dynamicVal, dynamicAttrName, variable.utilName);
     }
-    let code = `
-        ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal((${dynamicVal}), '${dynamicVal.replace(/'/g, "\\'")}');
-    `;
-    return code;
+    if(_varReg.test(dynamicVal)){
+        return `
+            if(typeof (${dynamicVal}) == 'undefined'){
+                ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal('${dynamicVal}', '${dynamicVal}');
+            }
+            else{
+                ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal(${dynamicVal}, '${dynamicVal}');
+            }
+        `;
+    }
+    else{
+        return `
+            ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal((${dynamicVal}), '${dynamicVal.replace(/'/g, "\\'")}');
+        `;
+    }
 };
 
 export default (domAttr)=>{
@@ -32,7 +42,10 @@ export default (domAttr)=>{
 
     let igKeys = ['mc-for', 'mc-if', 'mc-unless'];
 
-    let code = `var ${variable.attrName} = {}, ${variable.dynamicAttrName} = {}, ${variable.eventName} = {};`;
+    let code = `
+        var ${variable.attrName} = {}, ${variable.dynamicAttrName} = {}, ${variable.eventName} = {};
+        
+    `;
 
     attrKeys.forEach((v)=>{
         if(igKeys.indexOf(v) != -1){

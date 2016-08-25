@@ -5,14 +5,16 @@
  **/
 "use strict";
 import h2svd from './index';
-import loaderUtils from 'loader-utils';
+var loaderUtils = require('loader-utils');
 
-export default function(html){
-    let callback, query;
+module.exports = function(html){
+    let callback, query, code, js;
     query = loaderUtils.parseQuery(this.query);
     if(this.cacheable){
         this.cacheable();
     }
     callback = this.async();
-    callback(null, h2svd(html, query));
-}
+    code = h2svd(html, query);
+    js = `module.exports = ${code}`;
+    callback(null, js);
+};

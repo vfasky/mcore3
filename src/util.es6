@@ -81,10 +81,11 @@ export function extend(x){
 }
 
 export function getEvents(element, events = {}){
-
-    element.children.forEach((child)=>{
-        getEvents(child, events);
-    });
+    if(element.children){
+        element.children.forEach((child)=>{
+            getEvents(child, events);
+        });
+    }
 
     Object.keys(element.events).forEach((name)=>{
         let curEvent = element.events[name];
@@ -94,7 +95,11 @@ export function getEvents(element, events = {}){
         events[name].push({
             funName: curEvent.funName,
             args: curEvent.args,
-            target: element.template.refs
+            target: ()=> {
+                // console.log(element);
+                return element.refs;
+            },
+            element: element,
         });
     });
 
@@ -102,9 +107,14 @@ export function getEvents(element, events = {}){
 }
 
 export function getComponents(element, components = []){
-    element.children.forEach((child)=>{
-        getComponents(child, components);
-    });
+    if(!element){
+        return components;
+    }
+    if(element.children){
+        element.children.forEach((child)=>{
+            getComponents(child, components);
+        });
+    }
 
     if(element._component){
         components.push(element._component);

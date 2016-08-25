@@ -43,7 +43,24 @@ describe('h2svd', ()=>{
     });
 
     it('mc-for in', ()=>{
-        let html = `<ul><li mc-for="v in scope.list" mc-class-active="v == 1 || v == 5">{v}</li></ul>`;
+        let html = `<ul class="test">
+            <li mc-for="v in scope.list" mc-class-active="v == 1 || v == 5">
+                <a>
+                    <span>{v}</span>
+                </a>
+            </li>
+
+            <li>1</li>
+        </ul>
+        ok?
+        <div>
+            <ul>
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+            </ul>
+        </div>`;
         let code = h2svd(html);
         // console.log(code);
 
@@ -56,9 +73,9 @@ describe('h2svd', ()=>{
         tree.forEach((el)=>{
             $root.append(el.render());
         });
-        let $ul = $root.find('ul');
+        let $ul = $root.find('ul.test');
 
-        expect($ul.find('li').length).to.equal(5);
+        expect($ul.find('li').length).to.equal(6);
         expect($ul.find('li').eq(0).is('.active')).to.equal(true);
         expect($ul.find('li').eq(4).is('.active')).to.equal(true);
 

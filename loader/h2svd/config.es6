@@ -10,6 +10,7 @@ export const variable = {
     treeName: '__mc__tree',
     childrenName: '__mc__children',
     attrName: '__mc__attr',
+    tmpAttrName: '__mc__tmpAttr',
     dynamicAttrName: '__mc__dynamicAttr',
     eventName: '__mc__event',
     utilName: '__mc__util',
@@ -24,4 +25,7 @@ export const variable = {
     mcoreName: '__mc__mcore',
     viewName: '__mc__view',
     pathIName: '__mc__pathI',
+    pathSubIName: '__mc__pathSubI',
+    pathSubArr: '__mc__pathSubArr',
+    pathStaticIName: '__mc__pathStaticI',
 };

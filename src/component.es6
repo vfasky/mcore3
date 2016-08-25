@@ -31,11 +31,17 @@ export default class Component extends EventEmitter {
     constructor(parentNode, parentElement = {}) {
         super();
         this.parentNode = parentNode;
+        //兼容mcore2
+        this.el = parentNode;
         this.parentElement = parentElement;
         // 渲染完成，回调队列
         this._queueCallbacks = [];
         // 正在排队的渲染队列id
         this._queueId = null;
+        // 存放注册事件
+        this._regEvents = [];
+
+        this._initWatchScope = false;
 
         this.virtualDom = null;
 
@@ -60,14 +66,13 @@ export default class Component extends EventEmitter {
             this.scope[attr] = parentElement.dynamicProps[attr];
         });
 
-        // 观察scope, 如果改动，渲染模板
-        this.watchScope = new Watch(this.scope, (path)=>{
-            this.renderQueue();
-        });
-
         this.beforeInit();
         this.init();
         this.watch();
+
+
+
+
     }
     beforeInit(){}
     init(){}
@@ -81,15 +86,18 @@ export default class Component extends EventEmitter {
     }
 
     destroy(notRemove){
-        this.watchScope.unwatch();
+        if(this._initWatchScope){
+            this.watchScope.unwatch();
+        }
 
         if(!notRemove && this.$refs){
             this.$refs.remove();
             this.$refs = null;
         }
-        // else if(this.$refs){
-        //     this.$refs.off();
-        // }
+        else if(this.$refs){
+            this.$refs.off();
+        }
+        // console.log(getComponents(this.virtualDom));
         getComponents(this.virtualDom).forEach((component)=>{
             component.destroy();
         });
@@ -191,12 +199,13 @@ export default class Component extends EventEmitter {
         else{
             let patches = diff(this.virtualDom, virtualDom);
             //先移除事件绑定
-            if(this.$refs){
-                this.$refs.off();
-            }
+            // if(this.$refs){
+            //     this.$refs.off();
+            // }
             //更新dom
             patch(this.refs, patches);
-            this.$refs = $(this.refs);
+            // console.log(this.refs);
+            // this.$refs = $(this.refs);
             this.virtualDom = virtualDom;
         }
         // 绑定事件
@@ -210,7 +219,50 @@ export default class Component extends EventEmitter {
             }
         });
 
+        if(!this._initWatchScope){
+            this._initWatchScope = true;
+            // 观察scope, 如果改动，渲染模板
+            this.watchScope = new Watch(this.scope, (path)=>{
+                this.renderQueue();
+            });
+        }
+
         return this.refs;
+    }
+
+    regEvent(eventName){
+        const $ = util.get$();
+        if(this._regEvents.indexOf(eventName) === -1){
+            this._regEvents.push(eventName);
+
+            let eventData = this.events[eventName];
+            this.$refs.on(eventName, (event)=>{
+                var res = null;
+                let target = event.target;
+                for(let i = eventData.length - 1; i >= 0; i--){
+                    let ctx = eventData[i];
+                    let ctxTarget = ctx.target();
+                    if(ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))){
+                        // console.log(ctxTarget, target);
+                        let callback = this[ctx.funName];
+                        if(isFunction(callback)){
+                            let args = [event, ctxTarget];
+                            args = args.concat(ctx.args);
+                            // console.log(ctx.element);
+                            res = callback.apply(this, args);
+                            if(false === res){
+                                break;
+                            }
+                        }
+                    }
+                }
+                return res;
+            });
+        }
+    }
+
+    unRegEvent(eventName){
+        this.$refs.off(eventName);
     }
 
     bindEvents(){
@@ -218,29 +270,23 @@ export default class Component extends EventEmitter {
             return;
         }
         const $ = util.get$();
+        if(this.events){
+            this.oldEvents = this.events;
+        }
         this.events = getEvents(this.virtualDom);
+        let curEvents = Object.keys(this.events);
+        // console.log(curEvents, this.events);
 
-        Object.keys(this.events).forEach((eventName)=>{
-            let eventData = this.events[eventName];
-            this.$refs.on(eventName, (event)=>{
-                var res = null;
-                let target = event.target;
-                $.each(eventData, (ix, ctx)=>{
-                    if(ctx.target === target || $.contains(ctx.target, target)){
-                        let callback = this[ctx.funName];
-                        if(isFunction(callback)){
-                            let args = [event, ctx.target];
-                            ctx.args.forEach((v)=>{
-                                args.push(v);
-                            });
-                            res = callback.apply(this, args);
-                            return res;
-                        }
-                    }
-                });
-                return res;
-            });
+        this._regEvents.forEach((regEventName)=>{
+            if(curEvents.indexOf(regEventName) === -1){
+                this.unRegEvent(regEventName);
+            }
         });
+
+        curEvents.forEach((eventName)=>{
+            this.regEvent(eventName);
+        });
+
     }
 
     /**

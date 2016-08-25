@@ -5,7 +5,6 @@
  **/
 "use strict";
 
-import util from 'util';
 import {variable} from './config';
 
 let _formattersArgsReg = /[^\s']+|'([^']|'[^\s])*'|"([^"]|"[^\s])*"/g;
@@ -14,12 +13,7 @@ export default (name, dynamicVal, dynamicAttrName)=>{
     let funcs = dynamicVal.split(' | ');
     let startVal = funcs.shift();
 
-    let code = `
-        ${dynamicAttrName}['${name}'] = (function(x){
-            %s
-            return x;
-        })(${startVal});
-    `;
+
 
     let formatterCode = '';
 
@@ -98,5 +92,17 @@ export default (name, dynamicVal, dynamicAttrName)=>{
         `;
     });
 
-    return util.format(code, formatterCode);
+    let code = `
+        var ${variable.tmpAttrName};
+        try{
+            ${variable.tmpAttrName} = ${startVal};
+        }catch(err){}
+
+        ${dynamicAttrName}['${name}'] = (function(x){
+            ${formatterCode}
+            return x;
+        })(${variable.tmpAttrName});
+    `;
+
+    return code;
 };

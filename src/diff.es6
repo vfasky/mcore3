@@ -53,8 +53,16 @@ function dfsWalk(oldNode, newNode, index, patches){
                 props: propsPatches,
             });
         }
+        if(!newNode.refs && oldNode.refs){
+            newNode.render(oldNode.refs);
+        }
+        // if(!newNode.template && oldNode.template){
+        //     newNode.template = oldNode.template;
+        //     newNode.template.element = newNode;
+        // }
         // 没有声明不要 diff 子元素
-        if(!oldNode || !oldNode._noDiffChild){
+        // console.log(newNode._noDiffChild);
+        if(!oldNode || !oldNode._noDiffChild || !newNode._noDiffChild){
             diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
         }
     }
