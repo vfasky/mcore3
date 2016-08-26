@@ -63,7 +63,7 @@
 	
 	var app = new _mcore2.default.App((0, _jquery2.default)('#main'));
 	
-	app.route('/table', __webpack_require__(23).default).route('/removeItem', __webpack_require__(26).default).route('/changeItem', __webpack_require__(28).default).route('/addItem', __webpack_require__(32).default).route('/', __webpack_require__(30).default).run();
+	app.route('/table', __webpack_require__(23).default).route('/removeItem', __webpack_require__(26).default).route('/changeItem', __webpack_require__(28).default).route('/addItem', __webpack_require__(30).default).route('/findItem', __webpack_require__(32).default).route('/', __webpack_require__(34).default).run();
 
 /***/ },
 /* 1 */
@@ -1517,21 +1517,23 @@
 	            var res = null;
 	            var target = event.target;
 	            var eventData = this.events[eventName];
-	            // console.log(eventData, eventName);
-	            for (var i = 0, len = eventData.length; i < len; i++) {
-	                var ctx = eventData[i];
-	                var ctxTarget = ctx.target();
-	                // console.log(ctxTarget, target);
-	                if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
-	                    var callback = this[ctx.funName];
-	                    // console.log(callback, ctx.args);
-	                    if (isFunction(callback)) {
-	                        var args = [event, ctxTarget];
-	                        args = args.concat(ctx.args);
-	                        // console.log(ctx.element);
-	                        res = callback.apply(this, args);
-	                        if (false === res) {
-	                            break;
+	            if (Array.isArray(eventData)) {
+	                // console.log(eventData, eventName);
+	                for (var i = 0, len = eventData.length; i < len; i++) {
+	                    var ctx = eventData[i];
+	                    var ctxTarget = ctx.target();
+	                    // console.log(ctxTarget, target);
+	                    if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
+	                        var callback = this[ctx.funName];
+	                        // console.log(callback, ctx.args);
+	                        if (isFunction(callback)) {
+	                            var args = [event, ctxTarget];
+	                            args = args.concat(ctx.args);
+	                            // console.log(ctx.element);
+	                            res = callback.apply(this, args);
+	                            if (false === res) {
+	                                break;
+	                            }
 	                        }
 	                    }
 	                }
@@ -1814,7 +1816,7 @@
 	}
 	
 	function diffChildren(oldChildren, newChildren, index, patches, currentPatch) {
-	    var diffs = (0, _listDiff2.default)(oldChildren, newChildren, '_key');
+	    var diffs = (0, _listDiff2.default)(oldChildren, newChildren, 'key');
 	    newChildren = diffs.children;
 	    // 有移动
 	    if (diffs.moves.length) {
@@ -1822,6 +1824,7 @@
 	            type: _patch2.default.REORDER,
 	            moves: diffs.moves
 	        };
+	        // console.log(diffs, oldChildren, newChildren);
 	        currentPatch.push(reorderPatch);
 	    }
 	    var leftNode = null;
@@ -2047,6 +2050,7 @@
 	            maps[key] = node;
 	        }
 	    });
+	    // console.log(moves);
 	    moves.forEach(function (move) {
 	        var index = move.index;
 	        if (move.type === 0) {
@@ -2060,6 +2064,7 @@
 	                    node.removeChild(childNode);
 	                }
 	            }
+	            staticNodeList.splice(index, 1);
 	        } else if (move.type === 1) {
 	            var insertNode = void 0;
 	            var oldNode = maps[move.item.key];
@@ -6764,476 +6769,6 @@
 
 	/**
 	 *
-	 * home
-	 * @author vfasky <vfasky@gmail.com>
-	 **/
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _mcore = __webpack_require__(2);
-	
-	var _mcore2 = _interopRequireDefault(_mcore);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Index = function (_mcore$View) {
-	    _inherits(Index, _mcore$View);
-	
-	    function Index() {
-	        _classCallCheck(this, Index);
-	
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Index).apply(this, arguments));
-	    }
-	
-	    _createClass(Index, [{
-	        key: 'run',
-	        value: function run() {
-	            this.render(__webpack_require__(31), {
-	                menu: [{
-	                    title: 'Template',
-	                    menu: [{
-	                        title: 'Base Render',
-	                        subTitle: 'Render Html',
-	                        url: '#/'
-	                    }, {
-	                        title: 'Table Render',
-	                        subTitle: 'Diff and Render Table',
-	                        url: '#/table'
-	                    }]
-	                }, {
-	                    title: 'Interaction',
-	                    menu: [{
-	                        title: 'Remove',
-	                        subTitle: 'Remove Item',
-	                        url: '#/removeItem'
-	                    }, {
-	                        title: 'Change',
-	                        subTitle: 'Change Item',
-	                        url: '#/changeItem'
-	                    }, {
-	                        title: 'Add',
-	                        subTitle: 'Add Item',
-	                        url: '#/addItem'
-	                    }, {
-	                        title: 'Find',
-	                        subTitle: 'Find Item',
-	                        url: '#/findItem'
-	                    }]
-	                }]
-	            });
-	        }
-	    }]);
-	
-	    return Index;
-	}(_mcore2.default.View);
-	
-	exports.default = Index;
-	
-	
-	Index.viewName = 'index';
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(scope, __mc__view, __mc__mcore) {
-	
-	    if (!__mc__mcore) {
-	        __mc__mcore = __webpack_require__(2);
-	    }
-	    var __mc__util = {
-	        clone: __mc__mcore.util.clone,
-	        build: function(tagName, key, attr, dynamicAttr, events, children) {
-	            return new __mc__mcore.Element(tagName, key, attr, dynamicAttr, children, events, __mc__view);
-	        },
-	        parseDynamicVal: function(dynamicCode, dynamicCodeStr) {
-	            var _varReg = /(^[a-zA-Z0-9_-]+)$/;
-	            if (typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)) {
-	                return dynamicCode;
-	            } else if (typeof __mc__view[dynamicCode] != 'undefined') {
-	                return __mc__view[dynamicCode];
-	            } else if (_varReg.test(dynamicCodeStr)) {
-	                return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
-	            } else {
-	                return '';
-	            }
-	        },
-	        callFormatter: function(formatterName) {
-	            if (__mc__mcore.Template.formatters.hasOwnProperty(formatterName)) {
-	                return __mc__mcore.Template.formatters[formatterName];
-	            };
-	            return function() {};
-	        },
-	    };
-	    var __mc__tree = [];
-	
-	    (function(scope, __mc__tree, __mc_path) {
-	
-	
-	        /* [for-in] v in scope.menu */
-	        var __mc__forArr = scope.menu;
-	        if (false == Array.isArray(__mc__forArr)) {
-	            __mc__forArr = [];
-	        }
-	
-	
-	        __mc__forArr.forEach(function(v, __mc__$ix_) {
-	
-	            var __mc__children;
-	
-	            var __mc__attr = {},
-	                __mc__dynamicAttr = {},
-	                __mc__event = {};
-	
-	
-	            __mc__attr['class'] = 'wrap';
-	
-	
-	
-	            __mc__children = [];
-	
-	
-	
-	
-	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
-	
-	            (function(scope, __mc__tree, __mc_path) {
-	
-	
-	                var __mc__forArr = [0];
-	
-	
-	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
-	
-	                    var __mc__children;
-	
-	                    var __mc__attr = {},
-	                        __mc__dynamicAttr = {},
-	                        __mc__event = {};
-	
-	
-	
-	
-	                    __mc__children = [];
-	
-	
-	
-	
-	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
-	
-	                    (function(scope, __mc__tree, __mc_path) {
-	                        var __mc__strVal = {}
-	                        var __mc__tmpAttr;
-	                        try {
-	                            __mc__tmpAttr = v.title;
-	                        } catch (err) {}
-	
-	                        __mc__strVal['rp_0'] = (function(x) {
-	
-	                            return x;
-	                        })(__mc__tmpAttr);
-	
-	                        /* [formatter] {v.title} */
-	                        var __mc__str = "" + __mc__strVal['rp_0'] + "";
-	                        var __mc__dynamicAttr = {
-	                            text: __mc__str
-	                        };
-	                        __mc__tree.push(__mc__util.build(
-	                            '_textNode', __mc_path, {},
-	                            __mc__dynamicAttr, {}, []
-	                        ));
-	                    })(scope, __mc__children, __mc__pathSubI);
-	
-	                    __mc__tree.push(
-	                        __mc__util.build(
-	                            'h1', __mc__pathSubI, __mc__attr,
-	                            __mc__dynamicAttr, __mc__event, __mc__children
-	                        )
-	                    );
-	
-	
-	                });
-	
-	
-	
-	            })(scope, __mc__children, __mc__pathSubI);
-	
-	            (function(scope, __mc__tree, __mc_path) {
-	
-	
-	                var __mc__forArr = [0];
-	
-	
-	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
-	
-	                    var __mc__children;
-	
-	                    var __mc__attr = {},
-	                        __mc__dynamicAttr = {},
-	                        __mc__event = {};
-	
-	
-	                    __mc__attr['class'] = 'list';
-	
-	
-	
-	                    __mc__children = [];
-	
-	
-	
-	
-	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
-	
-	                    (function(scope, __mc__tree, __mc_path) {
-	
-	
-	                        /* [for-in] s in v.menu */
-	                        var __mc__forArr = v.menu;
-	                        if (false == Array.isArray(__mc__forArr)) {
-	                            __mc__forArr = [];
-	                        }
-	
-	
-	                        __mc__forArr.forEach(function(s, __mc__$ix_) {
-	
-	                            var __mc__children;
-	
-	                            var __mc__attr = {},
-	                                __mc__dynamicAttr = {},
-	                                __mc__event = {};
-	
-	
-	
-	
-	                            __mc__children = [];
-	
-	
-	
-	
-	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
-	
-	                            (function(scope, __mc__tree, __mc_path) {
-	
-	
-	                                var __mc__forArr = [0];
-	
-	
-	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
-	
-	                                    var __mc__children;
-	
-	                                    var __mc__attr = {},
-	                                        __mc__dynamicAttr = {},
-	                                        __mc__event = {};
-	
-	
-	
-	
-	                                    __mc__children = [];
-	
-	
-	
-	
-	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
-	
-	                                    (function(scope, __mc__tree, __mc_path) {
-	
-	
-	                                        var __mc__forArr = [0];
-	
-	
-	                                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
-	
-	                                            var __mc__children;
-	
-	                                            var __mc__attr = {},
-	                                                __mc__dynamicAttr = {},
-	                                                __mc__event = {};
-	
-	
-	                                            __mc__dynamicAttr['href'] = __mc__util.parseDynamicVal((s.url), 's.url');
-	
-	
-	
-	                                            __mc__children = [];
-	
-	
-	
-	
-	                                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
-	
-	                                            (function(scope, __mc__tree, __mc_path) {
-	                                                var __mc__strVal = {}
-	                                                var __mc__tmpAttr;
-	                                                try {
-	                                                    __mc__tmpAttr = s.title;
-	                                                } catch (err) {}
-	
-	                                                __mc__strVal['rp_0'] = (function(x) {
-	
-	                                                    return x;
-	                                                })(__mc__tmpAttr);
-	
-	                                                /* [formatter] {s.title} */
-	                                                var __mc__str = "" + __mc__strVal['rp_0'] + "";
-	                                                var __mc__dynamicAttr = {
-	                                                    text: __mc__str
-	                                                };
-	                                                __mc__tree.push(__mc__util.build(
-	                                                    '_textNode', __mc_path, {},
-	                                                    __mc__dynamicAttr, {}, []
-	                                                ));
-	                                            })(scope, __mc__children, __mc__pathSubI);
-	
-	                                            __mc__tree.push(
-	                                                __mc__util.build(
-	                                                    'a', __mc__pathSubI, __mc__attr,
-	                                                    __mc__dynamicAttr, __mc__event, __mc__children
-	                                                )
-	                                            );
-	
-	
-	                                        });
-	
-	
-	
-	                                    })(scope, __mc__children, __mc__pathSubI);
-	
-	                                    __mc__tree.push(
-	                                        __mc__util.build(
-	                                            'h2', __mc__pathSubI, __mc__attr,
-	                                            __mc__dynamicAttr, __mc__event, __mc__children
-	                                        )
-	                                    );
-	
-	
-	                                });
-	
-	
-	
-	                            })(scope, __mc__children, __mc__pathSubI);
-	
-	                            (function(scope, __mc__tree, __mc_path) {
-	
-	
-	                                var __mc__forArr = [0];
-	
-	
-	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
-	
-	                                    var __mc__children;
-	
-	                                    var __mc__attr = {},
-	                                        __mc__dynamicAttr = {},
-	                                        __mc__event = {};
-	
-	
-	
-	
-	                                    __mc__children = [];
-	
-	
-	
-	
-	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
-	
-	                                    (function(scope, __mc__tree, __mc_path) {
-	                                        var __mc__strVal = {}
-	                                        var __mc__tmpAttr;
-	                                        try {
-	                                            __mc__tmpAttr = s.subTitle;
-	                                        } catch (err) {}
-	
-	                                        __mc__strVal['rp_0'] = (function(x) {
-	
-	                                            return x;
-	                                        })(__mc__tmpAttr);
-	
-	                                        /* [formatter] {s.subTitle} */
-	                                        var __mc__str = "" + __mc__strVal['rp_0'] + "";
-	                                        var __mc__dynamicAttr = {
-	                                            text: __mc__str
-	                                        };
-	                                        __mc__tree.push(__mc__util.build(
-	                                            '_textNode', __mc_path, {},
-	                                            __mc__dynamicAttr, {}, []
-	                                        ));
-	                                    })(scope, __mc__children, __mc__pathSubI);
-	
-	                                    __mc__tree.push(
-	                                        __mc__util.build(
-	                                            'p', __mc__pathSubI, __mc__attr,
-	                                            __mc__dynamicAttr, __mc__event, __mc__children
-	                                        )
-	                                    );
-	
-	
-	                                });
-	
-	
-	
-	                            })(scope, __mc__children, __mc__pathSubI);
-	
-	                            __mc__tree.push(
-	                                __mc__util.build(
-	                                    'li', __mc__pathSubI, __mc__attr,
-	                                    __mc__dynamicAttr, __mc__event, __mc__children
-	                                )
-	                            );
-	
-	
-	                        });
-	
-	
-	                    })(scope, __mc__children, __mc__pathSubI);
-	
-	                    __mc__tree.push(
-	                        __mc__util.build(
-	                            'ul', __mc__pathSubI, __mc__attr,
-	                            __mc__dynamicAttr, __mc__event, __mc__children
-	                        )
-	                    );
-	
-	
-	                });
-	
-	
-	
-	            })(scope, __mc__children, __mc__pathSubI);
-	
-	            __mc__tree.push(
-	                __mc__util.build(
-	                    'div', __mc__pathSubI, __mc__attr,
-	                    __mc__dynamicAttr, __mc__event, __mc__children
-	                )
-	            );
-	
-	
-	        });
-	
-	
-	    })(scope, __mc__tree, '0');
-	
-	    return __mc__tree;
-	};
-
-/***/ },
-/* 32 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 *
 	 * add item
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
@@ -7273,7 +6808,7 @@
 	    _createClass(AddItem, [{
 	        key: 'run',
 	        value: function run() {
-	            this.render(__webpack_require__(33), {
+	            this.render(__webpack_require__(31), {
 	                addItemName: '',
 	                list: []
 	            });
@@ -7307,7 +6842,7 @@
 	AddItem.viewName = 'addItem';
 
 /***/ },
-/* 33 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(scope, __mc__view, __mc__mcore) {
@@ -7976,6 +7511,1447 @@
 	
 	
 	    })(scope, __mc__tree, '1');
+	
+	    return __mc__tree;
+	};
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * find item
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _addItem = __webpack_require__(30);
+	
+	var _addItem2 = _interopRequireDefault(_addItem);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var FindItem = function (_View) {
+	    _inherits(FindItem, _View);
+	
+	    function FindItem() {
+	        _classCallCheck(this, FindItem);
+	
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(FindItem).apply(this, arguments));
+	    }
+	
+	    _createClass(FindItem, [{
+	        key: 'run',
+	        value: function run() {
+	            this.render(__webpack_require__(33), {
+	                addItemName: '',
+	                find: '',
+	                list: [],
+	                filterList: []
+	            });
+	        }
+	    }, {
+	        key: 'edit',
+	        value: function edit(event, el, v) {
+	            if (!this.scope.find) {
+	                v.edit = true;
+	            }
+	            return false;
+	        }
+	    }, {
+	        key: 'find',
+	        value: function find(event, el) {
+	            var _this2 = this;
+	
+	            this.scope.find = el.value;
+	            if (!this.scope.find) {
+	                return;
+	            }
+	            this.scope.filterList = this.scope.list.filter(function (v) {
+	                return v.title.indexOf(_this2.scope.find) !== -1;
+	            });
+	        }
+	    }]);
+	
+	    return FindItem;
+	}(_addItem2.default);
+	
+	exports.default = FindItem;
+	
+	
+	FindItem.viewName = 'findItem';
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(scope, __mc__view, __mc__mcore) {
+	
+	    if (!__mc__mcore) {
+	        __mc__mcore = __webpack_require__(2);
+	    }
+	    var __mc__util = {
+	        clone: __mc__mcore.util.clone,
+	        build: function(tagName, key, attr, dynamicAttr, events, children) {
+	            return new __mc__mcore.Element(tagName, key, attr, dynamicAttr, children, events, __mc__view);
+	        },
+	        parseDynamicVal: function(dynamicCode, dynamicCodeStr) {
+	            var _varReg = /(^[a-zA-Z0-9_-]+)$/;
+	            if (typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)) {
+	                return dynamicCode;
+	            } else if (typeof __mc__view[dynamicCode] != 'undefined') {
+	                return __mc__view[dynamicCode];
+	            } else if (_varReg.test(dynamicCodeStr)) {
+	                return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+	            } else {
+	                return '';
+	            }
+	        },
+	        callFormatter: function(formatterName) {
+	            if (__mc__mcore.Template.formatters.hasOwnProperty(formatterName)) {
+	                return __mc__mcore.Template.formatters[formatterName];
+	            };
+	            return function() {};
+	        },
+	    };
+	    var __mc__tree = [];
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        var __mc__forArr = [0];
+	
+	
+	        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	            __mc__attr['class'] = 'na-form';
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                var __mc__forArr = [0];
+	
+	
+	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	                    __mc__attr['class'] = 'form-group row';
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['class'] = 'control-label flex-1';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	                                var __mc__attr = {
+	                                    text: 'find'
+	                                };
+	                                __mc__tree.push(__mc__util.build('_textNode', __mc_path, __mc__attr));
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'label', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['class'] = 'flex-8';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	                                    __mc__attr['type'] = 'text';
+	
+	                                    __mc__attr['class'] = 'form-control';
+	
+	                                    __mc__event['keyup'] = {
+	                                        'funName': 'find',
+	                                        'args': []
+	                                    };
+	
+	                                    __mc__dynamicAttr['value'] = __mc__util.parseDynamicVal((scope.find), 'scope.find');
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'input', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'div', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'div', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'div', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	
+	    })(scope, __mc__tree, '0');
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        var __mc__forArr = [0];
+	
+	
+	        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	            __mc__attr['class'] = 'list';
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                /* [for-in] v in (scope.find ? scope.filterList : scope.list) */
+	                var __mc__forArr = (scope.find ? scope.filterList : scope.list);
+	                if (false == Array.isArray(__mc__forArr)) {
+	                    __mc__forArr = [];
+	                }
+	
+	
+	                __mc__forArr.forEach(function(v, __mc__$ix_) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__dynamicAttr['show'] = __mc__util.parseDynamicVal((!v.edit), '!v.edit');
+	
+	                            __mc__event['click'] = {
+	                                'funName': 'edit',
+	                                'args': [v]
+	                            };
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	                                    __mc__attr['icon'] = 'print';
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'svgicon', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	                                var __mc__strVal = {}
+	                                var __mc__tmpAttr;
+	                                try {
+	                                    __mc__tmpAttr = v.title;
+	                                } catch (err) {}
+	
+	                                __mc__strVal['rp_0'] = (function(x) {
+	
+	                                    return x;
+	                                })(__mc__tmpAttr);
+	
+	                                /* [formatter] {v.title} */
+	                                var __mc__str = "             " + __mc__strVal['rp_0'] + "             ";
+	                                var __mc__dynamicAttr = {
+	                                    text: __mc__str
+	                                };
+	                                __mc__tree.push(__mc__util.build(
+	                                    '_textNode', __mc_path, {},
+	                                    __mc__dynamicAttr, {}, []
+	                                ));
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	                                    __mc__dynamicAttr['show'] = __mc__util.parseDynamicVal((!scope.find), '!scope.find');
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                        var __mc__forArr = [0];
+	
+	
+	                                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                            var __mc__children;
+	
+	                                            var __mc__attr = {},
+	                                                __mc__dynamicAttr = {},
+	                                                __mc__event = {};
+	
+	
+	                                            __mc__attr['class'] = 'iconfont icon-close';
+	
+	                                            __mc__event['click'] = {
+	                                                'funName': 'remove',
+	                                                'args': [v]
+	                                            };
+	
+	
+	
+	                                            __mc__children = [];
+	
+	
+	
+	
+	                                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                            __mc__tree.push(
+	                                                __mc__util.build(
+	                                                    'i', __mc__pathSubI, __mc__attr,
+	                                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                                )
+	                                            );
+	
+	
+	                                        });
+	
+	
+	
+	                                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'a', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'div', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['type'] = 'text';
+	
+	                            __mc__dynamicAttr['value'] = __mc__util.parseDynamicVal((v.title), 'v.title');
+	
+	                            __mc__dynamicAttr['show'] = __mc__util.parseDynamicVal((v.edit), 'v.edit');
+	
+	                            __mc__event['change'] = {
+	                                'funName': 'save',
+	                                'args': [v]
+	                            };
+	
+	                            __mc__event['blur'] = {
+	                                'funName': 'hideEdit',
+	                                'args': [v]
+	                            };
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'input', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'li', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'ul', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	
+	    })(scope, __mc__tree, '1');
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        var __mc__forArr = [0];
+	
+	
+	        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	            __mc__attr['class'] = 'na-form';
+	
+	            __mc__event['submit'] = {
+	                'funName': 'add',
+	                'args': []
+	            };
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                var __mc__forArr = [0];
+	
+	
+	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	                    __mc__attr['class'] = 'form-group row';
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['class'] = 'control-label flex-1';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	                                var __mc__attr = {
+	                                    text: 'item name'
+	                                };
+	                                __mc__tree.push(__mc__util.build('_textNode', __mc_path, __mc__attr));
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'label', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['class'] = 'flex-4';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	                                    __mc__attr['type'] = 'text';
+	
+	                                    __mc__attr['class'] = 'form-control';
+	
+	                                    __mc__event['change'] = {
+	                                        'funName': 'syncItemName',
+	                                        'args': []
+	                                    };
+	
+	                                    __mc__dynamicAttr['value'] = __mc__util.parseDynamicVal((scope.addItemName), 'scope.addItemName');
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'input', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'div', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['class'] = 'flex-2';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	                                    __mc__attr['class'] = 'btn';
+	
+	                                    __mc__attr['type'] = 'submit';
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    (function(scope, __mc__tree, __mc_path) {
+	                                        var __mc__attr = {
+	                                            text: 'Add'
+	                                        };
+	                                        __mc__tree.push(__mc__util.build('_textNode', __mc_path, __mc__attr));
+	                                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'button', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'div', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'div', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'form', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	
+	    })(scope, __mc__tree, '2');
+	
+	    return __mc__tree;
+	};
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * home
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _mcore = __webpack_require__(2);
+	
+	var _mcore2 = _interopRequireDefault(_mcore);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Index = function (_mcore$View) {
+	    _inherits(Index, _mcore$View);
+	
+	    function Index() {
+	        _classCallCheck(this, Index);
+	
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Index).apply(this, arguments));
+	    }
+	
+	    _createClass(Index, [{
+	        key: 'run',
+	        value: function run() {
+	            this.render(__webpack_require__(35), {
+	                menu: [{
+	                    title: 'Template',
+	                    menu: [{
+	                        title: 'Base Render',
+	                        subTitle: 'Render Html',
+	                        url: '#/'
+	                    }, {
+	                        title: 'Table Render',
+	                        subTitle: 'Diff and Render Table',
+	                        url: '#/table'
+	                    }]
+	                }, {
+	                    title: 'Interaction',
+	                    menu: [{
+	                        title: 'Remove',
+	                        subTitle: 'Remove Item',
+	                        url: '#/removeItem'
+	                    }, {
+	                        title: 'Change',
+	                        subTitle: 'Change Item',
+	                        url: '#/changeItem'
+	                    }, {
+	                        title: 'Add',
+	                        subTitle: 'Add Item',
+	                        url: '#/addItem'
+	                    }, {
+	                        title: 'Find',
+	                        subTitle: 'Find Item',
+	                        url: '#/findItem'
+	                    }]
+	                }]
+	            });
+	        }
+	    }]);
+	
+	    return Index;
+	}(_mcore2.default.View);
+	
+	exports.default = Index;
+	
+	
+	Index.viewName = 'index';
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(scope, __mc__view, __mc__mcore) {
+	
+	    if (!__mc__mcore) {
+	        __mc__mcore = __webpack_require__(2);
+	    }
+	    var __mc__util = {
+	        clone: __mc__mcore.util.clone,
+	        build: function(tagName, key, attr, dynamicAttr, events, children) {
+	            return new __mc__mcore.Element(tagName, key, attr, dynamicAttr, children, events, __mc__view);
+	        },
+	        parseDynamicVal: function(dynamicCode, dynamicCodeStr) {
+	            var _varReg = /(^[a-zA-Z0-9_-]+)$/;
+	            if (typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)) {
+	                return dynamicCode;
+	            } else if (typeof __mc__view[dynamicCode] != 'undefined') {
+	                return __mc__view[dynamicCode];
+	            } else if (_varReg.test(dynamicCodeStr)) {
+	                return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+	            } else {
+	                return '';
+	            }
+	        },
+	        callFormatter: function(formatterName) {
+	            if (__mc__mcore.Template.formatters.hasOwnProperty(formatterName)) {
+	                return __mc__mcore.Template.formatters[formatterName];
+	            };
+	            return function() {};
+	        },
+	    };
+	    var __mc__tree = [];
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        /* [for-in] v in scope.menu */
+	        var __mc__forArr = scope.menu;
+	        if (false == Array.isArray(__mc__forArr)) {
+	            __mc__forArr = [];
+	        }
+	
+	
+	        __mc__forArr.forEach(function(v, __mc__$ix_) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	            __mc__attr['class'] = 'wrap';
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                var __mc__forArr = [0];
+	
+	
+	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	                        var __mc__strVal = {}
+	                        var __mc__tmpAttr;
+	                        try {
+	                            __mc__tmpAttr = v.title;
+	                        } catch (err) {}
+	
+	                        __mc__strVal['rp_0'] = (function(x) {
+	
+	                            return x;
+	                        })(__mc__tmpAttr);
+	
+	                        /* [formatter] {v.title} */
+	                        var __mc__str = "" + __mc__strVal['rp_0'] + "";
+	                        var __mc__dynamicAttr = {
+	                            text: __mc__str
+	                        };
+	                        __mc__tree.push(__mc__util.build(
+	                            '_textNode', __mc_path, {},
+	                            __mc__dynamicAttr, {}, []
+	                        ));
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'h1', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                var __mc__forArr = [0];
+	
+	
+	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	                    __mc__attr['class'] = 'list';
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        /* [for-in] s in v.menu */
+	                        var __mc__forArr = v.menu;
+	                        if (false == Array.isArray(__mc__forArr)) {
+	                            __mc__forArr = [];
+	                        }
+	
+	
+	                        __mc__forArr.forEach(function(s, __mc__$ix_) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                        var __mc__forArr = [0];
+	
+	
+	                                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                            var __mc__children;
+	
+	                                            var __mc__attr = {},
+	                                                __mc__dynamicAttr = {},
+	                                                __mc__event = {};
+	
+	
+	                                            __mc__dynamicAttr['href'] = __mc__util.parseDynamicVal((s.url), 's.url');
+	
+	
+	
+	                                            __mc__children = [];
+	
+	
+	
+	
+	                                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                            (function(scope, __mc__tree, __mc_path) {
+	                                                var __mc__strVal = {}
+	                                                var __mc__tmpAttr;
+	                                                try {
+	                                                    __mc__tmpAttr = s.title;
+	                                                } catch (err) {}
+	
+	                                                __mc__strVal['rp_0'] = (function(x) {
+	
+	                                                    return x;
+	                                                })(__mc__tmpAttr);
+	
+	                                                /* [formatter] {s.title} */
+	                                                var __mc__str = "" + __mc__strVal['rp_0'] + "";
+	                                                var __mc__dynamicAttr = {
+	                                                    text: __mc__str
+	                                                };
+	                                                __mc__tree.push(__mc__util.build(
+	                                                    '_textNode', __mc_path, {},
+	                                                    __mc__dynamicAttr, {}, []
+	                                                ));
+	                                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                                            __mc__tree.push(
+	                                                __mc__util.build(
+	                                                    'a', __mc__pathSubI, __mc__attr,
+	                                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                                )
+	                                            );
+	
+	
+	                                        });
+	
+	
+	
+	                                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'h2', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    var __mc__children;
+	
+	                                    var __mc__attr = {},
+	                                        __mc__dynamicAttr = {},
+	                                        __mc__event = {};
+	
+	
+	
+	
+	                                    __mc__children = [];
+	
+	
+	
+	
+	                                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                    (function(scope, __mc__tree, __mc_path) {
+	                                        var __mc__strVal = {}
+	                                        var __mc__tmpAttr;
+	                                        try {
+	                                            __mc__tmpAttr = s.subTitle;
+	                                        } catch (err) {}
+	
+	                                        __mc__strVal['rp_0'] = (function(x) {
+	
+	                                            return x;
+	                                        })(__mc__tmpAttr);
+	
+	                                        /* [formatter] {s.subTitle} */
+	                                        var __mc__str = "" + __mc__strVal['rp_0'] + "";
+	                                        var __mc__dynamicAttr = {
+	                                            text: __mc__str
+	                                        };
+	                                        __mc__tree.push(__mc__util.build(
+	                                            '_textNode', __mc_path, {},
+	                                            __mc__dynamicAttr, {}, []
+	                                        ));
+	                                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                                    __mc__tree.push(
+	                                        __mc__util.build(
+	                                            'p', __mc__pathSubI, __mc__attr,
+	                                            __mc__dynamicAttr, __mc__event, __mc__children
+	                                        )
+	                                    );
+	
+	
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'li', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'ul', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'div', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	    })(scope, __mc__tree, '0');
 	
 	    return __mc__tree;
 	};

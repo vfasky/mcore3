@@ -118,6 +118,7 @@ function reorderChildren(node, moves){
             maps[key] = node;
         }
     });
+    // console.log(moves);
     moves.forEach((move)=>{
         let index = move.index;
         if(move.type === 0){
@@ -131,6 +132,7 @@ function reorderChildren(node, moves){
                     node.removeChild(childNode);
                 }
             }
+            staticNodeList.splice(index, 1);
         }
         else if(move.type === 1){
             let insertNode;

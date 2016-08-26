@@ -83,7 +83,7 @@ function dfsWalk(oldNode, newNode, index, patches){
 }
 
 function diffChildren(oldChildren, newChildren, index, patches, currentPatch){
-    let diffs = listDiff(oldChildren, newChildren, '_key');
+    let diffs = listDiff(oldChildren, newChildren, 'key');
     newChildren = diffs.children;
     // 有移动
     if(diffs.moves.length){
@@ -91,6 +91,7 @@ function diffChildren(oldChildren, newChildren, index, patches, currentPatch){
             type: patch.REORDER,
             moves: diffs.moves,
         };
+        // console.log(diffs, oldChildren, newChildren);
         currentPatch.push(reorderPatch);
     }
     let leftNode = null;

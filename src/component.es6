@@ -240,21 +240,23 @@ export default class Component extends EventEmitter {
         var res = null;
         let target = event.target;
         let eventData = this.events[eventName];
-        // console.log(eventData, eventName);
-        for(let i = 0, len = eventData.length; i < len; i++){
-            let ctx = eventData[i];
-            let ctxTarget = ctx.target();
-            // console.log(ctxTarget, target);
-            if(ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))){
-                let callback = this[ctx.funName];
-                // console.log(callback, ctx.args);
-                if(isFunction(callback)){
-                    let args = [event, ctxTarget];
-                    args = args.concat(ctx.args);
-                    // console.log(ctx.element);
-                    res = callback.apply(this, args);
-                    if(false === res){
-                        break;
+        if(Array.isArray(eventData)){
+            // console.log(eventData, eventName);
+            for(let i = 0, len = eventData.length; i < len; i++){
+                let ctx = eventData[i];
+                let ctxTarget = ctx.target();
+                // console.log(ctxTarget, target);
+                if(ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))){
+                    let callback = this[ctx.funName];
+                    // console.log(callback, ctx.args);
+                    if(isFunction(callback)){
+                        let args = [event, ctxTarget];
+                        args = args.concat(ctx.args);
+                        // console.log(ctx.element);
+                        res = callback.apply(this, args);
+                        if(false === res){
+                            break;
+                        }
                     }
                 }
             }
