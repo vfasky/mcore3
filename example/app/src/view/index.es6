@@ -32,6 +32,14 @@ export default class Index extends mcore.View {
                     title: 'Change',
                     subTitle: 'Change Item',
                     url: '#/changeItem'
+                },{
+                    title: 'Add',
+                    subTitle: 'Add Item',
+                    url: '#/addItem'
+                },{
+                    title: 'Find',
+                    subTitle: 'Find Item',
+                    url: '#/findItem'
                 }]
             }]
         });

@@ -23,13 +23,18 @@ export default class Watch {
     observer(changes, x, path){
         changes.forEach((change)=>{
             let curPath = path + '.' + change.name;
+            // console.log(change, x, path);
             if(change.type === 'add'){
                 this.watch(x[change.name], curPath);
+            }
+            if(change.type === 'splice'){
+                this.unwatchByPath(path);
+                this.watch(x, path);
             }
             else if(change.type === 'delete'){
                 this.unwatchByPath(curPath);
             }
-            else if(['reconfigure', 'update'].indexOf(change.type) !== -1){
+            else if(['reconfigure', 'update', 'splice'].indexOf(change.type) !== -1){
                 this.unwatchByPath(curPath);
                 this.watch(x[change.name], curPath);
             }

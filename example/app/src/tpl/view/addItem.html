@@ -1,0 +1,30 @@
+
+<form class="na-form" mc-on-submit="add">
+    <div class="form-group row">
+        <label class="control-label flex-1">item name</label>
+        <div class="flex-4">
+            <input type="text" class="form-control" mc-on-change="syncItemName" mc-value="scope.addItemName">
+        </div>
+        <div class="flex-2">
+            <button class="btn" type="submit">Add</button>
+        </div>
+    </div>
+</form>
+
+
+<ul class="list">
+    <li mc-for="v in scope.list">
+        <div mc-show="!v.edit" mc-on-click="edit(v)">
+            <svgicon icon="print"></svgicon>
+            {v.title}
+            <a>
+                <i class="iconfont icon-close" mc-on-click="remove(v)"></i>
+            </a>
+        </div>
+        <input type="text"
+               mc-value="v.title"
+               mc-show="v.edit"
+               mc-on-change="save(v)"
+               mc-on-blur="hideEdit(v)">
+    </li>
+</ul>

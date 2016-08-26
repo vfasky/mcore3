@@ -247,7 +247,7 @@ export default class Component extends EventEmitter {
             // console.log(ctxTarget, target);
             if(ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))){
                 let callback = this[ctx.funName];
-                // console.log(callback);
+                // console.log(callback, ctx.args);
                 if(isFunction(callback)){
                     let args = [event, ctxTarget];
                     args = args.concat(ctx.args);
