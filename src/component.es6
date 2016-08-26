@@ -283,7 +283,11 @@ export default class Component extends EventEmitter {
     }
 
     unRegEvent(eventName){
-        this.$refs.off(eventName);
+        let ix = this._regEvents.indexOf(eventName);
+        if(ix !== -1){
+            this.$refs.off(eventName);
+            this._regEvents.splice(ix, 1);
+        }
     }
 
     bindEvents(){

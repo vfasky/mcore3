@@ -3196,21 +3196,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var res = null;
 	            var target = event.target;
 	            var eventData = this.events[eventName];
-	            // console.log(eventData, eventName);
-	            for (var i = 0, len = eventData.length; i < len; i++) {
-	                var ctx = eventData[i];
-	                var ctxTarget = ctx.target();
-	                // console.log(ctxTarget, target);
-	                if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
-	                    var callback = this[ctx.funName];
-	                    // console.log(callback);
-	                    if (isFunction(callback)) {
-	                        var args = [event, ctxTarget];
-	                        args = args.concat(ctx.args);
-	                        // console.log(ctx.element);
-	                        res = callback.apply(this, args);
-	                        if (false === res) {
-	                            break;
+	            if (Array.isArray(eventData)) {
+	                // console.log(eventData, eventName);
+	                for (var i = 0, len = eventData.length; i < len; i++) {
+	                    var ctx = eventData[i];
+	                    var ctxTarget = ctx.target();
+	                    // console.log(ctxTarget, target);
+	                    if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
+	                        var callback = this[ctx.funName];
+	                        // console.log(callback, ctx.args);
+	                        if (isFunction(callback)) {
+	                            var args = [event, ctxTarget];
+	                            args = args.concat(ctx.args);
+	                            // console.log(ctx.element);
+	                            res = callback.apply(this, args);
+	                            if (false === res) {
+	                                break;
+	                            }
 	                        }
 	                    }
 	                }
@@ -3240,7 +3242,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'unRegEvent',
 	        value: function unRegEvent(eventName) {
-	            this.$refs.off(eventName);
+	            var ix = this._regEvents.indexOf(eventName);
+	            if (ix !== -1) {
+	                this.$refs.off(eventName);
+	                this._regEvents.splice(ix, 1);
+	            }
 	        }
 	    }, {
 	        key: 'bindEvents',
@@ -3493,7 +3499,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	function diffChildren(oldChildren, newChildren, index, patches, currentPatch) {
-	    var diffs = (0, _listDiff2.default)(oldChildren, newChildren, '_key');
+	    var diffs = (0, _listDiff2.default)(oldChildren, newChildren, 'key');
 	    newChildren = diffs.children;
 	    // 有移动
 	    if (diffs.moves.length) {
@@ -3501,6 +3507,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            type: _patch2.default.REORDER,
 	            moves: diffs.moves
 	        };
+	        // console.log(diffs, oldChildren, newChildren);
 	        currentPatch.push(reorderPatch);
 	    }
 	    var leftNode = null;
@@ -3726,6 +3733,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            maps[key] = node;
 	        }
 	    });
+	    // console.log(moves);
 	    moves.forEach(function (move) {
 	        var index = move.index;
 	        if (move.type === 0) {
@@ -3739,6 +3747,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    node.removeChild(childNode);
 	                }
 	            }
+	            staticNodeList.splice(index, 1);
 	        } else if (move.type === 1) {
 	            var insertNode = void 0;
 	            var oldNode = maps[move.item.key];
@@ -3982,11 +3991,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            changes.forEach(function (change) {
 	                var curPath = path + '.' + change.name;
+	                // console.log(change, x, path);
 	                if (change.type === 'add') {
 	                    _this.watch(x[change.name], curPath);
+	                }
+	                if (change.type === 'splice') {
+	                    _this.unwatchByPath(path);
+	                    _this.watch(x, path);
 	                } else if (change.type === 'delete') {
 	                    _this.unwatchByPath(curPath);
-	                } else if (['reconfigure', 'update'].indexOf(change.type) !== -1) {
+	                } else if (['reconfigure', 'update', 'splice'].indexOf(change.type) !== -1) {
 	                    _this.unwatchByPath(curPath);
 	                    _this.watch(x[change.name], curPath);
 	                }

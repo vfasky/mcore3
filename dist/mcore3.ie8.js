@@ -4578,10 +4578,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	function getEvents(element) {
 	    var events = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	
-	
-	    element.children.forEach(function (child) {
-	        getEvents(child, events);
-	    });
+	    if (element.children) {
+	        element.children.forEach(function (child) {
+	            getEvents(child, events);
+	        });
+	    }
 	
 	    Object.keys(element.events).forEach(function (name) {
 	        var curEvent = element.events[name];
@@ -4592,8 +4593,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            funName: curEvent.funName,
 	            args: curEvent.args,
 	            target: function target() {
-	                return element.template.refs;
-	            }
+	                // console.log(element);
+	                return element.refs;
+	            },
+	            element: element
 	        });
 	    });
 	
@@ -4603,9 +4606,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	function getComponents(element) {
 	    var components = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 	
-	    element.children.forEach(function (child) {
-	        getComponents(child, components);
-	    });
+	    if (!element) {
+	        return components;
+	    }
+	    if (element.children) {
+	        element.children.forEach(function (child) {
+	            getComponents(child, components);
+	        });
+	    }
 	
 	    if (element._component) {
 	        components.push(element._component);
@@ -4663,7 +4671,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _template2 = _interopRequireDefault(_template);
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -4718,13 +4726,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    _createClass(Element, [{
-	        key: "render",
-	        value: function render() {
-	            this.template = new _template2["default"](this);
-	            return this.template.render();
+	        key: 'cloneElement',
+	        value: function cloneElement(element) {
+	            var _this2 = this;
+	
+	            this._component = element._component;
+	            this.template = element.template;
+	            this.template.element = this;
+	            this.refs = element.refs;
+	
+	            //设置动态属性
+	            Object.keys(this.dynamicProps).forEach(function (attr) {
+	                // console.log(attr);
+	                _this2.template.setAttr(attr.toLowerCase(), _this2.dynamicProps[attr], true, 'update');
+	            });
 	        }
 	    }, {
-	        key: "destroy",
+	        key: 'render',
+	        value: function render() {
+	            this.template = new _template2['default'](this);
+	            this.refs = this.template.render();
+	            // console.log(this.refs);
+	            return this.refs;
+	        }
+	    }, {
+	        key: 'destroy',
 	        value: function destroy(notRemove) {
 	            if (this.template) {
 	                this.template.destroy(notRemove);
@@ -4735,7 +4761,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Element;
 	}();
 	
-	exports["default"] = Element;
+	exports['default'] = Element;
 
 /***/ },
 /* 36 */
@@ -4756,6 +4782,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _util = __webpack_require__(33);
 	
+	var util = _interopRequireWildcard(_util);
+	
 	var _eventEmitter = __webpack_require__(37);
 	
 	var _eventEmitter2 = _interopRequireDefault(_eventEmitter);
@@ -4766,11 +4794,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var getComponents = util.getComponents;
 	
 	/**
 	 * 模板引擎
@@ -4797,6 +4829,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _createClass(Template, [{
 	        key: 'destroy',
 	        value: function destroy(notRemove) {
+	
+	            getComponents(this.element).forEach(function (component) {
+	                component.destroy();
+	            });
+	
 	            // 移除自身
 	            if (!notRemove) {
 	                if (this.refs && this.refs.parentNode && this.refs.parentNode.removeChild) {
@@ -4814,7 +4851,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    }, {
 	        key: 'render',
-	        value: function render() {
+	        value: function render(oldNode) {
 	            var _this2 = this;
 	
 	            var node = void 0;
@@ -4831,13 +4868,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return node;
 	            }
 	            node = document.createElement(this.element.tagName);
+	
 	            node._key = this.element.key;
 	            this.refs = node;
 	            node._element = this.element;
 	
 	            // 自定义组件初始化，子元素由 自定义组件 自己管理
 	            if (Template.components.hasOwnProperty(this.element.tagName)) {
-	
 	                // 自定义组件，先设置静态属性
 	                Object.keys(this.element.props).forEach(function (attr) {
 	                    _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
@@ -4846,8 +4883,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                Object.keys(this.element.dynamicProps).forEach(function (attr) {
 	                    _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
 	                });
-	
 	                this.element._component = new Template.components[this.element.tagName](node, this.element);
+	
 	                this.element._noDiffChild = true;
 	                this.element.children = [];
 	                this.element.count = 0;
@@ -4892,6 +4929,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
 	                    });
 	                }
+	
 	            return node;
 	        }
 	
@@ -5054,7 +5092,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (!el._element || !el._element.view || !el._element.view[value]) {
 	        return function () {};
 	    }
-	    return el._element.view[value];
+	    return function () {
+	        return el._element.view[value].call(el._element.view, arguments);
+	    };
 	};
 	Template.getEnv = function (el) {
 	    return el._element.view;
@@ -5519,8 +5559,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _eventEmitter = __webpack_require__(37);
@@ -5574,6 +5612,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var $_win = null;
 	var $_body = null;
+	var _id = 0;
+	
+	var notProxyEvents = ['focus', 'blur'];
 	
 	var Component = function (_EventEmitter) {
 	    _inherits(Component, _EventEmitter);
@@ -5586,11 +5627,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
 	
 	        _this.parentNode = parentNode;
+	        //兼容mcore2
+	        _this.el = parentNode;
 	        _this.parentElement = parentElement;
 	        // 渲染完成，回调队列
 	        _this._queueCallbacks = [];
 	        // 正在排队的渲染队列id
 	        _this._queueId = null;
+	        // 存放注册事件
+	        _this._regEvents = [];
+	
+	        _this._initWatchScope = false;
+	
+	        _this.id = _id++;
 	
 	        _this.virtualDom = null;
 	
@@ -5615,14 +5664,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _this.scope[attr] = parentElement.dynamicProps[attr];
 	        });
 	
-	        // 观察scope, 如果改动，渲染模板
-	        _this.watchScope = new _watch2['default'](_this.scope, function (path) {
-	            _this.renderQueue();
-	        });
-	
 	        _this.beforeInit();
 	        _this.init();
 	        _this.watch();
+	
 	        return _this;
 	    }
 	
@@ -5648,15 +5693,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'destroy',
 	        value: function destroy(notRemove) {
-	            this.watchScope.unwatch();
+	            if (this._initWatchScope) {
+	                this.watchScope.unwatch();
+	            }
 	
 	            if (!notRemove && this.$refs) {
 	                this.$refs.remove();
 	                this.$refs = null;
+	            } else if (this.$refs) {
+	                this.$refs.off();
 	            }
-	            // else if(this.$refs){
-	            //     this.$refs.off();
-	            // }
+	            // console.log(getComponents(this.virtualDom));
 	            getComponents(this.virtualDom).forEach(function (component) {
 	                component.destroy();
 	            });
@@ -5770,12 +5817,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            } else {
 	                var patches = (0, _diff2['default'])(this.virtualDom, virtualDom);
 	                //先移除事件绑定
-	                if (this.$refs) {
-	                    this.$refs.off();
-	                }
+	                // if(this.$refs){
+	                //     this.$refs.off();
+	                // }
 	                //更新dom
 	                (0, _patch2['default'])(this.refs, patches);
-	                this.$refs = $(this.refs);
+	                // console.log(this.refs);
+	                // this.$refs = $(this.refs);
 	                this.virtualDom = virtualDom;
 	            }
 	            // 绑定事件
@@ -5789,45 +5837,99 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            });
 	
+	            if (!this._initWatchScope) {
+	                this._initWatchScope = true;
+	                // 观察scope, 如果改动，渲染模板
+	                this.watchScope = new _watch2['default'](this.scope, function (path) {
+	                    _this3.renderQueue();
+	                });
+	            }
+	
 	            return this.refs;
+	        }
+	    }, {
+	        key: 'callEvent',
+	        value: function callEvent(event, eventName) {
+	            var $ = util.get$();
+	            var res = null;
+	            var target = event.target;
+	            var eventData = this.events[eventName];
+	            if (Array.isArray(eventData)) {
+	                // console.log(eventData, eventName);
+	                for (var i = 0, len = eventData.length; i < len; i++) {
+	                    var ctx = eventData[i];
+	                    var ctxTarget = ctx.target();
+	                    // console.log(ctxTarget, target);
+	                    if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
+	                        var callback = this[ctx.funName];
+	                        // console.log(callback, ctx.args);
+	                        if (isFunction(callback)) {
+	                            var args = [event, ctxTarget];
+	                            args = args.concat(ctx.args);
+	                            // console.log(ctx.element);
+	                            res = callback.apply(this, args);
+	                            if (false === res) {
+	                                break;
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	            return res;
+	        }
+	    }, {
+	        key: 'regEvent',
+	        value: function regEvent(eventName) {
+	            var _this4 = this;
+	
+	            var $ = util.get$();
+	            if (this._regEvents.indexOf(eventName) === -1) {
+	                this._regEvents.push(eventName);
+	
+	                if (notProxyEvents.indexOf(eventName) === -1) {
+	                    this.$refs.on(eventName, function (event) {
+	                        return _this4.callEvent(event, eventName);
+	                    });
+	                } else if (['focus', 'blur'].indexOf(eventName) !== -1) {
+	                    this.$refs.on(eventName, 'input, textarea, select, [tabindex]', function (event) {
+	                        return _this4.callEvent(event, eventName);
+	                    });
+	                }
+	            }
+	        }
+	    }, {
+	        key: 'unRegEvent',
+	        value: function unRegEvent(eventName) {
+	            var ix = this._regEvents.indexOf(eventName);
+	            if (ix !== -1) {
+	                this.$refs.off(eventName);
+	                this._regEvents.splice(ix, 1);
+	            }
 	        }
 	    }, {
 	        key: 'bindEvents',
 	        value: function bindEvents() {
-	            var _this4 = this;
+	            var _this5 = this;
 	
 	            if (!this.$refs) {
 	                return;
 	            }
 	            var $ = util.get$();
+	            if (this.events) {
+	                this.oldEvents = this.events;
+	            }
 	            this.events = getEvents(this.virtualDom);
+	            var curEvents = Object.keys(this.events);
+	            // console.log(curEvents, this.events);
 	
-	            Object.keys(this.events).forEach(function (eventName) {
-	                var eventData = _this4.events[eventName];
-	                _this4.$refs.on(eventName, function (event) {
-	                    var res = null;
-	                    var target = event.target;
-	                    $.each(eventData, function (ix, ctx) {
-	                        if (ctx.target === target || $.contains(ctx.target, target)) {
-	                            var callback = _this4[ctx.funName];
-	                            if (isFunction(callback)) {
-	                                var _ret = function () {
-	                                    var args = [event, ctx.target];
-	                                    ctx.args.forEach(function (v) {
-	                                        args.push(v);
-	                                    });
-	                                    res = callback.apply(_this4, args);
-	                                    return {
-	                                        v: res
-	                                    };
-	                                }();
+	            this._regEvents.forEach(function (regEventName) {
+	                if (curEvents.indexOf(regEventName) === -1) {
+	                    _this5.unRegEvent(regEventName);
+	                }
+	            });
 	
-	                                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	                            }
-	                        }
-	                    });
-	                    return res;
-	                });
+	            curEvents.forEach(function (eventName) {
+	                _this5.regEvent(eventName);
 	            });
 	        }
 	
@@ -5842,7 +5944,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'set',
 	        value: function set(attr, value) {
-	            var _this5 = this;
+	            var _this6 = this;
 	
 	            var doneOrAsync = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 	
@@ -5856,7 +5958,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.renderQueue(doneOrAsync);
 	            } else {
 	                return value.then(function (val) {
-	                    _this5.set(attr, val, doneOrAsync);
+	                    _this6.set(attr, val, doneOrAsync);
 	                });
 	            }
 	        }
@@ -5921,7 +6023,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'render',
 	        value: function render(virtualDomDefine) {
-	            var _this6 = this;
+	            var _this7 = this;
 	
 	            var scope = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	            var doneOrAsync = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
@@ -5934,15 +6036,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	            return Promise.all(promiseVals).then(function (results) {
 	                scopeKeys.forEach(function (attr, ix) {
-	                    _this6.set(attr, results[ix]);
+	                    _this7.set(attr, results[ix]);
 	                });
 	
 	                //马上渲染
 	                if (doneOrAsync === true) {
-	                    return _this6.renderQueue(doneOrAsync);
+	                    return _this7.renderQueue(doneOrAsync);
 	                }
 	                return new Promise(function (resolve) {
-	                    _this6.renderQueue(function (refs) {
+	                    _this7.renderQueue(function (refs) {
 	                        if (isFunction(doneOrAsync)) {
 	                            doneOrAsync(refs);
 	                        }
@@ -6026,8 +6128,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            props: propsPatches
 	                        });
 	                    }
+	                    if (!newNode.refs && oldNode.refs) {
+	                        // newNode.render(oldNode.refs);
+	                        newNode.cloneElement(oldNode);
+	                        // console.log(newNode);
+	                    }
+	                    // if(!newNode.template && oldNode.template){
+	                    //     newNode.template = oldNode.template;
+	                    //     newNode.template.element = newNode;
+	                    // }
 	                    // 没有声明不要 diff 子元素
-	                    if (!oldNode || !oldNode._noDiffChild) {
+	                    // console.log(newNode._noDiffChild);
+	                    if (!oldNode || !oldNode._noDiffChild || !newNode._noDiffChild) {
 	                        diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
 	                    }
 	                }
@@ -6045,7 +6157,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	function diffChildren(oldChildren, newChildren, index, patches, currentPatch) {
-	    var diffs = (0, _listDiff2['default'])(oldChildren, newChildren, '_key');
+	    var diffs = (0, _listDiff2['default'])(oldChildren, newChildren, 'key');
 	    newChildren = diffs.children;
 	    // 有移动
 	    if (diffs.moves.length) {
@@ -6053,6 +6165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            type: _patch2['default'].REORDER,
 	            moves: diffs.moves
 	        };
+	        // console.log(diffs, oldChildren, newChildren);
 	        currentPatch.push(reorderPatch);
 	    }
 	    var leftNode = null;
@@ -6178,10 +6291,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        newNode = document.createTextNode(currentPatch.node);
 	                    }
 	                    if (newNode) {
-	                        if (node._element && node._element.destroy) {
-	                            node._element.destroy(true);
-	                        }
+	                        var element = node._element;
 	                        node.parentNode.replaceChild(newNode, node);
+	                        if (element && element.destroy) {
+	                            element.destroy();
+	                        }
 	                    }
 	                    break;
 	                // 重新排序
@@ -6218,7 +6332,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                }
 	                            }
 	                        }
+	                    } else if (node.textContent) {
+	                        node.textContent = currentPatch.content;
+	                    } else if (node.nodeValue) {
+	                        node.nodeValue = currentPatch.content;
 	                    } else {
+	                        console.log(node);
 	                        throw new Error('not mcore Element:' + node);
 	                    }
 	                    break;
@@ -6265,28 +6384,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (node._element && node._element.key) {
 	            key = node._element.key;
 	        }
-	        if (key === null && node.nodeType === 1) {
-	            key = node.getAttribute('_key');
-	        }
+	        // if(key === null && node.nodeType === 1){
+	        //     key = node.getAttribute('_key');
+	        // }
 	        if (key) {
 	            maps[key] = node;
 	        }
 	    });
+	    // console.log(moves);
 	    moves.forEach(function (move) {
 	        var index = move.index;
 	        if (move.type === 0) {
 	            // remove item
 	            if (staticNodeList[index] == node.childNodes[index]) {
 	                var childNode = node.childNodes[index];
-	                if (childNode._element) {
-	                    childNode._element.destroy(true);
+	                if (childNode) {
+	                    if (childNode._element) {
+	                        childNode._element.destroy(true);
+	                    }
+	                    node.removeChild(childNode);
 	                }
-	                node.removeChild(childNode);
 	            }
+	            staticNodeList.splice(index, 1);
 	        } else if (move.type === 1) {
 	            var insertNode = void 0;
+	            var oldNode = maps[move.item.key];
 	            // 使用旧节点
-	            if (maps[move.item.key]) {
+	            if (oldNode && oldNode._element == move.item) {
 	                insertNode = maps[move.item.key];
 	                if (insertNode._element && insertNode._element.template) {
 	                    insertNode._element.template.emit('reorder', node);
@@ -6300,8 +6424,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                else {
 	                        insertNode = document.createTextNode(String(move.item));
 	                    }
-	            staticNodeList.splice(index, 0, insertNode);
-	            node.insertBefore(insertNode, node.childNodes[index] || null);
+	            if (insertNode && node.insertBefore) {
+	                staticNodeList.splice(index, 0, insertNode);
+	                node.insertBefore(insertNode, node.childNodes[index] || null);
+	            }
 	        }
 	    });
 	}
@@ -6523,11 +6649,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            changes.forEach(function (change) {
 	                var curPath = path + '.' + change.name;
+	                // console.log(change, x, path);
 	                if (change.type === 'add') {
 	                    _this.watch(x[change.name], curPath);
+	                }
+	                if (change.type === 'splice') {
+	                    _this.unwatchByPath(path);
+	                    _this.watch(x, path);
 	                } else if (change.type === 'delete') {
 	                    _this.unwatchByPath(curPath);
-	                } else if (['reconfigure', 'update'].indexOf(change.type) !== -1) {
+	                } else if (['reconfigure', 'update', 'splice'].indexOf(change.type) !== -1) {
 	                    _this.unwatchByPath(curPath);
 	                    _this.watch(x[change.name], curPath);
 	                }
@@ -8130,7 +8261,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(View).call(this, $el[0]));
 	
 	        _this.$el = $el;
-	        _this.el = $el[0];
+	        // this.el = $el[0];
 	
 	        return _this;
 	    }
@@ -8337,15 +8468,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }, {
 	        key: '_initView',
-	        value: function _initView(View, viewName, parentNode, virtualDom, refs) {
+	        value: function _initView(View, viewName) {
 	            var _this4 = this;
 	
-	            var $el = (0, _util.get$)()(parentNode || '<div />');
+	            var $el = (0, _util.get$)()('<div />');
 	            $el.attr('class', this.options.viewClass);
 	
 	            var instantiate = new View($el, this);
-	            instantiate.virtualDom = virtualDom;
-	            instantiate.refs = refs;
 	
 	            this.curView = {
 	                name: viewName,
@@ -8353,9 +8482,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	
 	            this.runMiddlewares(function (err, instantiate) {
-	                if (!parentNode) {
-	                    instantiate.$el.appendTo(_this4.$el);
-	                }
+	                instantiate.$el.appendTo(_this4.$el);
 	                if (!err) {
 	                    _this4._changeViewEvent.after(_this4.curView, function () {
 	                        instantiate.afterRun();
@@ -8397,13 +8524,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                this._changeViewEvent.before(this.curView, function () {
 	                    _this5.emit('destroyView', _this5.curView);
-	                    var virtualDom = _this5.curView.instantiate.virtualDom;
-	                    var refs = _this5.curView.instantiate.refs;
-	                    var parentNode = _this5.curView.instantiate.parentNode;
 	
-	                    _this5.curView.instantiate.destroy(true);
+	                    _this5.curView.instantiate.destroy();
+	                    _this5.curView.instantiate.$el.remove();
 	
-	                    _this5._initView(View, viewName, parentNode, virtualDom, refs);
+	                    _this5._initView(View, viewName);
 	                }, this);
 	            } else {
 	                this._initView(View, viewName);

@@ -15,7 +15,7 @@ export default class Index extends mcore.View {
                 title: 'Template',
                 menu: [{
                     title: 'Base Render',
-                    subTitle: 'Render Html',
+                    subTitle: 'Render Html (this page)',
                     url: '#/',
                 },{
                     title: 'Table Render',

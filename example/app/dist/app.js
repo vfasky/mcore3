@@ -1563,7 +1563,11 @@
 	    }, {
 	        key: 'unRegEvent',
 	        value: function unRegEvent(eventName) {
-	            this.$refs.off(eventName);
+	            var ix = this._regEvents.indexOf(eventName);
+	            if (ix !== -1) {
+	                this.$refs.off(eventName);
+	                this._regEvents.splice(ix, 1);
+	            }
 	        }
 	    }, {
 	        key: 'bindEvents',
@@ -8532,7 +8536,7 @@
 	                    title: 'Template',
 	                    menu: [{
 	                        title: 'Base Render',
-	                        subTitle: 'Render Html',
+	                        subTitle: 'Render Html (this page)',
 	                        url: '#/'
 	                    }, {
 	                        title: 'Table Render',
