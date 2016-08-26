@@ -1162,7 +1162,7 @@
 	    }
 	};
 	
-	binders['load-data'] = {
+	binders['load-data'] = binders['from-load-data'] = {
 	    init: function init(el, data) {
 	        if (el.tagName.toLowerCase() !== 'form' || !el._element) {
 	            return el.setAttribute('load-data', data);
@@ -1181,10 +1181,10 @@
 	    }
 	};
 	
-	binders.sync = {
+	binders['form-sync'] = {
 	    init: function init(el, dataKey) {
 	        if (el.tagName.toLowerCase() !== 'form' || !el._element || !el._element.view) {
-	            return el.setAttribute('symc', dataKey);
+	            return el.setAttribute('sync', dataKey);
 	        }
 	        var view = el._element.view;
 	        var $ = (0, _util.get$)();
