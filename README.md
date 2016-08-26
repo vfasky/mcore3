@@ -94,20 +94,21 @@ Binds an event listener on the element using the event specified in [event]
 在事件中，传递上下文
 
 ```html
-<div mc-for="v in scope.list">
-    <span mc-on-click="show(v)">{v.title}</span>
+<div mc-for="v, i in scope.list">
+    <span mc-on-click="show(v, i)">{v.title}</span>
 </div>
 ```
 
 ```js
 class Edit extends mcore.Veiw {
-    show(event, el, v){
-        console.log(v);
+    show(event, el, v, i){
+        console.log(v, i);
     }
 }
 ```
 
-### class-[classname] ( version added: 3.0 )
+### class-[classname]
+> version added: 3.0
 
 Adds a class (whatever value is in place of [classname]) on the element when the value evaluates to true and removes that class if the value evaluates to false.
 
@@ -123,4 +124,39 @@ If your binding declaration does not match any of the above routines, it will fa
 
 ```html
 <input type="text" mc-placeholder="scope.field.placeholder">
+```
+
+
+## Formatters
+
+Formatters are functions that mutate the incoming and/or outgoing value of a binding. You can use them to format dates, numbers, currencies, etc. and because they work in a similar fashion to the Unix pipeline, the output of each feeds directly as input to the next one, so you can stack as many of them together as you like.
+
+```js
+mcore.Template.formatters.date = (value)=>{
+    return moment(value).format('YYYY-MM-DD');
+};
+```
+
+Formatters are applied by piping them to binding declarations using | as a delimiter.
+
+```html
+<input mc-value="scope.startDate | date" type="text" />
+
+<span>{scope.startDate | date}</span>
+```
+
+### Formatter arguments
+
+Formatters can accept any number of arguments in the form of keypaths or primitives. Keypath arguments get observed and will recompute the binding when any intermediary key changes. A primitive can be a string, number, boolean, null or undefined.
+
+```html
+<span>{ scope.alarm.time | time scope.user.timezone 'hh:mm' }</span>
+```
+
+The value of each argument in the binding declaration will be evaluated and passed into the formatter function as an additional argument.
+
+```js
+mcore.Template.formatters.time = (value, timezone, format)=>{
+    return moment(value).tz(timezone).format(format);
+};
 ```
