@@ -1,0 +1,16 @@
+<div class="pagetion" mc-show="scope.pageInfo.totalPage > 1">
+    <a class="prev" mc-on-click="changePage(scope.prevPage)" mc-show="scope.prevPage">
+        <svgicon icon="arrow2" fill dir="left"></svgicon>
+    </a>
+
+    <ul class="page">
+        <li class="item" mc-for="v in scope.pages" >
+            <a mc-class-active="v.cur" mc-if="v.page" mc-on-click="changePage(v.page)">{v.page}</a>
+            <span mc-if="!v.page">...</span>
+        </li>
+    </ul>
+
+    <a class="next" mc-on-click="changePage(scope.nextPage)" mc-show="scope.nextPage <= scope.pageInfo.totalPage">
+        <svgicon icon="arrow2" fill dir="right"></svgicon>
+    </a>
+</div>

@@ -63,7 +63,7 @@
 	
 	var app = new _mcore2.default.App((0, _jquery2.default)('#main'));
 	
-	app.route('/table', __webpack_require__(23).default).route('/removeItem', __webpack_require__(26).default).route('/changeItem', __webpack_require__(28).default).route('/addItem', __webpack_require__(30).default).route('/findItem', __webpack_require__(32).default).route('/', __webpack_require__(34).default).run();
+	app.route('/table', __webpack_require__(23).default).route('/removeItem', __webpack_require__(26).default).route('/changeItem', __webpack_require__(28).default).route('/addItem', __webpack_require__(30).default).route('/findItem', __webpack_require__(32).default).route('/pagination', __webpack_require__(36).default).route('/', __webpack_require__(34).default).run();
 
 /***/ },
 /* 1 */
@@ -1406,7 +1406,11 @@
 	                    return;
 	                }
 	                if (!Array.isArray(args)) {
-	                    args = [];
+	                    if (args.length !== undefined) {
+	                        args = Array.from(args);
+	                    } else {
+	                        args = [];
+	                    }
 	                }
 	                //如果模板事件有参数，追加在最后一个参数
 	                if (Array.isArray(eventCtx.args) && eventCtx.args.length) {
@@ -1615,9 +1619,9 @@
 	                var isChange = this.scope[attr] !== value;
 	                if (isChange) {
 	                    this.scope[attr] = value;
-	                    this.emit('changeScope', this.scope, attr, value);
-	                    this.emit('change:' + attr, value);
 	                }
+	                this.emit('changeScope', this.scope, attr, value);
+	                this.emit('change:' + attr, value);
 	                this.renderQueue(doneOrAsync);
 	            } else {
 	                return value.then(function (val) {
@@ -1980,6 +1984,10 @@
 	                                var value = currentPatch.props[attr];
 	                                var status = value !== undefined ? 'update' : 'remove';
 	                                node._element.template.setAttr(attr.toLowerCase(), value, true, status);
+	                                // if(node._element._component){
+	                                //     console.log(node._element._component.set);
+	                                //     node._element._component.set(attr.toLowerCase(), value);
+	                                // }
 	                            }
 	                        } catch (err) {
 	                            _didIteratorError2 = true;
@@ -6332,10 +6340,6 @@
 	
 	var _removeItem2 = _interopRequireDefault(_removeItem);
 	
-	var _svgicon = __webpack_require__(24);
-	
-	var _svgicon2 = _interopRequireDefault(_svgicon);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -8562,6 +8566,13 @@
 	                        subTitle: 'Find Item',
 	                        url: '#/findItem'
 	                    }]
+	                }, {
+	                    title: 'DIY Tag',
+	                    menu: [{
+	                        title: 'Pagination',
+	                        subTitle: 'Pagination Tag',
+	                        url: '#/pagination'
+	                    }]
 	                }]
 	            });
 	        }
@@ -8956,6 +8967,924 @@
 	
 	
 	    })(scope, __mc__tree, '0');
+	
+	    return __mc__tree;
+	};
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * remove
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _mcore = __webpack_require__(2);
+	
+	var _mcore2 = _interopRequireDefault(_mcore);
+	
+	var _pagination = __webpack_require__(37);
+	
+	var _pagination2 = _interopRequireDefault(_pagination);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Pagination = function (_mcore$View) {
+	    _inherits(Pagination, _mcore$View);
+	
+	    function Pagination() {
+	        _classCallCheck(this, Pagination);
+	
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Pagination).apply(this, arguments));
+	    }
+	
+	    _createClass(Pagination, [{
+	        key: 'run',
+	        value: function run() {
+	            this.data = [];
+	            for (var i = 0; i < 500; i++) {
+	                this.data.push(i);
+	            }
+	            this.render(__webpack_require__(40), {
+	                list: this.data.slice(0, 10),
+	                pageInfo: {
+	                    currentPage: 1,
+	                    totalPage: 50
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'chagePage',
+	        value: function chagePage(event, el, page) {
+	            var sep = 10;
+	            this.scope.list = this.data.slice((page - 1) * sep, (page - 1) * sep + sep);
+	            this.scope.pageInfo.currentPage = page;
+	        }
+	    }]);
+	
+	    return Pagination;
+	}(_mcore2.default.View);
+	
+	exports.default = Pagination;
+	
+	
+	Pagination.viewName = 'pagination';
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *
+	 * 分页组件
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _mcore = __webpack_require__(2);
+	
+	var _mcore2 = _interopRequireDefault(_mcore);
+	
+	var _svgicon = __webpack_require__(24);
+	
+	var _svgicon2 = _interopRequireDefault(_svgicon);
+	
+	var _pagination = __webpack_require__(38);
+	
+	var _pagination2 = _interopRequireDefault(_pagination);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Pagination = function (_paginationBase) {
+	    _inherits(Pagination, _paginationBase);
+	
+	    function Pagination() {
+	        _classCallCheck(this, Pagination);
+	
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Pagination).apply(this, arguments));
+	    }
+	
+	    _createClass(Pagination, [{
+	        key: 'init',
+	        value: function init() {
+	            this.buildPage(this.scope['page-info']);
+	            this.render(__webpack_require__(39));
+	        }
+	    }, {
+	        key: 'changePage',
+	        value: function changePage() {
+	            this.emitEvent('change-page', arguments);
+	            return false;
+	        }
+	    }]);
+	
+	    return Pagination;
+	}((0, _pagination2.default)(_mcore2.default));
+	
+	exports.default = Pagination;
+	
+	
+	_mcore2.default.Template.components.pagination = Pagination;
+
+/***/ },
+/* 38 */
+/***/ function(module, exports) {
+
+	/**
+	 *
+	 * 分页条
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	exports.default = function (mcore) {
+	    var Pagination = function (_mcore$Component) {
+	        _inherits(Pagination, _mcore$Component);
+	
+	        function Pagination() {
+	            _classCallCheck(this, Pagination);
+	
+	            return _possibleConstructorReturn(this, Object.getPrototypeOf(Pagination).apply(this, arguments));
+	        }
+	
+	        _createClass(Pagination, [{
+	            key: "buildPage",
+	            value: function buildPage() {
+	                var pageInfo = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	
+	                pageInfo = {
+	                    currentPage: parseInt(pageInfo.currentPage || 1),
+	                    totalPage: parseInt(pageInfo.totalPage || 1),
+	                    maxPage: parseInt(pageInfo.maxPage || 10) };
+	
+	                this.scope.prevPage = pageInfo.currentPage - 1;
+	                this.scope.nextPage = pageInfo.currentPage + 1;
+	
+	                var pages = [];
+	
+	                // 小于等于最大显示页数
+	                if (pageInfo.totalPage <= pageInfo.maxPage) {
+	                    for (var v = 1; v <= pageInfo.totalPage; v++) {
+	                        pages.push({
+	                            cur: v == pageInfo.currentPage,
+	                            page: v
+	                        });
+	                    }
+	                } else {
+	                    pages.push({
+	                        cur: 1 == pageInfo.currentPage,
+	                        page: 1
+	                    });
+	
+	                    // 插入过渡
+	                    if (pageInfo.currentPage > pageInfo.maxPage / 2 + 1) {
+	                        pages.push({
+	                            cur: false,
+	                            page: false
+	                        });
+	                    }
+	
+	                    var step = pageInfo.maxPage / 2 - 1;
+	                    var start = pageInfo.currentPage - step;
+	                    var end = pageInfo.currentPage + step;
+	
+	                    if (start < 2) {
+	                        start = 2;
+	                    }
+	                    if (end > pageInfo.totalPage - 1) {
+	                        end = pageInfo.totalPage - 1;
+	                    }
+	                    if (end < pageInfo.maxPage - 1) {
+	                        end = pageInfo.maxPage - 1;
+	                    }
+	                    if (end - start <= step) {
+	                        start = start - (step - (pageInfo.totalPage - end));
+	                    }
+	                    for (var _v = start; _v <= end; _v++) {
+	                        pages.push({
+	                            cur: _v == pageInfo.currentPage,
+	                            page: _v
+	                        });
+	                    }
+	
+	                    // 插入过渡
+	                    if (pageInfo.currentPage < pageInfo.totalPage - pageInfo.maxPage / 2) {
+	                        pages.push({
+	                            cur: false,
+	                            page: false
+	                        });
+	                    }
+	
+	                    pages.push({
+	                        cur: pageInfo.totalPage == pageInfo.currentPage,
+	                        page: pageInfo.totalPage
+	                    });
+	                }
+	
+	                this.scope.pages = pages;
+	                this.scope.pageInfo = pageInfo;
+	            }
+	        }, {
+	            key: "watch",
+	            value: function watch() {
+	                var _this2 = this;
+	
+	                this.on('change:page-info', function (pageInfo) {
+	                    _this2.buildPage(pageInfo);
+	                });
+	            }
+	        }]);
+	
+	        return Pagination;
+	    }(mcore.Component);
+	
+	    return Pagination;
+	};
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/***/ },
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(scope, __mc__view, __mc__mcore) {
+	
+	    if (!__mc__mcore) {
+	        __mc__mcore = __webpack_require__(2);
+	    }
+	    var __mc__util = {
+	        clone: __mc__mcore.util.clone,
+	        build: function(tagName, key, attr, dynamicAttr, events, children) {
+	            return new __mc__mcore.Element(tagName, key, attr, dynamicAttr, children, events, __mc__view);
+	        },
+	        parseDynamicVal: function(dynamicCode, dynamicCodeStr) {
+	            var _varReg = /(^[a-zA-Z0-9_-]+)$/;
+	            if (typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)) {
+	                return dynamicCode;
+	            } else if (typeof __mc__view[dynamicCode] != 'undefined') {
+	                return __mc__view[dynamicCode];
+	            } else if (_varReg.test(dynamicCodeStr)) {
+	                return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+	            } else {
+	                return '';
+	            }
+	        },
+	        callFormatter: function(formatterName) {
+	            if (__mc__mcore.Template.formatters.hasOwnProperty(formatterName)) {
+	                return __mc__mcore.Template.formatters[formatterName];
+	            };
+	            return function() {};
+	        },
+	    };
+	    var __mc__tree = [];
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        var __mc__forArr = [0];
+	
+	
+	        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	            __mc__attr['class'] = 'pagetion';
+	
+	            __mc__dynamicAttr['show'] = __mc__util.parseDynamicVal((scope.pageInfo.totalPage > 1), 'scope.pageInfo.totalPage > 1');
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                var __mc__forArr = [0];
+	
+	
+	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	                    __mc__attr['class'] = 'prev';
+	
+	                    __mc__event['click'] = {
+	                        'funName': 'changePage',
+	                        'args': [scope.prevPage]
+	                    };
+	
+	                    __mc__dynamicAttr['show'] = __mc__util.parseDynamicVal((scope.prevPage), 'scope.prevPage');
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['icon'] = 'arrow2';
+	
+	                            __mc__attr['fill'] = '';
+	
+	                            __mc__attr['dir'] = 'left';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'svgicon', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'a', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                var __mc__forArr = [0];
+	
+	
+	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	                    __mc__attr['class'] = 'page';
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        /* [for-in] v in scope.pages */
+	                        var __mc__forArr = scope.pages;
+	                        if (false == Array.isArray(__mc__forArr)) {
+	                            __mc__forArr = [];
+	                        }
+	
+	
+	                        __mc__forArr.forEach(function(v, __mc__$ix_) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['class'] = 'item';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    /* [mc-if] v.page */
+	                                    if (v.page) {
+	
+	                                        var __mc__children;
+	
+	                                        var __mc__attr = {},
+	                                            __mc__dynamicAttr = {},
+	                                            __mc__event = {};
+	
+	
+	                                        __mc__dynamicAttr['class-active'] = __mc__util.parseDynamicVal((v.cur), 'v.cur');
+	
+	                                        __mc__event['click'] = {
+	                                            'funName': 'changePage',
+	                                            'args': [v.page]
+	                                        };
+	
+	
+	
+	                                        __mc__children = [];
+	
+	
+	
+	
+	                                        var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                        (function(scope, __mc__tree, __mc_path) {
+	                                            var __mc__strVal = {}
+	                                            var __mc__tmpAttr;
+	                                            try {
+	                                                __mc__tmpAttr = v.page;
+	                                            } catch (err) {}
+	
+	                                            __mc__strVal['rp_0'] = (function(x) {
+	
+	                                                return x;
+	                                            })(__mc__tmpAttr);
+	
+	                                            /* [formatter] {v.page} */
+	                                            var __mc__str = "" + __mc__strVal['rp_0'] + "";
+	                                            var __mc__dynamicAttr = {
+	                                                text: __mc__str
+	                                            };
+	                                            __mc__tree.push(__mc__util.build(
+	                                                '_textNode', __mc_path, {},
+	                                                __mc__dynamicAttr, {}, []
+	                                            ));
+	                                        })(scope, __mc__children, __mc__pathSubI);
+	
+	                                        __mc__tree.push(
+	                                            __mc__util.build(
+	                                                'a', __mc__pathSubI, __mc__attr,
+	                                                __mc__dynamicAttr, __mc__event, __mc__children
+	                                            )
+	                                        );
+	
+	                                    }
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                                var __mc__forArr = [0];
+	
+	
+	                                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                                    /* [mc-if] !v.page */
+	                                    if (!v.page) {
+	
+	                                        var __mc__children;
+	
+	                                        var __mc__attr = {},
+	                                            __mc__dynamicAttr = {},
+	                                            __mc__event = {};
+	
+	
+	
+	
+	                                        __mc__children = [];
+	
+	
+	
+	
+	                                        var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                                        (function(scope, __mc__tree, __mc_path) {
+	                                            var __mc__attr = {
+	                                                text: '...'
+	                                            };
+	                                            __mc__tree.push(__mc__util.build('_textNode', __mc_path, __mc__attr));
+	                                        })(scope, __mc__children, __mc__pathSubI);
+	
+	                                        __mc__tree.push(
+	                                            __mc__util.build(
+	                                                'span', __mc__pathSubI, __mc__attr,
+	                                                __mc__dynamicAttr, __mc__event, __mc__children
+	                                            )
+	                                        );
+	
+	                                    }
+	                                });
+	
+	
+	
+	                            })(scope, __mc__children, __mc__pathSubI);
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'li', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'ul', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                var __mc__forArr = [0];
+	
+	
+	                __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	                    __mc__attr['class'] = 'next';
+	
+	                    __mc__event['click'] = {
+	                        'funName': 'changePage',
+	                        'args': [scope.nextPage]
+	                    };
+	
+	                    __mc__dynamicAttr['show'] = __mc__util.parseDynamicVal((scope.nextPage <= scope.pageInfo.totalPage), 'scope.nextPage <= scope.pageInfo.totalPage');
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                        var __mc__forArr = [0];
+	
+	
+	                        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	                            var __mc__children;
+	
+	                            var __mc__attr = {},
+	                                __mc__dynamicAttr = {},
+	                                __mc__event = {};
+	
+	
+	                            __mc__attr['icon'] = 'arrow2';
+	
+	                            __mc__attr['fill'] = '';
+	
+	                            __mc__attr['dir'] = 'right';
+	
+	
+	
+	                            __mc__children = [];
+	
+	
+	
+	
+	                            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                            __mc__tree.push(
+	                                __mc__util.build(
+	                                    'svgicon', __mc__pathSubI, __mc__attr,
+	                                    __mc__dynamicAttr, __mc__event, __mc__children
+	                                )
+	                            );
+	
+	
+	                        });
+	
+	
+	
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'a', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'div', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	
+	    })(scope, __mc__tree, '0');
+	
+	    return __mc__tree;
+	};
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(scope, __mc__view, __mc__mcore) {
+	
+	    if (!__mc__mcore) {
+	        __mc__mcore = __webpack_require__(2);
+	    }
+	    var __mc__util = {
+	        clone: __mc__mcore.util.clone,
+	        build: function(tagName, key, attr, dynamicAttr, events, children) {
+	            return new __mc__mcore.Element(tagName, key, attr, dynamicAttr, children, events, __mc__view);
+	        },
+	        parseDynamicVal: function(dynamicCode, dynamicCodeStr) {
+	            var _varReg = /(^[a-zA-Z0-9_-]+)$/;
+	            if (typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)) {
+	                return dynamicCode;
+	            } else if (typeof __mc__view[dynamicCode] != 'undefined') {
+	                return __mc__view[dynamicCode];
+	            } else if (_varReg.test(dynamicCodeStr)) {
+	                return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+	            } else {
+	                return '';
+	            }
+	        },
+	        callFormatter: function(formatterName) {
+	            if (__mc__mcore.Template.formatters.hasOwnProperty(formatterName)) {
+	                return __mc__mcore.Template.formatters[formatterName];
+	            };
+	            return function() {};
+	        },
+	    };
+	    var __mc__tree = [];
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        var __mc__forArr = [0];
+	
+	
+	        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            (function(scope, __mc__tree, __mc_path) {
+	
+	
+	                /* [for-in] v in scope.list */
+	                var __mc__forArr = scope.list;
+	                if (false == Array.isArray(__mc__forArr)) {
+	                    __mc__forArr = [];
+	                }
+	
+	
+	                __mc__forArr.forEach(function(v, __mc__$ix_) {
+	
+	                    var __mc__children;
+	
+	                    var __mc__attr = {},
+	                        __mc__dynamicAttr = {},
+	                        __mc__event = {};
+	
+	
+	
+	
+	                    __mc__children = [];
+	
+	
+	
+	
+	                    var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	                    (function(scope, __mc__tree, __mc_path) {
+	                        var __mc__strVal = {}
+	                        var __mc__tmpAttr;
+	                        try {
+	                            __mc__tmpAttr = v;
+	                        } catch (err) {}
+	
+	                        __mc__strVal['rp_0'] = (function(x) {
+	
+	                            return x;
+	                        })(__mc__tmpAttr);
+	
+	                        /* [formatter] # id : {v} */
+	                        var __mc__str = " # id : " + __mc__strVal['rp_0'] + "";
+	                        var __mc__dynamicAttr = {
+	                            text: __mc__str
+	                        };
+	                        __mc__tree.push(__mc__util.build(
+	                            '_textNode', __mc_path, {},
+	                            __mc__dynamicAttr, {}, []
+	                        ));
+	                    })(scope, __mc__children, __mc__pathSubI);
+	
+	                    __mc__tree.push(
+	                        __mc__util.build(
+	                            'li', __mc__pathSubI, __mc__attr,
+	                            __mc__dynamicAttr, __mc__event, __mc__children
+	                        )
+	                    );
+	
+	
+	                });
+	
+	
+	            })(scope, __mc__children, __mc__pathSubI);
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'ul', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	
+	    })(scope, __mc__tree, '0');
+	
+	    (function(scope, __mc__tree, __mc_path) {
+	
+	
+	        var __mc__forArr = [0];
+	
+	
+	        __mc__forArr.forEach(function(__mc__$vn_, __mc__i) {
+	
+	            var __mc__children;
+	
+	            var __mc__attr = {},
+	                __mc__dynamicAttr = {},
+	                __mc__event = {};
+	
+	
+	            __mc__dynamicAttr['page-info'] = __mc__util.parseDynamicVal((scope.pageInfo), 'scope.pageInfo');
+	
+	            __mc__event['change-page'] = {
+	                'funName': 'chagePage',
+	                'args': []
+	            };
+	
+	
+	
+	            __mc__children = [];
+	
+	
+	
+	
+	            var __mc__pathSubI = String(__mc_path + '.' + (__mc__tree.length));
+	
+	            __mc__tree.push(
+	                __mc__util.build(
+	                    'pagination', __mc__pathSubI, __mc__attr,
+	                    __mc__dynamicAttr, __mc__event, __mc__children
+	                )
+	            );
+	
+	
+	        });
+	
+	
+	
+	    })(scope, __mc__tree, '1');
 	
 	    return __mc__tree;
 	};

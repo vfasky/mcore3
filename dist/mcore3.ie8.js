@@ -5499,7 +5499,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 	
-	binders['load-data'] = {
+	binders['load-data'] = binders['from-load-data'] = {
 	    init: function init(el, data) {
 	        if (el.tagName.toLowerCase() !== 'form' || !el._element) {
 	            return el.setAttribute('load-data', data);
@@ -5518,10 +5518,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 	
-	binders.sync = {
+	binders['form-sync'] = {
 	    init: function init(el, dataKey) {
 	        if (el.tagName.toLowerCase() !== 'form' || !el._element || !el._element.view) {
-	            return el.setAttribute('symc', dataKey);
+	            return el.setAttribute('sync', dataKey);
 	        }
 	        var view = el._element.view;
 	        var $ = (0, _util.get$)();
@@ -5743,7 +5743,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    return;
 	                }
 	                if (!Array.isArray(args)) {
-	                    args = [];
+	                    if (args.length !== undefined) {
+	                        args = Array.from(args);
+	                    } else {
+	                        args = [];
+	                    }
 	                }
 	                //如果模板事件有参数，追加在最后一个参数
 	                if (Array.isArray(eventCtx.args) && eventCtx.args.length) {
@@ -5952,9 +5956,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var isChange = this.scope[attr] !== value;
 	                if (isChange) {
 	                    this.scope[attr] = value;
-	                    this.emit('changeScope', this.scope, attr, value);
-	                    this.emit('change:' + attr, value);
 	                }
+	                this.emit('changeScope', this.scope, attr, value);
+	                this.emit('change:' + attr, value);
 	                this.renderQueue(doneOrAsync);
 	            } else {
 	                return value.then(function (val) {
@@ -6317,6 +6321,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                var value = currentPatch.props[attr];
 	                                var status = value !== undefined ? 'update' : 'remove';
 	                                node._element.template.setAttr(attr.toLowerCase(), value, true, status);
+	                                // if(node._element._component){
+	                                //     console.log(node._element._component.set);
+	                                //     node._element._component.set(attr.toLowerCase(), value);
+	                                // }
 	                            }
 	                        } catch (err) {
 	                            _didIteratorError2 = true;

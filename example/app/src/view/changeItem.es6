@@ -7,7 +7,6 @@
 
 import View from './removeItem';
 
-import Svgicon from '../tag/svgicon';
 
 export default class ChangeItem extends View {
     run(){

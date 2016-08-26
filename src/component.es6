@@ -137,7 +137,12 @@ export default class Component extends EventEmitter {
                 return;
             }
             if(!Array.isArray(args)){
-                args = [];
+                if(args.length !== undefined){
+                    args = Array.from(args);
+                }
+                else{
+                    args = [];
+                }
             }
             //如果模板事件有参数，追加在最后一个参数
             if(Array.isArray(eventCtx.args) && eventCtx.args.length){
@@ -326,9 +331,9 @@ export default class Component extends EventEmitter {
             let isChange = this.scope[attr] !== value;
             if(isChange){
                 this.scope[attr] = value;
-                this.emit('changeScope', this.scope, attr, value);
-                this.emit('change:' + attr, value);
             }
+            this.emit('changeScope', this.scope, attr, value);
+            this.emit('change:' + attr, value);
             this.renderQueue(doneOrAsync);
         }
         else{

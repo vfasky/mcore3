@@ -41,6 +41,13 @@ export default class Index extends mcore.View {
                     subTitle: 'Find Item',
                     url: '#/findItem'
                 }]
+            },{
+                title: 'DIY Tag',
+                menu:[{
+                    title: 'Pagination',
+                    subTitle: 'Pagination Tag',
+                    url: '#/pagination'
+                }]
             }]
         });
     }

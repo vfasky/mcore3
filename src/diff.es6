@@ -122,6 +122,7 @@ function diffProps(oldNode, newNode){
     let newProps = newNode.dynamicProps;
     let propsPatches = {};
 
+
     //判断旧值变更或删除
     Object.keys(oldProps).forEach((attr)=>{
         let value = oldProps[attr];
