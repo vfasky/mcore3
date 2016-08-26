@@ -9,9 +9,9 @@
 
 ## MOVING PARTS
 
-- [Binders](#Binders)
-- [Formatters](#Formatters)
-- [Components](#Components)
+- [Binders](#binders)
+- [Formatters](#formatters)
+- [Components](#components)
 
 ## Binders
 
