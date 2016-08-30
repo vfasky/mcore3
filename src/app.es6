@@ -132,7 +132,6 @@ export default class App extends EventEmitter {
             viewName: viewName,
             app: this,
         };
-
         if(this.curView){
             // 已经初始化，只调用run方法
             if(this.curView.name === viewName){
@@ -149,6 +148,7 @@ export default class App extends EventEmitter {
 
 
                 this.curView.instantiate.destroy();
+                // console.log(this.curView.instantiate.$el);
                 this.curView.instantiate.$el.remove();
 
                 this._initView(View, viewName);

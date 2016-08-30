@@ -8,12 +8,22 @@
 require('object.observe');
 require('array.observe');
 
-import {isPlainObject, isArray} from './util';
+import {isPlainObject, isArray, nextTick} from './util';
 
 export default class Watch {
     constructor(scope = {}, callback = ()=>{}) {
+        let nextTickTime = null;
         this.scope = scope;
-        this.callback = callback;
+
+        this.callback = (path)=>{
+            if(nextTickTime){
+                nextTick.clear(nextTickTime);
+            }
+            nextTickTime = nextTick(()=>{
+                callback(path);
+            });
+            // console.log(path);
+        };
 
         this._watchReg = {};
         this._watchTotal = 0;
@@ -21,28 +31,45 @@ export default class Watch {
     }
 
     observer(changes, x, path){
+        // console.log(changes,x, path);
         changes.forEach((change)=>{
             let curPath = path + '.' + change.name;
             // console.log(change, x, path);
             if(change.type === 'add'){
                 this.watch(x[change.name], curPath);
             }
-            if(change.type === 'splice'){
+            else if(change.type === 'splice' && path != 'scope'){
                 this.unwatchByPath(path);
                 this.watch(x, path);
+                // console.log(this._watchReg[path]);
             }
             else if(change.type === 'delete'){
                 this.unwatchByPath(curPath);
             }
-            else if(['reconfigure', 'update', 'splice'].indexOf(change.type) !== -1){
+            // else if(['reconfigure', 'update', 'splice'].indexOf(change.type) !== -1){
+            else if(change.type === 'update' || change.type === 'reconfigure'){
                 this.unwatchByPath(curPath);
                 this.watch(x[change.name], curPath);
             }
+            else{
+                console.log(change);
+            }
         });
+        // console.log(path, changes);
         this.callback(path);
     }
 
     unwatchByPath(path){
+        Object.keys(this._watchReg).reverse().forEach((key)=>{
+            if(key.indexOf(path + '.') === 0){
+                // console.log(key);
+                this._unwatchByPath(key);
+            }
+        });
+        this._unwatchByPath(path);
+    }
+
+    _unwatchByPath(path){
         let reg = this._watchReg[path];
         if(!reg){
             return;
@@ -56,7 +83,7 @@ export default class Watch {
         delete this._watchReg[path];
     }
 
-    watch(x, path = ''){
+    watch(x, path = 'scope'){
         let watchType = null;
         if(isPlainObject(x)){
             watchType = 'object';

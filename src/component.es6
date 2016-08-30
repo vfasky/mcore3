@@ -24,6 +24,20 @@ const templateHelper = {
     Element: Element,
 };
 
+const keyCode = {
+    keyenter: 13, // mcore 2
+    keyesc: 27, // mcore 2
+    'key-enter': 13,
+    'key-esc': 27,
+    'key-back': 8,
+    'key-tab': 9,
+    'key-left': 37,
+    'key-up': 38,
+    'key-right': 39,
+    'key-down': 40,
+    'key-escape': 27,
+};
+
 let $_win = null;
 let $_body = null;
 let _id = 0;
@@ -95,6 +109,11 @@ export default class Component extends EventEmitter {
             this.watchScope.unwatch();
         }
 
+        // console.log(getComponents(this.virtualDom));
+        getComponents(this.virtualDom).forEach((component)=>{
+            component.destroy();
+        });
+
         if(!notRemove && this.$refs){
             this.$refs.remove();
             this.$refs = null;
@@ -102,10 +121,6 @@ export default class Component extends EventEmitter {
         else if(this.$refs){
             this.$refs.off();
         }
-        // console.log(getComponents(this.virtualDom));
-        getComponents(this.virtualDom).forEach((component)=>{
-            component.destroy();
-        });
 
         // 渲染完成，回调队列
         this._queueCallbacks = [];
@@ -274,7 +289,14 @@ export default class Component extends EventEmitter {
         if(this._regEvents.indexOf(eventName) === -1){
             this._regEvents.push(eventName);
 
-            if(notProxyEvents.indexOf(eventName) === -1){
+            if(keyCode.hasOwnProperty(eventName)){
+                this.$refs.on('keyup', (event)=>{
+                    if(event.keyCode == keyCode[eventName]){
+                        return this.callEvent(event, eventName);
+                    }
+                });
+            }
+            else if(notProxyEvents.indexOf(eventName) === -1){
                 this.$refs.on(eventName, (event)=>{
                     return this.callEvent(event, eventName);
                 });
@@ -327,14 +349,16 @@ export default class Component extends EventEmitter {
      * @param  {Function | Boolean} doneOrAsync
      */
     set(attr, value, doneOrAsync = null){
-        if(!isFunction(value.then)){
+        if(!value || !isFunction(value.then)){
             let isChange = this.scope[attr] !== value;
             if(isChange){
                 this.scope[attr] = value;
+                this.renderQueue(doneOrAsync);
+                // for mcore3
+                this.emit('update:' + attr, value);
             }
             this.emit('changeScope', this.scope, attr, value);
             this.emit('change:' + attr, value);
-            this.renderQueue(doneOrAsync);
         }
         else{
             return value.then((val)=>{

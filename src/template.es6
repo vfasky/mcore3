@@ -8,6 +8,7 @@
 import {isNumber, isString, isFunction} from './util';
 import EventEmitter from './eventEmitter';
 import binders from './template/binders';
+import formatters from './template/formatters';
 import * as util from './util';
 const getComponents = util.getComponents;
 
@@ -84,7 +85,7 @@ export default class Template extends EventEmitter {
             this.element.children = [];
             this.element.count = 0;
             node._component = this.element._component;
-            //TODO 兼容mcore2 可能要开启
+            //兼容mcore2 要开启
             // Object.keys(this.element.dynamicProps).forEach((attr)=>{
             //     this.element._component.update(attr.toLowerCase(), this.element.dynamicProps[attr]);
             // });
@@ -245,7 +246,7 @@ Template.binders = binders;
  * 过滤函数
  * @type {Object}
  */
-Template.formatters = {};
+Template.formatters = formatters;
 
 //兼容mcore2
 Template.strToFun = (el, value)=>{
@@ -253,7 +254,7 @@ Template.strToFun = (el, value)=>{
         return ()=>{};
     }
     return function(){
-        return el._element.view[value].call(el._element.view, arguments);
+        return el._element.view[value].apply(el._element.view, arguments);
     };
 
 };

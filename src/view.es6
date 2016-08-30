@@ -46,8 +46,9 @@ export default class View extends Component{
         return false;
     }
 
-    // destroy(notRemove){
-    //     super.destroy(notRemove);
+    // destroy(){
+    //     console.log("d");
+    //     super.destroy();
     // }
 
     run(){}

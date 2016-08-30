@@ -46,6 +46,9 @@ function dfsWalk(oldNode, newNode, index, patches){
     }
     // 同一 node, 更新属性
     else if(oldNode.tagName === newNode.tagName && oldNode._key === newNode._key){
+        // 变更静态属性
+        diffAndPatchStaticProps(oldNode, newNode);
+
         let propsPatches = diffProps(oldNode, newNode);
         if(propsPatches){
             currentPatch.push({
@@ -110,6 +113,48 @@ function diffChildren(oldChildren, newChildren, index, patches, currentPatch){
 }
 
 /**
+ * 检查并更新静态属性
+ * @method diffStaticProps
+ * @param  {Element}        oldNode
+ * @param  {Element}        newNode
+ * @return {Object | Null}        [description]
+ */
+function diffAndPatchStaticProps(oldNode, newNode){
+    if(oldNode._noDiffChild || oldNode._component){
+        return;
+    }
+    let oldProps = oldNode.props;
+    let newProps = newNode.props;
+    let node = oldNode.refs;
+    let propsPatches = {};
+
+    if(!node){
+        throw new Error('node not inexistence');
+    }
+
+    //判断旧值变更或删除
+    Object.keys(oldProps).forEach((attr)=>{
+        let value = oldProps[attr];
+        if(newProps[attr] !== value){
+            propsPatches[attr] = newProps[attr];
+            if(newProps[attr] === undefined){
+                node.removeAttribute(attr);
+            }
+            else{
+                node.setAttribute(attr, newProps[attr]);
+            }
+        }
+    });
+
+    // 查找新添加的值
+    Object.keys(newProps).forEach((attr)=>{
+        if(false === propsPatches.hasOwnProperty(attr)){
+            node.setAttribute(attr, newProps[attr]);
+        }
+    });
+}
+
+/**
  * 检查属性变更
  * @method diffProps
  * @param  {Element}  oldNode
@@ -117,6 +162,7 @@ function diffChildren(oldChildren, newChildren, index, patches, currentPatch){
  * @return {Object | Null}  [description]
  */
 function diffProps(oldNode, newNode){
+
     let count = 0;
     let oldProps = oldNode.dynamicProps;
     let newProps = newNode.dynamicProps;

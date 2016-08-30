@@ -10,7 +10,7 @@ import {get$} from './util';
 // 兼容mcore2
 if (typeof Promise.prototype.done == 'undefined') {
     Promise.prototype.done = function (onFulfilled, onRejected) {
-        this.then(onFulfilled, onRejected).catch(function (error) {
+        return this.then(onFulfilled, onRejected).catch(function (error) {
             setTimeout(function () {
                 throw error;
             }, 0);
