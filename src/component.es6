@@ -45,8 +45,11 @@ let _id = 0;
 const notProxyEvents = ['focus', 'blur'];
 
 export default class Component extends EventEmitter {
-    constructor(parentNode, parentElement = {}) {
+    constructor(parentNode, parentElement = {}, args = {}) {
         super();
+        Object.keys(args).forEach((key)=>{
+            this[key] = args[key];
+        });
         this.parentNode = parentNode;
         //兼容mcore2
         this.el = parentNode;

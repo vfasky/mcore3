@@ -5705,11 +5705,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    function Component(parentNode) {
 	        var parentElement = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var args = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	
 	        _classCallCheck(this, Component);
 	
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
 	
+	        Object.keys(args).forEach(function (key) {
+	            _this[key] = args[key];
+	        });
 	        _this.parentNode = parentNode;
 	        //兼容mcore2
 	        _this.el = parentNode;
@@ -8447,7 +8451,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function View($el, app) {
 	        _classCallCheck(this, View);
 	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(View).call(this, $el[0]));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(View).call(this, $el[0], {}, { app: app }));
 	
 	        _this.$el = $el;
 	        // this.el = $el[0];

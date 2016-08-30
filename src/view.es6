@@ -11,11 +11,12 @@ let _$iframe = null;
 
 export default class View extends Component{
     constructor($el, app){
-        super($el[0]);
+        super($el[0], {}, {app: app});
         this.$el = $el;
         // this.el = $el[0];
 
     }
+
 
     setTitle(title){
         this.title = title;
