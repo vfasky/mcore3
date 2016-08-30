@@ -348,21 +348,25 @@ export default class Component extends EventEmitter {
      * @param  {Mixed} value
      * @param  {Function | Boolean} doneOrAsync
      */
-    set(attr, value, doneOrAsync = null){
-        if(!value || !isFunction(value.then)){
+    set(attr, value, doneOrAsync = null, isPromeisCallback = false){
+        if(isPromeisCallback || !value || !isFunction(value.then)){
             let isChange = this.scope[attr] !== value;
             if(isChange){
                 this.scope[attr] = value;
-                this.renderQueue(doneOrAsync);
                 // for mcore3
                 this.emit('update:' + attr, value);
             }
+            // else{
+            //     this.renderQueue(doneOrAsync);
+            // }
             this.emit('changeScope', this.scope, attr, value);
             this.emit('change:' + attr, value);
+            return isChange;
         }
         else{
             return value.then((val)=>{
-                this.set(attr, val, doneOrAsync);
+                let isChange = this.set(attr, val, doneOrAsync, true);
+                return isChange;
             });
         }
     }

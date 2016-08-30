@@ -1,6 +1,6 @@
 {
   "name": "mcore3",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "virtual-dom ",
   "main": "src/index.es6",
   "scripts": {
@@ -8,8 +8,8 @@
     "ie8": "webpack --config ./build/ie8.js --display-error-details",
     "h2svd": "webpack --config ./build/h2svd.js --display-error-details",
     "dev": "webpack --config ./build/test.js --display-error-details -w",
-    "test-h2svd": "./node_modules/.bin/mocha --require babel-core/register loader/h2svd/test/index.test.es6",
-    "test": "browser-sync start --server --startPath test --files test/* & webpack --config ./build/test.js --display-error-details -w"
+    "test": "./node_modules/.bin/mocha --require babel-core/register loader/h2svd/test/*.test.es6",
+    "test-browser": "browser-sync start --server --startPath test --files test/* & webpack --config ./build/test.js --display-error-details -w"
   },
   "repository": {
     "type": "git",

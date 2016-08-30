@@ -151,7 +151,17 @@ function diffAndPatchStaticProps(oldNode, newNode){
         if(false === propsPatches.hasOwnProperty(attr)){
             node.setAttribute(attr, newProps[attr]);
         }
+
     });
+
+    if(oldNode._binder){
+        for(let i = node.attributes.length - 1; i >= 0; i--){
+            let attr = String(node.attributes[i].name);
+            if(false === newProps.hasOwnProperty(attr)){
+                node.removeAttribute(attr);
+            }
+        }
+    }
 }
 
 /**

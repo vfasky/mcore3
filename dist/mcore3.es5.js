@@ -2293,20 +2293,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'callBinder',
 	        value: function callBinder(binder, status, value, attrValue) {
 	            if ((0, _util.isFunction)(binder)) {
+	                this.element._binder = true;
 	                binder(this.refs, value, attrValue);
 	                return;
 	            }
 	            if (status === 'init') {
 	                if ((0, _util.isFunction)(binder.init)) {
+	                    this.element._binder = true;
 	                    binder.init(this.refs, value, attrValue);
 	                }
 	                //兼容mcore2
 	                if ((0, _util.isFunction)(binder.rendered)) {
+	                    this.element._binder = true;
 	                    binder.rendered(this.refs, value, attrValue);
 	                }
 	            } else {
 	                var binderFun = binder[status];
 	                if ((0, _util.isFunction)(binderFun)) {
+	                    this.element._binder = true;
 	                    binderFun(this.refs, value, attrValue);
 	                }
 	            }
@@ -2343,6 +2347,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            //处理动态属性
 	            if (isDynamic) {
+	                if (false === this.element.dynamicProps.hasOwnProperty(attr)) {
+	                    return;
+	                }
 	                if (Template.binders.hasOwnProperty(attr)) {
 	                    var binder = Template.binders[attr];
 	                    this.callBinder(binder, status, value);
@@ -3377,20 +3384,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var _this6 = this;
 	
 	            var doneOrAsync = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+	            var isPromeisCallback = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
 	
-	            if (!value || !isFunction(value.then)) {
+	            if (isPromeisCallback || !value || !isFunction(value.then)) {
 	                var isChange = this.scope[attr] !== value;
 	                if (isChange) {
 	                    this.scope[attr] = value;
-	                    this.renderQueue(doneOrAsync);
 	                    // for mcore3
 	                    this.emit('update:' + attr, value);
 	                }
+	                // else{
+	                //     this.renderQueue(doneOrAsync);
+	                // }
 	                this.emit('changeScope', this.scope, attr, value);
 	                this.emit('change:' + attr, value);
+	                return isChange;
 	            } else {
 	                return value.then(function (val) {
-	                    _this6.set(attr, val, doneOrAsync);
+	                    var isChange = _this6.set(attr, val, doneOrAsync, true);
+	                    return isChange;
 	                });
 	            }
 	        }
@@ -3656,6 +3668,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            node.setAttribute(attr, newProps[attr]);
 	        }
 	    });
+	
+	    if (oldNode._binder) {
+	        for (var i = node.attributes.length - 1; i >= 0; i--) {
+	            var attr = String(node.attributes[i].name);
+	            if (false === newProps.hasOwnProperty(attr)) {
+	                node.removeAttribute(attr);
+	            }
+	        }
+	    }
 	}
 	
 	/**

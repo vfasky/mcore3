@@ -142,21 +142,25 @@ export default class Template extends EventEmitter {
      */
     callBinder(binder, status, value, attrValue){
         if(isFunction(binder)){
+            this.element._binder = true;
             binder(this.refs, value, attrValue);
             return;
         }
         if(status === 'init'){
             if(isFunction(binder.init)){
+                this.element._binder = true;
                 binder.init(this.refs, value, attrValue);
             }
             //兼容mcore2
             if(isFunction(binder.rendered)){
+                this.element._binder = true;
                 binder.rendered(this.refs, value, attrValue);
             }
         }
         else{
             let binderFun = binder[status];
             if(isFunction(binderFun)){
+                this.element._binder = true;
                 binderFun(this.refs, value, attrValue);
             }
         }
@@ -184,6 +188,9 @@ export default class Template extends EventEmitter {
     setAttr(attr, value, isDynamic = false, status = 'init'){
         //处理动态属性
         if(isDynamic){
+            if(false === this.element.dynamicProps.hasOwnProperty(attr)){
+                return;
+            }
             if(Template.binders.hasOwnProperty(attr)){
                 let binder = Template.binders[attr];
                 this.callBinder(binder, status, value);
