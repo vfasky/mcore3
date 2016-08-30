@@ -100,7 +100,7 @@ export default (name, dynamicVal, dynamicAttrName)=>{
 
         ${dynamicAttrName}['${name}'] = (function(x){
             ${formatterCode}
-            return x;
+            return x === undefined ? '' : x;
         })(${variable.tmpAttrName});
     `;
 

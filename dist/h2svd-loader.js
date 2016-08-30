@@ -554,7 +554,7 @@ module.exports =
 	        formatterCode += '\n            x = ' + _config.variable.utilName + '.callFormatter(\'' + formatter + '\')(' + args.join(',') + ');\n        ';
 	    });
 	
-	    var code = '\n        var ' + _config.variable.tmpAttrName + ';\n        try{\n            ' + _config.variable.tmpAttrName + ' = ' + startVal + ';\n        }catch(err){}\n\n        ' + dynamicAttrName + '[\'' + name + '\'] = (function(x){\n            ' + formatterCode + '\n            return x;\n        })(' + _config.variable.tmpAttrName + ');\n    ';
+	    var code = '\n        var ' + _config.variable.tmpAttrName + ';\n        try{\n            ' + _config.variable.tmpAttrName + ' = ' + startVal + ';\n        }catch(err){}\n\n        ' + dynamicAttrName + '[\'' + name + '\'] = (function(x){\n            ' + formatterCode + '\n            return x === undefined ? \'\' : x;\n        })(' + _config.variable.tmpAttrName + ');\n    ';
 	
 	    return code;
 	};
