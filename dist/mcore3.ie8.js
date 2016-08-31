@@ -5598,7 +5598,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	formatters.objToStyle = function (value) {
-	    var autoPx = ['width', 'height', 'left', 'top', 'right', 'bottom'];
+	    var autoPx = ['width', 'height', 'left', 'top', 'right', 'bottom', 'margin-top', 'margin-left', 'margin-right', 'margin-bottom', 'padding-top', 'padding-left', 'padding-right', 'padding-bottom'];
 	    var css = [];
 	
 	    Object.keys(value).forEach(function (key) {

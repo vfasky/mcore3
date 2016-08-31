@@ -27,7 +27,11 @@ formatters.in = (x, ...arr)=>{
 
 
 formatters.objToStyle = (value)=>{
-    let autoPx = ['width', 'height', 'left', 'top', 'right', 'bottom'];
+    let autoPx = [
+        'width', 'height', 'left', 'top', 'right', 'bottom',
+        'margin-top', 'margin-left', 'margin-right', 'margin-bottom',
+        'padding-top', 'padding-left', 'padding-right', 'padding-bottom',
+    ];
     let css = [];
 
     Object.keys(value).forEach((key)=>{
