@@ -3186,10 +3186,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	                //如果模板事件有参数，追加在最后一个参数
 	                if (Array.isArray(eventCtx.args) && eventCtx.args.length) {
-	                    args.push({
-	                        type: 'eventContext',
-	                        args: eventCtx.args
-	                    });
+	                    // args.push({
+	                    //     type: 'eventContext',
+	                    //     args: eventCtx.args,
+	                    // });
+	                    args = args.concat(eventCtx.args);
 	                }
 	                callback.apply(parentView, args);
 	            }
