@@ -28,4 +28,5 @@ export const variable = {
     pathSubIName: '__mc__pathSubI',
     pathSubArr: '__mc__pathSubArr',
     pathStaticIName: '__mc__pathStaticI',
+    // textNodeTotal: '__mc__textNodeTotal',
 };

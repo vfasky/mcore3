@@ -15,6 +15,7 @@ export default (domAttr, key)=>{
     let forCode = `
 
         var ${variable.pathSubIName} = String(${key});
+        var ${variable.textNodeTotal} = 0;
     `;
 
     if(Array.isArray(domAttr.children)){
@@ -33,7 +34,7 @@ export default (domAttr, key)=>{
 
         ${variable.childrenName} = [];
 
-        
+
         ${forCode}
         ${variable.treeName}.push(
             ${variable.utilName}.build(

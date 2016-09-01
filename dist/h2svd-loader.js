@@ -185,7 +185,7 @@ module.exports =
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	  value: true
 	});
 	
 	var _filter = __webpack_require__(4);
@@ -210,12 +210,12 @@ module.exports =
 	 */
 	
 	exports.default = function (domAttr) {
-	    if (domAttr.type === 'text') {
-	        return (0, _parseText2.default)(domAttr);
-	    }
-	    var code = 'function(' + _config.variable.scopeName + ', ' + _config.variable.treeName + ', ' + _config.variable.pathName + '){\n        \n        ' + (0, _parseFor2.default)(domAttr) + '\n    }';
+	  // if(domAttr.type === 'text'){
+	  //     return parseText(domAttr);
+	  // }
+	  var code = 'function(' + _config.variable.scopeName + ', ' + _config.variable.treeName + ', ' + _config.variable.pathName + '){\n        ' + (domAttr.type === 'text' ? (0, _parseText2.default)(domAttr) : (0, _parseFor2.default)(domAttr)) + '\n    }';
 	
-	    return code;
+	  return code;
 	};
 
 /***/ },
@@ -317,7 +317,7 @@ module.exports =
 	
 	exports.default = function (domAttr, key) {
 	
-	    var forCode = '\n\n        var ' + _config.variable.pathSubIName + ' = String(' + key + ');\n    ';
+	    var forCode = '\n\n        var ' + _config.variable.pathSubIName + ' = String(' + key + ');\n        var ' + _config.variable.textNodeTotal + ' = 0;\n    ';
 	
 	    if (Array.isArray(domAttr.children)) {
 	        var childrens = (0, _filter2.default)(domAttr.children);
@@ -328,7 +328,7 @@ module.exports =
 	        });
 	    }
 	
-	    var code = '\n\n        ' + _config.variable.childrenName + ' = [];\n\n        \n        ' + forCode + '\n        ' + _config.variable.treeName + '.push(\n            ' + _config.variable.utilName + '.build(\n                \'' + domAttr.name + '\', ' + _config.variable.pathSubIName + ', ' + _config.variable.attrName + ',\n                ' + _config.variable.dynamicAttrName + ', ' + _config.variable.eventName + ', ' + _config.variable.childrenName + '\n            )\n        );\n    ';
+	    var code = '\n\n        ' + _config.variable.childrenName + ' = [];\n\n\n        ' + forCode + '\n        ' + _config.variable.treeName + '.push(\n            ' + _config.variable.utilName + '.build(\n                \'' + domAttr.name + '\', ' + _config.variable.pathSubIName + ', ' + _config.variable.attrName + ',\n                ' + _config.variable.dynamicAttrName + ', ' + _config.variable.eventName + ', ' + _config.variable.childrenName + '\n            )\n        );\n    ';
 	
 	    return code;
 	};
@@ -623,7 +623,7 @@ module.exports =
 	exports.default = function (domAttr) {
 	    domAttr.data = domAttr.data.replace(/\n/g, ' ');
 	    var text = domAttr.data;
-	    var code = 'function(' + _config.variable.scopeName + ', ' + _config.variable.treeName + ', ' + _config.variable.pathName + '){';
+	    var code = '\n        var ' + _config.variable.pathStaticIName + ' = ' + _config.variable.pathName + ' + \'.\' + ' + _config.variable.treeName + '.length;\n    ';
 	
 	    if (_signReg.test(text)) {
 	        (function () {
@@ -648,16 +648,16 @@ module.exports =
 	                code += (0, _parseFormatters2.default)(v.key, v.val, _config.variable.strValsName);
 	            });
 	
-	            code += '\n            /* [formatter] ' + text.trim() + ' */\n            var ' + _config.variable.strName + ' = ' + runtimeCode + ';\n            var ' + _config.variable.dynamicAttrName + ' = {text: ' + _config.variable.strName + '};\n            ' + _config.variable.treeName + '.push(' + _config.variable.utilName + '.build(\n                \'_textNode\', ' + _config.variable.pathName + ', {},\n                ' + _config.variable.dynamicAttrName + ', {}, []\n            ));\n        ';
+	            code += '\n            /* [formatter] ' + text.trim() + ' */\n            var ' + _config.variable.strName + ' = ' + runtimeCode + ';\n            var ' + _config.variable.dynamicAttrName + ' = {text: ' + _config.variable.strName + '};\n            ' + _config.variable.treeName + '.push(' + _config.variable.utilName + '.build(\n                \'_textNode\', ' + _config.variable.pathStaticIName + ', {},\n                ' + _config.variable.dynamicAttrName + ', {}, []\n            ));\n        ';
 	        })();
 	    } else {
 	        // code += `
 	        //     ${variable.treeName}.push('${text}');
 	        // `;
-	        code += '\n            var ' + _config.variable.attrName + ' = {text:\'' + text + '\'};\n            ' + _config.variable.treeName + '.push(' + _config.variable.utilName + '.build(\'_textNode\', ' + _config.variable.pathName + ', ' + _config.variable.attrName + '));\n        ';
+	        code += '\n            var ' + _config.variable.attrName + ' = {text:\'' + text + '\'};\n            ' + _config.variable.treeName + '.push(' + _config.variable.utilName + '.build(\'_textNode\', ' + _config.variable.pathStaticIName + ', ' + _config.variable.attrName + '));\n        ';
 	    }
 	
-	    return code + '}';
+	    return code;
 	};
 
 /***/ },

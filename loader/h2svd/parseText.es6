@@ -14,7 +14,9 @@ let _strEndReg = /[^]+""$/;
 export default (domAttr)=>{
     domAttr.data = domAttr.data.replace(/\n/g, ' ');
     let text = domAttr.data;
-    let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.pathName}){`;
+    let code = `
+        var ${variable.pathStaticIName} = ${variable.pathName} + '.' + ${variable.treeName}.length;
+    `;
 
     if(_signReg.test(text)){
         code += `var ${variable.strValsName} = {}`;
@@ -43,7 +45,7 @@ export default (domAttr)=>{
             var ${variable.strName} = ${runtimeCode};
             var ${variable.dynamicAttrName} = {text: ${variable.strName}};
             ${variable.treeName}.push(${variable.utilName}.build(
-                '_textNode', ${variable.pathName}, {},
+                '_textNode', ${variable.pathStaticIName}, {},
                 ${variable.dynamicAttrName}, {}, []
             ));
         `;
@@ -55,9 +57,9 @@ export default (domAttr)=>{
         // `;
         code += `
             var ${variable.attrName} = {text:'${text}'};
-            ${variable.treeName}.push(${variable.utilName}.build('_textNode', ${variable.pathName}, ${variable.attrName}));
+            ${variable.treeName}.push(${variable.utilName}.build('_textNode', ${variable.pathStaticIName}, ${variable.attrName}));
         `;
     }
 
-    return code + '}';
+    return code;
 };

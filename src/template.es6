@@ -59,6 +59,7 @@ export default class Template extends EventEmitter {
                 node = document.createTextNode(this.element.props.text);
             }
             node._key = this.element.key;
+            // console.log(this.element.key, this.element);
             this.refs = node;
             // node._element = this.element;
             return node;
@@ -224,6 +225,9 @@ export default class Template extends EventEmitter {
             this.refs.style.cssText = value;
             return;
         }
+        // else if(attr === '_key'){
+        //     return;
+        // }
 
         let tagName = this.element.tagName;
 

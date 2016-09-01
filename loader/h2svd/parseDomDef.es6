@@ -16,12 +16,11 @@ import {variable} from './config';
  * @return Array
  */
 export default (domAttr)=>{
-    if(domAttr.type === 'text'){
-        return parseText(domAttr);
-    }
+    // if(domAttr.type === 'text'){
+    //     return parseText(domAttr);
+    // }
     let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.pathName}){
-        
-        ${parseFor(domAttr)}
+        ${domAttr.type === 'text' ? parseText(domAttr) : parseFor(domAttr)}
     }`;
 
     return code;

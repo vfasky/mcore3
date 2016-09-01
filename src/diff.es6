@@ -25,20 +25,23 @@ function dfsWalk(oldNode, newNode, index, patches){
 
     }
     // 文本替换
-    else if(isString(oldNode) && isString(newNode)){
-        if(newNode != oldNode){
-            currentPatch.push({
-                type: patch.TEXT,
-                content: newNode,
-            });
-        }
-    }
+    // else if(isString(oldNode) && isString(newNode)){
+    //     if(newNode != oldNode){
+    //         currentPatch.push({
+    //             type: patch.TEXT,
+    //             content: newNode,
+    //         });
+    //     }
+    // }
     // 文本替换
     else if (oldNode.tagName === '_textnode' && oldNode.tagName === newNode.tagName) {
-        if(newNode != oldNode){
+        let oldText = String(oldNode.dynamicProps.text || oldNode.props.text);
+        let newText = String(newNode.dynamicProps.text || newNode.props.text);
+        if(oldText != newText){
+            // console.log(oldNode, newNode, index);
             currentPatch.push({
                 type: patch.TEXT,
-                content: String(newNode.dynamicProps.text || newNode.props.text || ''),
+                content: newText,
             });
 
         }
@@ -134,6 +137,9 @@ function diffAndPatchStaticProps(oldNode, newNode){
 
     //判断旧值变更或删除
     Object.keys(oldProps).forEach((attr)=>{
+        // if(attr === '_key'){
+        //     return;
+        // }
         let value = oldProps[attr];
         if(newProps[attr] !== value){
             propsPatches[attr] = newProps[attr];
@@ -157,6 +163,9 @@ function diffAndPatchStaticProps(oldNode, newNode){
     if(oldNode._binder){
         for(let i = node.attributes.length - 1; i >= 0; i--){
             let attr = String(node.attributes[i].name);
+            // if(attr === '_key'){
+            //     return;
+            // }
             if(false === newProps.hasOwnProperty(attr)){
                 node.removeAttribute(attr);
             }

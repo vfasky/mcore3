@@ -2209,6 +2209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    node = document.createTextNode(this.element.props.text);
 	                }
 	                node._key = this.element.key;
+	                // console.log(this.element.key, this.element);
 	                this.refs = node;
 	                // node._element = this.element;
 	                return node;
@@ -2404,6 +2405,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.refs.style.cssText = value;
 	                return;
 	            }
+	            // else if(attr === '_key'){
+	            //     return;
+	            // }
 	
 	            var tagName = this.element.tagName;
 	
@@ -3550,57 +3554,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // node is removed
 	    if (newNode === null) {}
 	    // 文本替换
-	    else if ((0, _util.isString)(oldNode) && (0, _util.isString)(newNode)) {
-	            if (newNode != oldNode) {
+	    // else if(isString(oldNode) && isString(newNode)){
+	    //     if(newNode != oldNode){
+	    //         currentPatch.push({
+	    //             type: patch.TEXT,
+	    //             content: newNode,
+	    //         });
+	    //     }
+	    // }
+	    // 文本替换
+	    else if (oldNode.tagName === '_textnode' && oldNode.tagName === newNode.tagName) {
+	            var oldText = String(oldNode.dynamicProps.text || oldNode.props.text);
+	            var newText = String(newNode.dynamicProps.text || newNode.props.text);
+	            if (oldText != newText) {
+	                // console.log(oldNode, newNode, index);
 	                currentPatch.push({
 	                    type: _patch2.default.TEXT,
-	                    content: newNode
+	                    content: newText
 	                });
 	            }
 	        }
-	        // 文本替换
-	        else if (oldNode.tagName === '_textnode' && oldNode.tagName === newNode.tagName) {
-	                if (newNode != oldNode) {
+	        // 同一 node, 更新属性
+	        else if (oldNode.tagName === newNode.tagName && oldNode._key === newNode._key) {
+	                // 变更静态属性
+	                diffAndPatchStaticProps(oldNode, newNode);
+	
+	                var propsPatches = diffProps(oldNode, newNode);
+	                if (propsPatches) {
 	                    currentPatch.push({
-	                        type: _patch2.default.TEXT,
-	                        content: String(newNode.dynamicProps.text || newNode.props.text || '')
+	                        type: _patch2.default.PROPS,
+	                        props: propsPatches
 	                    });
 	                }
-	            }
-	            // 同一 node, 更新属性
-	            else if (oldNode.tagName === newNode.tagName && oldNode._key === newNode._key) {
-	                    // 变更静态属性
-	                    diffAndPatchStaticProps(oldNode, newNode);
-	
-	                    var propsPatches = diffProps(oldNode, newNode);
-	                    if (propsPatches) {
-	                        currentPatch.push({
-	                            type: _patch2.default.PROPS,
-	                            props: propsPatches
-	                        });
-	                    }
-	                    if (!newNode.refs && oldNode.refs) {
-	                        // newNode.render(oldNode.refs);
-	                        newNode.cloneElement(oldNode);
-	                        // console.log(newNode);
-	                    }
-	                    // if(!newNode.template && oldNode.template){
-	                    //     newNode.template = oldNode.template;
-	                    //     newNode.template.element = newNode;
-	                    // }
-	                    // 没有声明不要 diff 子元素
-	                    // console.log(newNode._noDiffChild);
-	                    if (!oldNode || !oldNode._noDiffChild || !newNode._noDiffChild) {
-	                        diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
-	                    }
+	                if (!newNode.refs && oldNode.refs) {
+	                    // newNode.render(oldNode.refs);
+	                    newNode.cloneElement(oldNode);
+	                    // console.log(newNode);
 	                }
-	                // 替换
-	                else {
-	                        currentPatch.push({
-	                            type: _patch2.default.REPLACE,
-	                            node: newNode
-	                        });
-	                    }
+	                // if(!newNode.template && oldNode.template){
+	                //     newNode.template = oldNode.template;
+	                //     newNode.template.element = newNode;
+	                // }
+	                // 没有声明不要 diff 子元素
+	                // console.log(newNode._noDiffChild);
+	                if (!oldNode || !oldNode._noDiffChild || !newNode._noDiffChild) {
+	                    diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
+	                }
+	            }
+	            // 替换
+	            else {
+	                    currentPatch.push({
+	                        type: _patch2.default.REPLACE,
+	                        node: newNode
+	                    });
+	                }
 	
 	    if (currentPatch.length) {
 	        patches[index] = currentPatch;
@@ -3655,6 +3662,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    //判断旧值变更或删除
 	    Object.keys(oldProps).forEach(function (attr) {
+	        // if(attr === '_key'){
+	        //     return;
+	        // }
 	        var value = oldProps[attr];
 	        if (newProps[attr] !== value) {
 	            propsPatches[attr] = newProps[attr];
@@ -3676,6 +3686,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (oldNode._binder) {
 	        for (var i = node.attributes.length - 1; i >= 0; i--) {
 	            var attr = String(node.attributes[i].name);
+	            // if(attr === '_key'){
+	            //     return;
+	            // }
 	            if (false === newProps.hasOwnProperty(attr)) {
 	                node.removeAttribute(attr);
 	            }
@@ -3849,6 +3862,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                // 变更文本
 	                case TEXT:
+	                    // console.log(node.textContent, currentPatch);
 	                    if (node.textContent) {
 	                        node.textContent = currentPatch.content;
 	                    } else {

@@ -87,6 +87,7 @@ function applyPatches(node, currentPatches){
                 break;
             // 变更文本
             case TEXT:
+                // console.log(node.textContent, currentPatch);
                 if(node.textContent){
                     node.textContent = currentPatch.content;
                 }
