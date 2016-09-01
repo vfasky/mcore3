@@ -5836,7 +5836,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    return;
 	                }
 	                if (!Array.isArray(args)) {
-	                    if (args.length !== undefined) {
+	                    if (args && args.length !== undefined) {
 	                        args = Array.from(args);
 	                    } else {
 	                        args = [];
@@ -6222,8 +6222,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // }
 	    // 文本替换
 	    else if (oldNode.tagName === '_textnode' && oldNode.tagName === newNode.tagName) {
-	            var oldText = String(oldNode.dynamicProps.text || oldNode.props.text);
-	            var newText = String(newNode.dynamicProps.text || newNode.props.text);
+	            var oldText = String(oldNode.dynamicProps.text || oldNode.props.text || '');
+	            var newText = String(newNode.dynamicProps.text || newNode.props.text || '');
 	            if (oldText != newText) {
 	                // console.log(oldNode, newNode, index);
 	                currentPatch.push({

@@ -35,8 +35,8 @@ function dfsWalk(oldNode, newNode, index, patches){
     // }
     // 文本替换
     else if (oldNode.tagName === '_textnode' && oldNode.tagName === newNode.tagName) {
-        let oldText = String(oldNode.dynamicProps.text || oldNode.props.text);
-        let newText = String(newNode.dynamicProps.text || newNode.props.text);
+        let oldText = String(oldNode.dynamicProps.text || oldNode.props.text || '');
+        let newText = String(newNode.dynamicProps.text || newNode.props.text || '');
         if(oldText != newText){
             // console.log(oldNode, newNode, index);
             currentPatch.push({

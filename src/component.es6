@@ -155,7 +155,7 @@ export default class Component extends EventEmitter {
                 return;
             }
             if(!Array.isArray(args)){
-                if(args.length !== undefined){
+                if(args && args.length !== undefined){
                     args = Array.from(args);
                 }
                 else{
