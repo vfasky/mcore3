@@ -12,7 +12,7 @@ export default class Element {
         this.key = key;
         //静态属性
         this.props = props;
-        this.props._key = key;
+        // this.props._key = key;
         //动态属性
         this.dynamicProps = dynamicProps;
         //子元素

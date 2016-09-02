@@ -4692,7 +4692,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.key = key;
 	        //静态属性
 	        this.props = props;
-	        this.props._key = key;
+	        // this.props._key = key;
 	        //动态属性
 	        this.dynamicProps = dynamicProps;
 	        //子元素
@@ -6223,13 +6223,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // }
 	    // 文本替换
 	    else if (oldNode.tagName === '_textnode' && oldNode.tagName === newNode.tagName) {
-	            var oldText = String(oldNode.dynamicProps.text || oldNode.props.text || '');
-	            var newText = String(newNode.dynamicProps.text || newNode.props.text || '');
+	            var oldText = String(oldNode.dynamicProps.hasOwnProperty('text') ? oldNode.dynamicProps.text : oldNode.props.text);
+	            var newText = String(newNode.dynamicProps.hasOwnProperty('text') ? newNode.dynamicProps.text : newNode.props.text);
 	            if (oldText != newText) {
-	                // console.log(oldNode, newNode, index);
 	                currentPatch.push({
 	                    type: _patch2['default'].TEXT,
-	                    content: newText
+	                    content: newText === undefined ? '' : newText
 	                });
 	            }
 	        }
@@ -6491,10 +6490,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                var value = currentPatch.props[attr];
 	                                var status = value !== undefined ? 'update' : 'remove';
 	                                node._element.template.setAttr(attr.toLowerCase(), value, true, status);
-	                                // if(node._element._component){
-	                                //     console.log(node._element._component.set);
-	                                //     node._element._component.set(attr.toLowerCase(), value);
-	                                // }
+	                                if (node._element._component) {
+	                                    // console.log(node._element._component.set);
+	                                    node._element._component.set(attr.toLowerCase(), value, true, status);
+	                                }
 	                            }
 	                        } catch (err) {
 	                            _didIteratorError2 = true;
