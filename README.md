@@ -12,6 +12,10 @@
 - [Binders](#binders)
 - [Formatters](#formatters)
 - [Components](#components)
+- [View](#view)
+- [Route](#route)
+- [App](#app)
+- [Middleware](#middleware)
 
 ## Binders
 
@@ -160,3 +164,53 @@ mcore.Template.formatters.time = (value, timezone, format)=>{
     return moment(value).tz(timezone).format(format);
 };
 ```
+
+## Components
+
+Components let you define reusable views that can be used within any of your templates. For some perspective on where components fit into your templates in relation to binders; binders define custom attributes, while components define custom elements.
+
+```html
+<!-- time.html -->
+<span>{scope.time}</span>
+```
+
+```js
+export default class Time extends mcore.Component {
+    init(){
+        this.render(require('time.html'),{
+            time: new Date()
+        });
+
+        setInterval(()=>{
+            this.scope.time = new Date();
+        }, 1000);
+    }
+}
+mcore.Template.components.time = Time;
+```
+
+Use Components
+
+```html
+<time></time>
+```
+
+## View
+> extends Components
+
+```html
+<!-- home.html -->
+<h1> Hello {scope.name} !</h1>
+```
+
+```js
+export default class Home extends mcore.View {
+    run(){
+        this.render(require('home.html'), {
+            name: 'freddy'
+        });
+    }
+}
+```
+
+## Route
