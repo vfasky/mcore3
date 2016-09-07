@@ -1,8 +1,8 @@
 {
   "name": "mcore3",
-  "version": "3.0.11",
+  "version": "3.0.12",
   "description": "virtual-dom ",
-  "main": "src/index.es6",
+  "main": "dist/mcore3.es5.js",
   "scripts": {
     "es5": "webpack --config ./build/es5.js --display-error-details",
     "ie8": "webpack --config ./build/ie8.js --display-error-details",

@@ -1842,6 +1842,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.extend = extend;
 	exports.getEvents = getEvents;
 	exports.getComponents = getComponents;
+	exports.getObjAttrByPath = getObjAttrByPath;
 	exports.nextTick = nextTick;
 	var $ = void 0;
 	var _isIOS = null;
@@ -1962,6 +1963,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    return components;
+	}
+	
+	function getObjAttrByPath(path) {
+	    var obj = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	
+	    if (path.indexOf('.') === -1) {
+	        return obj[path];
+	    }
+	    var pathArr = path.split('.');
+	    var curObj = obj;
+	
+	    each(pathArr, function (curPath) {
+	        if (isNumber(curPath) && isArray(curObj)) {
+	            var ix = parseInt(curPath);
+	            if (ix < curObj.length) {
+	                curObj = curObj[ix];
+	                return;
+	            } else {
+	                curObj = null;
+	                return false;
+	            }
+	        } else if (isObject(curObj) && curObj.hasOwnProperty(curPath)) {
+	            curObj = curObj[curPath];
+	            return;
+	        } else {
+	            curObj = null;
+	            return false;
+	        }
+	    });
+	
+	    return curObj;
 	}
 	
 	/**
@@ -2883,16 +2915,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var view = el._element.view;
 	        var $ = (0, _util.get$)();
 	        var $form = $(el);
+	        var soure = dataKey;
+	        if ((0, _util.isString)(dataKey)) {
+	            soure = (0, _util.getObjAttrByPath)(dataKey, view.scope);
+	        }
 	
 	        $form.on('change', '[name]', function () {
 	            var $el = $(this);
 	            var name = $el.attr('name');
-	            if (name && view.scope[dataKey]) {
+	            if (name && soure) {
 	                if ($el.is('[type=checkbox],[type=radio]')) {
 	                    var val = $el.prop('checked') ? this.value : '';
-	                    view.scope[dataKey][name] = val;
+	                    soure[name] = val;
 	                } else {
-	                    view.scope[dataKey][name] = this.value;
+	                    soure[name] = this.value;
 	                }
 	            }
 	        });

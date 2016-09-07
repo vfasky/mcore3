@@ -4,7 +4,7 @@
  * @author vfasky <vfasky@gmail.com>
  **/
 "use strict";
-import {get$} from '../util';
+import {get$, getObjAttrByPath, isString} from '../util';
 
 let binders = {};
 
@@ -101,17 +101,21 @@ binders['form-sync'] = {
         let view = el._element.view;
         let $ = get$();
         let $form = $(el);
+        let soure = dataKey;
+        if(isString(dataKey)){
+            soure = getObjAttrByPath(dataKey, view.scope);
+        }
 
         $form.on('change', '[name]', function(){
             let $el = $(this);
             let name = $el.attr('name');
-            if(name && view.scope[dataKey]){
+            if(name && soure){
                 if($el.is('[type=checkbox],[type=radio]')){
                     let val = $el.prop('checked') ? this.value : '';
-                    view.scope[dataKey][name] = val;
+                    soure[name] = val;
                 }
                 else{
-                    view.scope[dataKey][name] = this.value;
+                    soure[name] = this.value;
                 }
             }
         });

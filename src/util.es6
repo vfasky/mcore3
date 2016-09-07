@@ -123,6 +123,37 @@ export function getComponents(element, components = []){
     return components;
 }
 
+export function getObjAttrByPath(path, obj = {}){
+    if(path.indexOf('.') === -1){
+        return obj[path];
+    }
+    let pathArr = path.split('.');
+    let curObj = obj;
+
+    each(pathArr, (curPath)=>{
+        if(isNumber(curPath) && isArray(curObj)){
+            let ix = parseInt(curPath);
+            if(ix < curObj.length){
+                curObj = curObj[ix];
+                return;
+            }
+            else{
+                curObj = null;
+                return false;
+            }
+        }
+        else if(isObject(curObj) && curObj.hasOwnProperty(curPath)){
+            curObj = curObj[curPath];
+            return;
+        }
+        else{
+            curObj = null;
+            return false;
+        }
+    });
+
+    return curObj;
+}
 
 /**
  * 放到下一帧执行
