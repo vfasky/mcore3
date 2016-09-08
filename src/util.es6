@@ -5,21 +5,22 @@
  **/
 "use strict";
 
-// import $ from 'jquery';
-let $;
+var $;
+const _varReg = /(^[a-zA-Z0-9_-]+)$/;
+
 let _isIOS = null;
 let _isWeixinBrowser = null;
 
 export function isIOS(){
     if(_isIOS === null){
-        _isIOS = (/iphone|ipad/gi).test(window.navigator.appVersion);
+        _isIOS = typeof window == 'object' && (/iphone|ipad/gi).test(window.navigator.appVersion);
     }
     return _isIOS;
 }
 
 export function isWeixinBrowser() {
     if(_isWeixinBrowser === null){
-        _isWeixinBrowser = (/MicroMessenger/i).test(window.navigator.userAgent);
+        _isWeixinBrowser = typeof window == 'object' && (/MicroMessenger/i).test(window.navigator.userAgent);
     }
     return _isWeixinBrowser;
 }
@@ -28,7 +29,7 @@ export function get$(){
     if($){
         return $;
     }
-    if(window.$){
+    if(typeof window == 'object' && typeof window.$ == 'function'){
         $ = window.$;
         return window.$;
     }
@@ -155,11 +156,33 @@ export function getObjAttrByPath(path, obj = {}){
     return curObj;
 }
 
+export function parseDynamicVal(dynamicCode, dynamicCodeStr, view){
+    if(typeof dynamicCode != 'undefined' && (typeof Element === 'function' && false === dynamicCode instanceof Element)){
+        return dynamicCode == 'undefined' ? '' : dynamicCode;
+    }
+    else if(typeof view[dynamicCode] != 'undefined'){
+        return view[dynamicCode];
+    }
+    else if(_varReg.test(dynamicCodeStr)){
+        return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+    }
+    else {
+        return '';
+    }
+}
+
+export function callFormatter(formatterName, mcore){
+    if(mcore.Template.formatters.hasOwnProperty(formatterName)){
+        return mcore.Template.formatters[formatterName];
+    }
+    return function(){};
+}
+
 /**
  * 放到下一帧执行
  */
 export function nextTick(fun){
-    if(window.requestAnimationFrame){
+    if(typeof requestAnimationFrame == 'function'){
         return requestAnimationFrame(()=>{
             fun();
         });
@@ -171,7 +194,7 @@ export function nextTick(fun){
     }
 }
 nextTick.clear = (id)=>{
-    if(window.requestAnimationFrame){
+    if(typeof requestAnimationFrame == 'function'){
         return cancelAnimationFrame(id);
     }
     else{

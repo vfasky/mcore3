@@ -29,36 +29,16 @@ export default (html, options = {})=>{
     });
 
     let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){
-
-            if(!${variable.mcoreName}){
-                ${variable.mcoreName} = require('${options.moduleName}');
-            }
             var ${variable.utilName} = {
                 clone: ${variable.mcoreName}.util.clone,
                 build: function(tagName, key, attr, dynamicAttr, events, children){
                     return new ${variable.mcoreName}.Element(tagName, key, attr, dynamicAttr, children, events, ${variable.viewName});
                 },
                 parseDynamicVal: function(dynamicCode, dynamicCodeStr){
-                    var _varReg = /(^[a-zA-Z0-9_-]+)$/;
-                    if(typeof dynamicCode != 'undefined' && (false === dynamicCode instanceof window.Element)){
-                        return dynamicCode;
-                    }
-                    else if(typeof ${variable.viewName}[dynamicCode] != 'undefined'){
-                        return ${variable.viewName}[dynamicCode];
-                    }
-
-                    else if(_varReg.test(dynamicCodeStr)){
-                        return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
-                    }
-                    else {
-                        return '';
-                    }
+                    return ${variable.mcoreName}.util.parseDynamicVal(dynamicCode, dynamicCodeStr, ${variable.viewName});
                 },
                 callFormatter: function(formatterName){
-                    if(${variable.mcoreName}.Template.formatters.hasOwnProperty(formatterName)){
-                        return ${variable.mcoreName}.Template.formatters[formatterName];
-                    };
-                    return function(){};
+                    return ${variable.mcoreName}.util.callFormatter(formatterName, ${variable.mcoreName});
                 },
             };
             var ${variable.treeName} = [];
