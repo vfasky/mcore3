@@ -1,11 +1,11 @@
 
 ## mcore
 
-- MVC 框架
-- 模板渲染基于 virtual-dom diff 实现， 只更新需要变更的 DOM
-- 模板不需要像 react 那样用 JSX； 跟原来一样， 写 html 就行了
-- 模板中的 DIY tag 就是一个 Components， 实现组件化非常方便
-- 每一个 DIY tag 是一个 “独立空间”， 子节点不参于 diff. 所以，你可以很方便的， 在 DIY tag 里，使用 jQuery 的插件
+- MVC 框架 [Based on MVC Architecture]
+- 模板渲染基于 virtual-dom diff 实现， 只更新需要变更的 DOM [Template rendering is based on Virtual-Dom diff. Only update the DOM that needs to be updated]
+- 模板不需要像 react 那样用 JSX； 跟原来一样， 写 html 就行了 [Unlike ReactJS, templates don't need JSX. We can just write html as usual]
+- 模板中的 DIY tag 就是一个 Components， 实现组件化非常方便 [The DIY tag in template is a Components, so it's easy to achieve modular]
+- 每一个 DIY tag 是一个 “独立空间”， 子节点不参于 diff. 所以，你可以很方便的， 在 DIY tag 里，使用 jQuery 的插件 [Each DIY tag is like a independent space, child node doesn't involve in diff. So, you can easily use jQuery plugin in the DIY tag]
 
 ## MOVING PARTS
 
