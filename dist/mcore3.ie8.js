@@ -1,10 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("jQuery"));
+		module.exports = factory(require("jquery"));
 	else if(typeof define === 'function' && define.amd)
-		define(["jQuery"], factory);
+		define(["jquery"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("jQuery")) : factory(root["jQuery"]);
+		var a = typeof exports === 'object' ? factory(require("jquery")) : factory(root["jQuery"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
 })(this, function(__WEBPACK_EXTERNAL_MODULE_34__) {
@@ -4481,11 +4481,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 **/
 	"use strict";
 	
-	// import $ from 'jquery';
-	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
 	exports.isIOS = isIOS;
 	exports.isWeixinBrowser = isWeixinBrowser;
 	exports.get$ = get$;
@@ -4501,21 +4502,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.getEvents = getEvents;
 	exports.getComponents = getComponents;
 	exports.getObjAttrByPath = getObjAttrByPath;
+	exports.parseDynamicVal = parseDynamicVal;
+	exports.callFormatter = callFormatter;
 	exports.nextTick = nextTick;
-	var $ = void 0;
+	var $;
+	var _varReg = /(^[a-zA-Z0-9_-]+)$/;
+	
 	var _isIOS = null;
 	var _isWeixinBrowser = null;
 	
 	function isIOS() {
 	    if (_isIOS === null) {
-	        _isIOS = /iphone|ipad/gi.test(window.navigator.appVersion);
+	        _isIOS = (typeof window === 'undefined' ? 'undefined' : _typeof(window)) == 'object' && /iphone|ipad/gi.test(window.navigator.appVersion);
 	    }
 	    return _isIOS;
 	}
 	
 	function isWeixinBrowser() {
 	    if (_isWeixinBrowser === null) {
-	        _isWeixinBrowser = /MicroMessenger/i.test(window.navigator.userAgent);
+	        _isWeixinBrowser = (typeof window === 'undefined' ? 'undefined' : _typeof(window)) == 'object' && /MicroMessenger/i.test(window.navigator.userAgent);
 	    }
 	    return _isWeixinBrowser;
 	}
@@ -4524,7 +4529,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if ($) {
 	        return $;
 	    }
-	    if (window.$) {
+	    if ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) == 'object' && typeof window.$ == 'function') {
 	        $ = window.$;
 	        return window.$;
 	    }
@@ -4654,11 +4659,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return curObj;
 	}
 	
+	function parseDynamicVal(dynamicCode, dynamicCodeStr, view) {
+	    if (typeof dynamicCode != 'undefined' && typeof Element === 'function' && false === dynamicCode instanceof Element) {
+	        return dynamicCode == 'undefined' ? '' : dynamicCode;
+	    } else if (typeof view[dynamicCode] != 'undefined') {
+	        return view[dynamicCode];
+	    } else if (_varReg.test(dynamicCodeStr)) {
+	        return dynamicCodeStr == 'undefined' ? '' : dynamicCodeStr;
+	    } else {
+	        return '';
+	    }
+	}
+	
+	function callFormatter(formatterName, mcore) {
+	    if (mcore.Template.formatters.hasOwnProperty(formatterName)) {
+	        return mcore.Template.formatters[formatterName];
+	    }
+	    return function () {};
+	}
+	
 	/**
 	 * 放到下一帧执行
 	 */
 	function nextTick(fun) {
-	    if (window.requestAnimationFrame) {
+	    if (typeof requestAnimationFrame == 'function') {
 	        return requestAnimationFrame(function () {
 	            fun();
 	        });
@@ -4669,7 +4693,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 	nextTick.clear = function (id) {
-	    if (window.requestAnimationFrame) {
+	    if (typeof requestAnimationFrame == 'function') {
 	        return cancelAnimationFrame(id);
 	    } else {
 	        return clearTimeout(id);
