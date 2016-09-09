@@ -4929,7 +4929,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                var __mc__attr = {
-	                    text: ''
+	                    text: "   Change Table "
 	                };
 	                __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -5081,7 +5081,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                    var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                                    var __mc__attr = {
-	                                                        text: ''
+	                                                        text: "Type"
 	                                                    };
 	                                                    __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -5130,7 +5130,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                    var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                                    var __mc__attr = {
-	                                                        text: ''
+	                                                        text: "Bookings"
 	                                                    };
 	                                                    __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -5621,7 +5621,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                    var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                                    var __mc__attr = {
-	                                                        text: ''
+	                                                        text: "Type"
 	                                                    };
 	                                                    __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -5670,7 +5670,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                    var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                                    var __mc__attr = {
-	                                                        text: ''
+	                                                        text: "Bookings"
 	                                                    };
 	                                                    __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -5719,7 +5719,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                    var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                                    var __mc__attr = {
-	                                                        text: ''
+	                                                        text: "Name"
 	                                                    };
 	                                                    __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -5844,7 +5844,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                    var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                                    var __mc__attr = {
-	                                                        text: ''
+	                                                        text: "New Customer"
 	                                                    };
 	                                                    __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -5893,7 +5893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                    var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                                    var __mc__attr = {
-	                                                        text: ''
+	                                                        text: "19"
 	                                                    };
 	                                                    __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -5942,7 +5942,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                    var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                                    var __mc__attr = {
-	                                                        text: ''
+	                                                        text: "Freddy"
 	                                                    };
 	                                                    __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -7239,7 +7239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                var __mc__attr = {
-	                                    text: ''
+	                                    text: "item name"
 	                                };
 	                                __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -7407,7 +7407,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                        var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                        var __mc__attr = {
-	                                            text: ''
+	                                            text: "Add"
 	                                        };
 	                                        __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -7982,7 +7982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                var __mc__attr = {
-	                                    text: ''
+	                                    text: "find"
 	                                };
 	                                __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -8538,7 +8538,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                var __mc__attr = {
-	                                    text: ''
+	                                    text: "item name"
 	                                };
 	                                __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -8706,7 +8706,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                        var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                        var __mc__attr = {
-	                                            text: ''
+	                                            text: "Add"
 	                                        };
 	                                        __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
@@ -9340,7 +9340,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                            var __mc__pathStaticI = __mc_path + '.' + __mc__tree.length;
 	
 	                                            var __mc__attr = {
-	                                                text: ''
+	                                                text: "..."
 	                                            };
 	                                            __mc__tree.push(__mc__util.build('_textNode', __mc__pathStaticI, __mc__attr));
 	
