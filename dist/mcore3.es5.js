@@ -4,7 +4,7 @@
 	else if(typeof define === 'function' && define.amd)
 		define(["jquery"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("jquery")) : factory(root["jQuery"]);
+		var a = typeof exports === 'object' ? factory(require("jquery")) : factory(root["$"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
 })(this, function(__WEBPACK_EXTERNAL_MODULE_31__) {
@@ -1855,14 +1855,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function isIOS() {
 	    if (_isIOS === null) {
-	        _isIOS = /iphone|ipad/gi.test(window.navigator.appVersion);
+	        _isIOS = (typeof window === 'undefined' ? 'undefined' : _typeof(window)) == 'object' && /iphone|ipad/gi.test(window.navigator.appVersion);
 	    }
 	    return _isIOS;
 	}
 	
 	function isWeixinBrowser() {
 	    if (_isWeixinBrowser === null) {
-	        _isWeixinBrowser = /MicroMessenger/i.test(window.navigator.userAgent);
+	        _isWeixinBrowser = (typeof window === 'undefined' ? 'undefined' : _typeof(window)) == 'object' && /MicroMessenger/i.test(window.navigator.userAgent);
 	    }
 	    return _isWeixinBrowser;
 	}
@@ -2024,7 +2024,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 放到下一帧执行
 	 */
 	function nextTick(fun) {
-	    if (window.requestAnimationFrame) {
+	    if (typeof requestAnimationFrame == 'function') {
 	        return requestAnimationFrame(function () {
 	            fun();
 	        });
@@ -2035,7 +2035,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 	nextTick.clear = function (id) {
-	    if (window.requestAnimationFrame) {
+	    if (typeof requestAnimationFrame == 'function') {
 	        return cancelAnimationFrame(id);
 	    } else {
 	        return clearTimeout(id);
@@ -3708,9 +3708,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @return {Object | Null}        [description]
 	 */
 	function diffAndPatchStaticProps(oldNode, newNode) {
-	    if (oldNode._noDiffChild || oldNode._component) {
-	        return;
-	    }
+	    // if(oldNode._noDiffChild || oldNode._component){
+	    //     return;
+	    // }
 	    var oldProps = oldNode.props;
 	    var newProps = newNode.props;
 	    var node = oldNode.refs;

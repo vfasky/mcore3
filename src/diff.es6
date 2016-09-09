@@ -122,9 +122,9 @@ function diffChildren(oldChildren, newChildren, index, patches, currentPatch){
  * @return {Object | Null}        [description]
  */
 function diffAndPatchStaticProps(oldNode, newNode){
-    if(oldNode._noDiffChild || oldNode._component){
-        return;
-    }
+    // if(oldNode._noDiffChild || oldNode._component){
+    //     return;
+    // }
     let oldProps = oldNode.props;
     let newProps = newNode.props;
     let node = oldNode.refs;
