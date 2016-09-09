@@ -56,7 +56,7 @@ export default (domAttr)=>{
         //     ${variable.treeName}.push('${text}');
         // `;
         code += `
-            var ${variable.attrName} = {text:'${text}'};
+            var ${variable.attrName} = {text:'${text.repeat("'", "\\'")}'};
             ${variable.treeName}.push(${variable.utilName}.build('_textNode', ${variable.pathStaticIName}, ${variable.attrName}));
         `;
     }

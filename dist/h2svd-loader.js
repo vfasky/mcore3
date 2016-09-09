@@ -654,7 +654,7 @@ module.exports =
 	        // code += `
 	        //     ${variable.treeName}.push('${text}');
 	        // `;
-	        code += '\n            var ' + _config.variable.attrName + ' = {text:\'' + text + '\'};\n            ' + _config.variable.treeName + '.push(' + _config.variable.utilName + '.build(\'_textNode\', ' + _config.variable.pathStaticIName + ', ' + _config.variable.attrName + '));\n        ';
+	        code += '\n            var ' + _config.variable.attrName + ' = {text:\'' + text.repeat("'", "\\'") + '\'};\n            ' + _config.variable.treeName + '.push(' + _config.variable.utilName + '.build(\'_textNode\', ' + _config.variable.pathStaticIName + ', ' + _config.variable.attrName + '));\n        ';
 	    }
 	
 	    return code;
