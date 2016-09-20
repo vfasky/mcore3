@@ -6299,7 +6299,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Promise.prototype.fail = function (onResolveOrReject) {
 	        return this.catch(function (reason) {
 	            return reason;
-	        }).then(onResolveOrReject);
+	        }).then(function () {}, onResolveOrReject);
 	    };
 	}
 	
