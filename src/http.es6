@@ -17,6 +17,7 @@ if (typeof Promise.prototype.done == 'undefined') {
         });
     };
 }
+
 if(typeof Promise.prototype.fail == 'undefined'){
     Promise.prototype.fail = function(onResolveOrReject) {
         return this.catch(function(reason) {
@@ -24,6 +25,7 @@ if(typeof Promise.prototype.fail == 'undefined'){
         }).then(onResolveOrReject);
     };
 }
+
 if(typeof Promise.prototype.always == 'undefined'){
     Promise.prototype.always = function(onResolveOrReject) {
         return this.then(onResolveOrReject, function(reason) {
@@ -32,6 +34,7 @@ if(typeof Promise.prototype.always == 'undefined'){
         });
     };
 }
+
 let _networkErrCallback = (xhr, status, hideError)=>{
     let msg = 'Network Error';
     let $ = get$();
