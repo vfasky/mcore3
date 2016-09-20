@@ -8841,13 +8841,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    };
 	}
+	
 	if (typeof Promise.prototype.fail == 'undefined') {
 	    Promise.prototype.fail = function (onResolveOrReject) {
 	        return this['catch'](function (reason) {
 	            return reason;
-	        }).then(onResolveOrReject);
+	        }).then(function () {}, onResolveOrReject);
 	    };
 	}
+	
 	if (typeof Promise.prototype.always == 'undefined') {
 	    Promise.prototype.always = function (onResolveOrReject) {
 	        return this.then(onResolveOrReject, function (reason) {
@@ -8856,6 +8858,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    };
 	}
+	
 	var _networkErrCallback = function _networkErrCallback(xhr, status, hideError) {
 	    var msg = 'Network Error';
 	    var $ = (0, _util.get$)();
