@@ -13,6 +13,7 @@
 
 ```
 mkdir mcore-app
+npm init -y
 cd mcore-app
 npm i mcore-cli
 node ./node_modules/mcore-cli/bin/init
