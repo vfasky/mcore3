@@ -7,6 +7,18 @@
 - 模板中的 DIY tag 就是一个 Components， 实现组件化非常方便 [The DIY tag in template is a Components, so it's easy to achieve modular]
 - 每一个 DIY tag 是一个 “独立空间”， 子节点不参于 diff. 所以，你可以很方便的， 在 DIY tag 里，使用 jQuery 的插件 [Each DIY tag is like a independent space, child node doesn't involve in diff. So, you can easily use jQuery plugin in the DIY tag]
 
+## Getting started
+
+### Install mcore-cli
+
+```
+mkdir mcore-app
+cd mcore-app
+npm i mcore-cli
+node ./node_modules/mcore-cli/bin/init
+npm run dev
+```
+
 ## MOVING PARTS
 
 - [Binders](#binders)
