@@ -20,9 +20,9 @@ if (typeof Promise.prototype.done == 'undefined') {
 
 if(typeof Promise.prototype.fail == 'undefined'){
     Promise.prototype.fail = function(onResolveOrReject) {
-        return this.catch(function(reason) {
-            return reason;
-        }).then(function(){}, onResolveOrReject);
+        return this.then(function(){}, onResolveOrReject).catch(function(error) {
+            throw error;
+        });
     };
 }
 
