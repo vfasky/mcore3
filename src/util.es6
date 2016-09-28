@@ -157,7 +157,12 @@ export function getObjAttrByPath(path, obj = {}){
 }
 
 export function parseDynamicVal(dynamicCode, dynamicCodeStr, view){
-    if(typeof dynamicCode != 'undefined' && (typeof Element === 'function' && false === dynamicCode instanceof Element)){
+    if(typeof dynamicCode === 'function') {
+        typeof console !== 'undefined' && console.error('dynamicCode can not be a function');
+        return '';
+    }
+    if(typeof dynamicCode != 'undefined'
+    && ((typeof Element === 'function' || typeof Element === 'object') && false === dynamicCode instanceof Element))
         return dynamicCode == 'undefined' ? '' : dynamicCode;
     }
     else if(typeof view[dynamicCode] != 'undefined'){
