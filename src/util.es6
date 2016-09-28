@@ -161,8 +161,8 @@ export function parseDynamicVal(dynamicCode, dynamicCodeStr, view){
         typeof console !== 'undefined' && console.error('dynamicCode can not be a function');
         return '';
     }
-    if(typeof dynamicCode != 'undefined'
-    && ((typeof Element === 'function' || typeof Element === 'object') && false === dynamicCode instanceof Element))
+    else if(typeof dynamicCode != 'undefined'
+    && ((typeof Element === 'function' || typeof Element === 'object') && false === dynamicCode instanceof Element)) {
         return dynamicCode == 'undefined' ? '' : dynamicCode;
     }
     else if(typeof view[dynamicCode] != 'undefined'){
