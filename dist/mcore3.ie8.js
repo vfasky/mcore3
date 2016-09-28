@@ -4660,7 +4660,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	function parseDynamicVal(dynamicCode, dynamicCodeStr, view) {
-	    if (typeof dynamicCode != 'undefined' && typeof Element === 'function' && false === dynamicCode instanceof Element) {
+	    if (typeof dynamicCode != 'undefined' && (typeof Element === 'function' || (typeof Element === 'undefined' ? 'undefined' : _typeof(Element)) === 'object') && false === dynamicCode instanceof Element) {
 	        return dynamicCode == 'undefined' ? '' : dynamicCode;
 	    } else if (typeof view[dynamicCode] != 'undefined') {
 	        return view[dynamicCode];
