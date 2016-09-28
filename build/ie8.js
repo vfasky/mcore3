@@ -12,7 +12,7 @@ config.module.loaders[0] = {
     exclude: /node_modules/,
     query: {
         "presets": ["stage-0", "es2015"],
-        "plugins": ["transform-es3-property-literals", "transform-es3-member-expression-literals"],
+        "plugins": ["transform-runtime", "transform-es3-property-literals", "transform-es3-member-expression-literals"],
     }
 };
 
