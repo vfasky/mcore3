@@ -126,7 +126,7 @@ function ajax(type, url, data, hideError = false, timeout = 10000){
         options.contentType = false;
     }
 
-    if(type === 'jsonp'){
+    if(type === 'JSONP'){
         options.type = 'GET';
         options.dataType = 'jsonp';
     }
@@ -167,12 +167,8 @@ function ajax(type, url, data, hideError = false, timeout = 10000){
     return promise;
 }
 
-http.get = (url, data, hideError = false, timeout = 10000)=>{
-    return ajax('GET', url, data, hideError, timeout);
-};
-http.post = (url, data, hideError = false, timeout = 10000)=>{
-    return ajax('POST', url, data, hideError, timeout);
-};
-http.jsonp = (url, data, hideError = false, timeout = 10000)=>{
-    return ajax('jsonp', url, data, hideError, timeout);
-};
+['get', 'post', 'jsonp', 'head', 'options', 'put', 'delete', 'trace', 'connect', 'patch'].forEach((method)=>{
+    http[method] = (url, data, hideError = false, timeout = 10000)=>{
+        return ajax(method.toUpperCase(), url, data, hideError, timeout);
+    };
+});

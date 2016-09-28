@@ -8763,7 +8763,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options.contentType = false;
 	    }
 	
-	    if (type === 'jsonp') {
+	    if (type === 'JSONP') {
 	        options.type = 'GET';
 	        options.dataType = 'jsonp';
 	    }
@@ -8800,24 +8800,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return promise;
 	}
 	
-	http.get = function (url, data) {
-	    var hideError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-	    var timeout = arguments.length <= 3 || arguments[3] === undefined ? 10000 : arguments[3];
+	['get', 'post', 'jsonp', 'head', 'options', 'put', 'delete', 'trace', 'connect', 'patch'].forEach(function (method) {
+	    http[method] = function (url, data) {
+	        var hideError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+	        var timeout = arguments.length <= 3 || arguments[3] === undefined ? 10000 : arguments[3];
 	
-	    return ajax('GET', url, data, hideError, timeout);
-	};
-	http.post = function (url, data) {
-	    var hideError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-	    var timeout = arguments.length <= 3 || arguments[3] === undefined ? 10000 : arguments[3];
-	
-	    return ajax('POST', url, data, hideError, timeout);
-	};
-	http.jsonp = function (url, data) {
-	    var hideError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-	    var timeout = arguments.length <= 3 || arguments[3] === undefined ? 10000 : arguments[3];
-	
-	    return ajax('jsonp', url, data, hideError, timeout);
-	};
+	        return ajax(method.toUpperCase(), url, data, hideError, timeout);
+	    };
+	});
 
 /***/ }
 /******/ ])
