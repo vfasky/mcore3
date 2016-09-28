@@ -6038,7 +6038,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (oldText != newText) {
 	                currentPatch.push({
 	                    type: _patch2.default.TEXT,
-	                    content: newText === undefined ? '' : newText
+	                    content: newText == 'undefined' ? '' : newText
 	                });
 	            }
 	        }

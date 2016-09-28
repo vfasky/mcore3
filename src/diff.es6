@@ -40,7 +40,7 @@ function dfsWalk(oldNode, newNode, index, patches){
         if(oldText != newText){
             currentPatch.push({
                 type: patch.TEXT,
-                content: newText === undefined ? '' : newText,
+                content: newText == 'undefined' ? '' : newText,
             });
 
         }
