@@ -44,6 +44,10 @@ export default class App extends EventEmitter {
     }
 
     route(path, View){
+        //兼容 esModule
+        if(View.default){
+            View = View.default;
+        }
         if(!this._viewUrlMap.hasOwnProperty(View.viewName)){
             this._viewUrlMap[View.viewName] = [];
         }

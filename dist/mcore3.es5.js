@@ -542,6 +542,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	// shim for using process in browser
+	
 	var process = module.exports = {};
 	
 	// cached from whatever global is present so that test runners that stub it
@@ -552,84 +553,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 	
-	function defaultSetTimout() {
-	    throw new Error('setTimeout has not been defined');
-	}
-	function defaultClearTimeout () {
-	    throw new Error('clearTimeout has not been defined');
-	}
 	(function () {
-	    try {
-	        if (typeof setTimeout === 'function') {
-	            cachedSetTimeout = setTimeout;
-	        } else {
-	            cachedSetTimeout = defaultSetTimout;
-	        }
-	    } catch (e) {
-	        cachedSetTimeout = defaultSetTimout;
+	  try {
+	    cachedSetTimeout = setTimeout;
+	  } catch (e) {
+	    cachedSetTimeout = function () {
+	      throw new Error('setTimeout is not defined');
 	    }
-	    try {
-	        if (typeof clearTimeout === 'function') {
-	            cachedClearTimeout = clearTimeout;
-	        } else {
-	            cachedClearTimeout = defaultClearTimeout;
-	        }
-	    } catch (e) {
-	        cachedClearTimeout = defaultClearTimeout;
+	  }
+	  try {
+	    cachedClearTimeout = clearTimeout;
+	  } catch (e) {
+	    cachedClearTimeout = function () {
+	      throw new Error('clearTimeout is not defined');
 	    }
+	  }
 	} ())
-	function runTimeout(fun) {
-	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
-	        return setTimeout(fun, 0);
-	    }
-	    // if setTimeout wasn't available but was latter defined
-	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-	        cachedSetTimeout = setTimeout;
-	        return setTimeout(fun, 0);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedSetTimeout(fun, 0);
-	    } catch(e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-	            return cachedSetTimeout.call(null, fun, 0);
-	        } catch(e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-	            return cachedSetTimeout.call(this, fun, 0);
-	        }
-	    }
-	
-	
-	}
-	function runClearTimeout(marker) {
-	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
-	    }
-	    // if clearTimeout wasn't available but was latter defined
-	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-	        cachedClearTimeout = clearTimeout;
-	        return clearTimeout(marker);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedClearTimeout(marker);
-	    } catch (e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-	            return cachedClearTimeout.call(null, marker);
-	        } catch (e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-	            return cachedClearTimeout.call(this, marker);
-	        }
-	    }
-	
-	
-	
-	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -654,7 +593,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = runTimeout(cleanUpNextTick);
+	    var timeout = cachedSetTimeout(cleanUpNextTick);
 	    draining = true;
 	
 	    var len = queue.length;
@@ -671,7 +610,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    runClearTimeout(timeout);
+	    cachedClearTimeout(timeout);
 	}
 	
 	process.nextTick = function (fun) {
@@ -683,7 +622,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        runTimeout(drainQueue);
+	        cachedSetTimeout(drainQueue, 0);
 	    }
 	};
 	
@@ -1247,7 +1186,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-isconstructor
 		IsConstructor: function IsConstructor(argument) {
-			return typeof argument === 'function' && !!argument.prototype; // unfortunately there's no way to truly check this without try/catch `new argument`
+			return this.IsCallable(argument); // unfortunately there's no way to truly check this without try/catch `new argument`
 		},
 	
 		// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-isextensible-o
@@ -1293,35 +1232,6 @@ return /******/ (function(modules) { // webpackBootstrap
 		// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero
 		SameValueZero: function SameValueZero(x, y) {
 			return (x === y) || ($isNaN(x) && $isNaN(y));
-		},
-	
-		Type: function Type(x) {
-			if (typeof x === 'symbol') {
-				return 'Symbol';
-			}
-			return ES5.Type(x);
-		},
-	
-		// http://www.ecma-international.org/ecma-262/6.0/#sec-speciesconstructor
-		SpeciesConstructor: function SpeciesConstructor(O, defaultConstructor) {
-			if (this.Type(O) !== 'Object') {
-				throw new TypeError('Assertion failed: Type(O) is not Object');
-			}
-			var C = O.constructor;
-			if (typeof C === 'undefined') {
-				return defaultConstructor;
-			}
-			if (this.Type(C) !== 'Object') {
-				throw new TypeError('O.constructor is not an Object');
-			}
-			var S = hasSymbols && Symbol.species ? C[Symbol.species] : undefined;
-			if (S == null) {
-				return defaultConstructor;
-			}
-			if (this.IsConstructor(S)) {
-				return S;
-			}
-			throw new TypeError('no constructor found');
 		}
 	});
 	
@@ -1711,28 +1621,6 @@ return /******/ (function(modules) { // webpackBootstrap
 				return true;
 			}
 			return $isNaN(x) && $isNaN(y);
-		},
-	
-		// http://www.ecma-international.org/ecma-262/5.1/#sec-8
-		Type: function Type(x) {
-			if (x === null) {
-				return 'Null';
-			}
-			if (typeof x === 'undefined') {
-				return 'Undefined';
-			}
-			if (typeof x === 'function' || typeof x === 'object') {
-				return 'Object';
-			}
-			if (typeof x === 'number') {
-				return 'Number';
-			}
-			if (typeof x === 'boolean') {
-				return 'Boolean';
-			}
-			if (typeof x === 'string') {
-				return 'String';
-			}
 		}
 	};
 	
@@ -2853,7 +2741,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // Thrash, waste and sodomy: IE GC bug
 	  var iframe = __webpack_require__(63)('iframe')
 	    , i      = enumBugKeys.length
-	    , lt     = '<'
 	    , gt     = '>'
 	    , iframeDocument;
 	  iframe.style.display = 'none';
@@ -2863,7 +2750,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // html.removeChild(iframe);
 	  iframeDocument = iframe.contentWindow.document;
 	  iframeDocument.open();
-	  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+	  iframeDocument.write('<script>document.F=Object</script' + gt);
 	  iframeDocument.close();
 	  createDict = iframeDocument.F;
 	  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
@@ -2881,7 +2768,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else result = createDict();
 	  return Properties === undefined ? result : dPs(result, Properties);
 	};
-
 
 /***/ },
 /* 77 */
@@ -3762,7 +3648,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        (0, _classCallCheck3.default)(this, Template);
 	
 	        //标记是否监听事件
-	        var _this = (0, _possibleConstructorReturn3.default)(this, (Template.__proto__ || (0, _getPrototypeOf2.default)(Template)).call(this));
+	
+	        var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Template).call(this));
 	
 	        _this._isWatchEvent = false;
 	
@@ -4922,7 +4809,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var args = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	        (0, _classCallCheck3.default)(this, Component);
 	
-	        var _this = (0, _possibleConstructorReturn3.default)(this, (Component.__proto__ || (0, _getPrototypeOf2.default)(Component)).call(this));
+	        var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Component).call(this));
 	
 	        (0, _keys2.default)(args).forEach(function (key) {
 	            _this[key] = args[key];
@@ -5406,9 +5293,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  , classof            = __webpack_require__(115)
 	  , $export            = __webpack_require__(52)
 	  , isObject           = __webpack_require__(59)
+	  , anObject           = __webpack_require__(58)
 	  , aFunction          = __webpack_require__(55)
 	  , anInstance         = __webpack_require__(136)
 	  , forOf              = __webpack_require__(137)
+	  , setProto           = __webpack_require__(124).set
 	  , speciesConstructor = __webpack_require__(140)
 	  , task               = __webpack_require__(141).set
 	  , microtask          = __webpack_require__(143)()
@@ -8424,7 +8313,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function View($el, app) {
 	        (0, _classCallCheck3.default)(this, View);
 	
-	        var _this = (0, _possibleConstructorReturn3.default)(this, (View.__proto__ || (0, _getPrototypeOf2.default)(View)).call(this, $el[0], {}, { app: app }));
+	        var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(View).call(this, $el[0], {}, { app: app }));
 	
 	        _this.$el = $el;
 	        // this.el = $el[0];
@@ -8538,7 +8427,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        var $ = (0, _util.get$)();
 	
-	        var _this = (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).call(this));
+	        var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(App).call(this));
 	
 	        _this.$el = $el;
 	        _this.options = $.extend({
@@ -8576,6 +8465,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function route(path, View) {
 	            var _this2 = this;
 	
+	            //兼容 esModule
+	            if (View.default) {
+	                View = View.default;
+	            }
 	            if (!this._viewUrlMap.hasOwnProperty(View.viewName)) {
 	                this._viewUrlMap[View.viewName] = [];
 	            }
