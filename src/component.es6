@@ -92,9 +92,6 @@ export default class Component extends EventEmitter {
         this.init();
         this.watch();
 
-
-
-
     }
     beforeInit(){}
     init(){}
@@ -105,6 +102,10 @@ export default class Component extends EventEmitter {
             parentEl.appendChild(this.refs);
             this.emit('mount', this.refs);
         }
+    }
+
+    isMount(){
+        return !this.refs || !this.refs.parentNode ? false : true;
     }
 
     destroy(notRemove){
@@ -121,8 +122,8 @@ export default class Component extends EventEmitter {
             this.$refs.remove();
             this.$refs = null;
         }
-        else if(this.$refs){
-            this.$refs.off();
+        else {
+            this.unBindEvents();
         }
 
         // 渲染完成，回调队列
@@ -226,15 +227,42 @@ export default class Component extends EventEmitter {
             this.mount();
         }
         else{
-            let patches = diff(this.virtualDom, virtualDom);
+            let oldRefs = this.refs;
+
+            //处理 root dom 就被替换的情况
+            if(this.virtualDom.tagName != virtualDom.tagName){
+                this.unBindEvents();
+                getComponents(this.virtualDom).forEach((component)=>{
+                    component.destroy();
+                });
+
+                this.refs = virtualDom.render();
+
+                if(oldRefs.parentNode && oldRefs.parentNode.replaceChild){
+                    oldRefs.parentNode.replaceChild(this.refs, oldRefs);
+                }
+            }
+            else{
+                // console.log(oldRefs.parentNode);
+                let patches = diff(this.virtualDom, virtualDom);
+                // console.log(patches);
+                //更新dom
+                patch(this.refs, patches);
+                // console.log(this.refs.parentNode);
+            }
+            if(!this.refs.parentNode){
+                this.unBindEvents();
+                this.mount();
+            }
             //先移除事件绑定
             // if(this.$refs){
             //     this.$refs.off();
             // }
-            //更新dom
-            patch(this.refs, patches);
+
             // console.log(this.refs);
-            // this.$refs = $(this.refs);
+            if(!this.$refs){
+                this.$refs = $(this.refs);
+            }
             this.virtualDom = virtualDom;
         }
         // 绑定事件
@@ -326,9 +354,9 @@ export default class Component extends EventEmitter {
             return;
         }
         const $ = util.get$();
-        if(this.events){
-            this.oldEvents = this.events;
-        }
+        // if(this.events){
+        //     this.oldEvents = this.events;
+        // }
         this.events = getEvents(this.virtualDom);
         let curEvents = Object.keys(this.events);
         // console.log(curEvents, this.events);
@@ -343,6 +371,13 @@ export default class Component extends EventEmitter {
             this.regEvent(eventName);
         });
 
+    }
+
+    unBindEvents(){
+        if(this.$refs){
+            this.$refs.off();
+        }
+        this._regEvents = [];
     }
 
     /**

@@ -50,7 +50,9 @@ function applyPatches(node, currentPatches){
                 }
                 if(newNode){
                     let element = node._element;
-                    node.parentNode.replaceChild(newNode, node);
+                    if(node.parentNode && node.parentNode.replaceChild){
+                        node.parentNode.replaceChild(newNode, node);
+                    }
                     if(element && element.destroy){
                         element.destroy();
                     }
@@ -69,8 +71,17 @@ function applyPatches(node, currentPatches){
                         let status = value !== undefined ? 'update' : 'remove';
                         node._element.template.setAttr(attr.toLowerCase(), value, true, status);
                         if(node._element._component){
-                            // console.log(node._element._component.set);
-                            node._element._component.set(attr.toLowerCase(), value, true, status);
+                            node._element._component.set(attr.toLowerCase(), value);
+                        }
+                    }
+                    if(node._element._component && !node._element._component.isMount()){
+                        console.log(node._element._component.parentView());
+                        node._element._component.renderQueue(true);
+                        for(let attr of propkeys){
+                            let value = currentPatch.props[attr];
+                            attr = attr.toLowerCase();
+                            console.log('update:' + attr, value);
+                            node._element._component.emit('update:' + attr, value);
                         }
                     }
                 }

@@ -4879,6 +4879,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }, {
+	        key: 'isMount',
+	        value: function isMount() {
+	            return !this.refs || !this.refs.parentNode ? false : true;
+	        }
+	    }, {
 	        key: 'destroy',
 	        value: function destroy(notRemove) {
 	            if (this._initWatchScope) {
@@ -4893,8 +4898,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!notRemove && this.$refs) {
 	                this.$refs.remove();
 	                this.$refs = null;
-	            } else if (this.$refs) {
-	                this.$refs.off();
+	            } else {
+	                this.unBindEvents();
 	            }
 	
 	            // 渲染完成，回调队列
@@ -5009,15 +5014,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.$refs = $(this.refs);
 	                this.mount();
 	            } else {
-	                var patches = (0, _diff2.default)(this.virtualDom, virtualDom);
+	                var oldRefs = this.refs;
+	
+	                //处理 root dom 就被替换的情况
+	                if (this.virtualDom.tagName != virtualDom.tagName) {
+	                    this.unBindEvents();
+	                    getComponents(this.virtualDom).forEach(function (component) {
+	                        component.destroy();
+	                    });
+	
+	                    this.refs = virtualDom.render();
+	
+	                    if (oldRefs.parentNode && oldRefs.parentNode.replaceChild) {
+	                        oldRefs.parentNode.replaceChild(this.refs, oldRefs);
+	                    }
+	                } else {
+	                    // console.log(oldRefs.parentNode);
+	                    var patches = (0, _diff2.default)(this.virtualDom, virtualDom);
+	                    // console.log(patches);
+	                    //更新dom
+	                    (0, _patch2.default)(this.refs, patches);
+	                    // console.log(this.refs.parentNode);
+	                }
+	                if (!this.refs.parentNode) {
+	                    this.unBindEvents();
+	                    this.mount();
+	                }
 	                //先移除事件绑定
 	                // if(this.$refs){
 	                //     this.$refs.off();
 	                // }
-	                //更新dom
-	                (0, _patch2.default)(this.refs, patches);
+	
 	                // console.log(this.refs);
-	                // this.$refs = $(this.refs);
+	                if (!this.$refs) {
+	                    this.$refs = $(this.refs);
+	                }
 	                this.virtualDom = virtualDom;
 	            }
 	            // 绑定事件
@@ -5115,9 +5146,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return;
 	            }
 	            var $ = util.get$();
-	            if (this.events) {
-	                this.oldEvents = this.events;
-	            }
+	            // if(this.events){
+	            //     this.oldEvents = this.events;
+	            // }
 	            this.events = getEvents(this.virtualDom);
 	            var curEvents = (0, _keys2.default)(this.events);
 	            // console.log(curEvents, this.events);
@@ -5131,6 +5162,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            curEvents.forEach(function (eventName) {
 	                _this5.regEvent(eventName);
 	            });
+	        }
+	    }, {
+	        key: 'unBindEvents',
+	        value: function unBindEvents() {
+	            if (this.$refs) {
+	                this.$refs.off();
+	            }
+	            this._regEvents = [];
 	        }
 	
 	        /**
@@ -6291,7 +6330,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                    if (newNode) {
 	                        var element = node._element;
-	                        node.parentNode.replaceChild(newNode, node);
+	                        if (node.parentNode && node.parentNode.replaceChild) {
+	                            node.parentNode.replaceChild(newNode, node);
+	                        }
 	                        if (element && element.destroy) {
 	                            element.destroy();
 	                        }
@@ -6311,14 +6352,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                        try {
 	                            for (var _iterator2 = (0, _getIterator3.default)(propkeys), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	                                var attr = _step2.value;
+	                                var _attr = _step2.value;
 	
-	                                var value = currentPatch.props[attr];
-	                                var status = value !== undefined ? 'update' : 'remove';
-	                                node._element.template.setAttr(attr.toLowerCase(), value, true, status);
+	                                var _value = currentPatch.props[_attr];
+	                                var status = _value !== undefined ? 'update' : 'remove';
+	                                node._element.template.setAttr(_attr.toLowerCase(), _value, true, status);
 	                                if (node._element._component) {
-	                                    // console.log(node._element._component.set);
-	                                    node._element._component.set(attr.toLowerCase(), value, true, status);
+	                                    node._element._component.set(_attr.toLowerCase(), _value);
 	                                }
 	                            }
 	                        } catch (err) {
@@ -6332,6 +6372,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            } finally {
 	                                if (_didIteratorError2) {
 	                                    throw _iteratorError2;
+	                                }
+	                            }
+	                        }
+	
+	                        if (node._element._component && !node._element._component.isMount()) {
+	                            console.log(node._element._component.parentView());
+	                            node._element._component.renderQueue(true);
+	                            var _iteratorNormalCompletion3 = true;
+	                            var _didIteratorError3 = false;
+	                            var _iteratorError3 = undefined;
+	
+	                            try {
+	                                for (var _iterator3 = (0, _getIterator3.default)(propkeys), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                                    var attr = _step3.value;
+	
+	                                    var value = currentPatch.props[attr];
+	                                    attr = attr.toLowerCase();
+	                                    console.log('update:' + attr, value);
+	                                    node._element._component.emit('update:' + attr, value);
+	                                }
+	                            } catch (err) {
+	                                _didIteratorError3 = true;
+	                                _iteratorError3 = err;
+	                            } finally {
+	                                try {
+	                                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	                                        _iterator3.return();
+	                                    }
+	                                } finally {
+	                                    if (_didIteratorError3) {
+	                                        throw _iteratorError3;
+	                                    }
 	                                }
 	                            }
 	                        }
@@ -8536,15 +8608,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            this.stack(0, null, done);
 	        }
+	
+	        // _initView(View, viewName){
+	        //     let $el = get$()('<div />');
+	        //     $el.attr('class', this.options.viewClass);
+	        //
+	        //     let instantiate = new View($el, this);
+	        //
+	        //     this.curView = {
+	        //         name: viewName,
+	        //         instantiate: instantiate,
+	        //     };
+	        //
+	        //     this.runMiddlewares((err, instantiate)=>{
+	        //         instantiate.$el.appendTo(this.$el);
+	        //         if(!err){
+	        //             this._changeViewEvent.after(this.curView, ()=>{
+	        //                 instantiate.afterRun();
+	        //             }, this);
+	        //         }
+	        //     });
+	        // }
+	
 	    }, {
 	        key: '_initView',
-	        value: function _initView(View, viewName) {
+	        value: function _initView(View, viewName, parentNode, virtualDom, refs) {
 	            var _this4 = this;
 	
-	            var $el = (0, _util.get$)()('<div />');
+	            var $el = (0, _util.get$)()(parentNode);
 	            $el.attr('class', this.options.viewClass);
 	
 	            var instantiate = new View($el, this);
+	            if (refs) {
+	                instantiate.virtualDom = virtualDom;
+	                instantiate.refs = refs;
+	            }
 	
 	            this.curView = {
 	                name: viewName,
@@ -8552,7 +8650,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	
 	            this.runMiddlewares(function (err, instantiate) {
-	                instantiate.$el.appendTo(_this4.$el);
+	                if (!refs) {
+	                    instantiate.$el.appendTo(_this4.$el);
+	                }
 	                if (!err) {
 	                    _this4._changeViewEvent.after(_this4.curView, function () {
 	                        instantiate.afterRun();
@@ -8580,6 +8680,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                viewName: viewName,
 	                app: this
 	            };
+	
 	            if (this.curView) {
 	                // 已经初始化，只调用run方法
 	                if (this.curView.name === viewName) {
@@ -8593,17 +8694,63 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                this._changeViewEvent.before(this.curView, function () {
 	                    _this5.emit('destroyView', _this5.curView);
+	                    var virtualDom = _this5.curView.instantiate.virtualDom;
+	                    var refs = _this5.curView.instantiate.refs;
+	                    var parentNode = _this5.curView.instantiate.parentNode;
+	                    // console.log(parentNode);
+	                    // console.log(refs, parentNode);
 	
-	                    _this5.curView.instantiate.destroy();
-	                    // console.log(this.curView.instantiate.$el);
-	                    _this5.curView.instantiate.$el.remove();
+	                    _this5.curView.instantiate.destroy(true);
+	                    // console.log(parentNode);
 	
-	                    _this5._initView(View, viewName);
+	                    _this5._initView(View, viewName, parentNode, virtualDom, refs);
 	                }, this);
 	            } else {
-	                this._initView(View, viewName);
+	                this._initView(View, viewName, document.createElement('div'));
 	            }
 	        }
+	
+	        // 启动view
+	        // runView(View, route, args){
+	        //     let viewName = View.viewName;
+	        //     if(!viewName){
+	        //         throw new Error('View not viewName');
+	        //     }
+	        //
+	        //     this.env = {
+	        //         route: route,
+	        //         context: route.context,
+	        //         args: args,
+	        //         viewName: viewName,
+	        //         app: this,
+	        //     };
+	        //     if(this.curView){
+	        //         // 已经初始化，只调用run方法
+	        //         if(this.curView.name === viewName){
+	        //             this.runMiddlewares((err, instantiate)=>{
+	        //                 if(!err){
+	        //                     instantiate.afterRun();
+	        //                 }
+	        //             });
+	        //             return;
+	        //         }
+	        //
+	        //         this._changeViewEvent.before(this.curView, ()=>{
+	        //             this.emit('destroyView', this.curView);
+	        //
+	        //
+	        //             this.curView.instantiate.destroy();
+	        //             // console.log(this.curView.instantiate.$el);
+	        //             this.curView.instantiate.$el.remove();
+	        //
+	        //             this._initView(View, viewName);
+	        //         }, this);
+	        //     }
+	        //     else{
+	        //         this._initView(View, viewName);
+	        //     }
+	        // }
+	
 	    }, {
 	        key: 'run',
 	        value: function run() {

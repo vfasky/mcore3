@@ -71,6 +71,8 @@ export default class App extends EventEmitter {
         return this;
     }
 
+
+
     _runView(done, err){
         this.curView.instantiate.route = this.env.route;
         this.curView.instantiate.context = this.env.context;
@@ -101,11 +103,36 @@ export default class App extends EventEmitter {
         this.stack(0, null, done);
     }
 
-    _initView(View, viewName){
-        let $el = get$()('<div />');
+    // _initView(View, viewName){
+    //     let $el = get$()('<div />');
+    //     $el.attr('class', this.options.viewClass);
+    //
+    //     let instantiate = new View($el, this);
+    //
+    //     this.curView = {
+    //         name: viewName,
+    //         instantiate: instantiate,
+    //     };
+    //
+    //     this.runMiddlewares((err, instantiate)=>{
+    //         instantiate.$el.appendTo(this.$el);
+    //         if(!err){
+    //             this._changeViewEvent.after(this.curView, ()=>{
+    //                 instantiate.afterRun();
+    //             }, this);
+    //         }
+    //     });
+    // }
+
+    _initView(View, viewName, parentNode, virtualDom, refs){
+        let $el = get$()(parentNode);
         $el.attr('class', this.options.viewClass);
 
         let instantiate = new View($el, this);
+        if(refs){
+            instantiate.virtualDom = virtualDom;
+            instantiate.refs = refs;
+        }
 
         this.curView = {
             name: viewName,
@@ -113,7 +140,9 @@ export default class App extends EventEmitter {
         };
 
         this.runMiddlewares((err, instantiate)=>{
-            instantiate.$el.appendTo(this.$el);
+            if(!refs){
+                instantiate.$el.appendTo(this.$el);
+            }
             if(!err){
                 this._changeViewEvent.after(this.curView, ()=>{
                     instantiate.afterRun();
@@ -136,6 +165,7 @@ export default class App extends EventEmitter {
             viewName: viewName,
             app: this,
         };
+
         if(this.curView){
             // 已经初始化，只调用run方法
             if(this.curView.name === viewName){
@@ -149,19 +179,63 @@ export default class App extends EventEmitter {
 
             this._changeViewEvent.before(this.curView, ()=>{
                 this.emit('destroyView', this.curView);
+                let virtualDom = this.curView.instantiate.virtualDom;
+                let refs = this.curView.instantiate.refs;
+                let parentNode = this.curView.instantiate.parentNode;
+                // console.log(parentNode);
+                // console.log(refs, parentNode);
 
+                this.curView.instantiate.destroy(true);
+                // console.log(parentNode);
 
-                this.curView.instantiate.destroy();
-                // console.log(this.curView.instantiate.$el);
-                this.curView.instantiate.$el.remove();
-
-                this._initView(View, viewName);
+                this._initView(View, viewName, parentNode, virtualDom, refs);
             }, this);
         }
         else{
-            this._initView(View, viewName);
+            this._initView(View, viewName, document.createElement('div'));
         }
     }
+
+    // 启动view
+    // runView(View, route, args){
+    //     let viewName = View.viewName;
+    //     if(!viewName){
+    //         throw new Error('View not viewName');
+    //     }
+    //
+    //     this.env = {
+    //         route: route,
+    //         context: route.context,
+    //         args: args,
+    //         viewName: viewName,
+    //         app: this,
+    //     };
+    //     if(this.curView){
+    //         // 已经初始化，只调用run方法
+    //         if(this.curView.name === viewName){
+    //             this.runMiddlewares((err, instantiate)=>{
+    //                 if(!err){
+    //                     instantiate.afterRun();
+    //                 }
+    //             });
+    //             return;
+    //         }
+    //
+    //         this._changeViewEvent.before(this.curView, ()=>{
+    //             this.emit('destroyView', this.curView);
+    //
+    //
+    //             this.curView.instantiate.destroy();
+    //             // console.log(this.curView.instantiate.$el);
+    //             this.curView.instantiate.$el.remove();
+    //
+    //             this._initView(View, viewName);
+    //         }, this);
+    //     }
+    //     else{
+    //         this._initView(View, viewName);
+    //     }
+    // }
 
     run(){
         this.router.run();
