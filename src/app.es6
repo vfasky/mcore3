@@ -130,8 +130,9 @@ export default class App extends EventEmitter {
 
         let instantiate = new View($el, this);
         if(refs){
-            instantiate.virtualDom = virtualDom;
-            instantiate.refs = refs;
+            instantiate.useVirtualDom(virtualDom, refs);
+            // instantiate.refs = refs;
+            // console.log(instantiate);
         }
 
         this.curView = {

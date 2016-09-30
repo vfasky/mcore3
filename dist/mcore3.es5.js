@@ -5015,6 +5015,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.mount();
 	            } else {
 	                var oldRefs = this.refs;
+	                // console.log(this.virtualDom, virtualDom);
 	
 	                //处理 root dom 就被替换的情况
 	                if (this.virtualDom.tagName != virtualDom.tagName) {
@@ -6098,6 +6099,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    newNode.cloneElement(oldNode);
 	                    // console.log(newNode);
 	                }
+	                // if(newNode._component){
+	                //     console.log(newNode._component.parentElement.view);
+	                //     console.log(oldNode._component.parentElement.view);
+	                // }
 	                // if(!newNode.template && oldNode.template){
 	                //     newNode.template = oldNode.template;
 	                //     newNode.template.element = newNode;
@@ -6346,19 +6351,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                case PROPS:
 	                    if (node._element && node._element.template) {
 	                        var propkeys = (0, _keys2.default)(currentPatch.props);
+	                        var isComponent = !node._element._component ? false : true;
+	                        var isMount = isComponent && node._element._component.isMount();
 	                        var _iteratorNormalCompletion2 = true;
 	                        var _didIteratorError2 = false;
 	                        var _iteratorError2 = undefined;
 	
 	                        try {
 	                            for (var _iterator2 = (0, _getIterator3.default)(propkeys), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	                                var _attr = _step2.value;
+	                                var attr = _step2.value;
 	
-	                                var _value = currentPatch.props[_attr];
-	                                var status = _value !== undefined ? 'update' : 'remove';
-	                                node._element.template.setAttr(_attr.toLowerCase(), _value, true, status);
-	                                if (node._element._component) {
-	                                    node._element._component.set(_attr.toLowerCase(), _value);
+	                                var value = currentPatch.props[attr];
+	                                var status = value !== undefined ? 'update' : 'remove';
+	                                node._element.template.setAttr(attr.toLowerCase(), value, true, status);
+	                                if (isComponent && isMount) {
+	                                    node._element._component.set(attr.toLowerCase(), value);
 	                                }
 	                            }
 	                        } catch (err) {
@@ -6376,36 +6383,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            }
 	                        }
 	
-	                        if (node._element._component && !node._element._component.isMount()) {
-	                            console.log(node._element._component.parentView());
-	                            node._element._component.renderQueue(true);
-	                            var _iteratorNormalCompletion3 = true;
-	                            var _didIteratorError3 = false;
-	                            var _iteratorError3 = undefined;
-	
-	                            try {
-	                                for (var _iterator3 = (0, _getIterator3.default)(propkeys), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	                                    var attr = _step3.value;
-	
-	                                    var value = currentPatch.props[attr];
-	                                    attr = attr.toLowerCase();
-	                                    console.log('update:' + attr, value);
-	                                    node._element._component.emit('update:' + attr, value);
-	                                }
-	                            } catch (err) {
-	                                _didIteratorError3 = true;
-	                                _iteratorError3 = err;
-	                            } finally {
-	                                try {
-	                                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-	                                        _iterator3.return();
-	                                    }
-	                                } finally {
-	                                    if (_didIteratorError3) {
-	                                        throw _iteratorError3;
-	                                    }
-	                                }
-	                            }
+	                        if (isComponent && !isMount) {
+	                            node._element._component.init();
+	                            // console.log(node._element._component.parentView());
+	                            // node._element._component.renderQueue(true);
+	                            // for(let attr of propkeys){
+	                            //     let value = currentPatch.props[attr];
+	                            //     attr = attr.toLowerCase();
+	                            //     // console.log('update:' + attr, value);
+	                            //     node._element._component.emit('update:' + attr, value);
+	                            // }
 	                        }
 	                    } else if (node.textContent) {
 	                        node.textContent = currentPatch.content;
@@ -8375,6 +8362,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _component2 = _interopRequireDefault(_component);
 	
+	var _util = __webpack_require__(30);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var _$iframe = null;
@@ -8394,9 +8383,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    (0, _createClass3.default)(View, [{
+	        key: 'useVirtualDom',
+	        value: function useVirtualDom(virtualDom, refs) {
+	            var _this2 = this;
+	
+	            this.refs = refs;
+	            this.virtualDom = virtualDom;
+	            this.virtualDom.view = this;
+	
+	            (0, _util.getComponents)(this.virtualDom).forEach(function (component) {
+	                if (component.parentElement) {
+	                    component.parentElement.view = _this2;
+	                }
+	                // console.log(component);
+	            });
+	
+	            // console.log(virtualDom);
+	        }
+	    }, {
 	        key: 'setTitle',
 	        value: function setTitle(title) {
-	            var _this2 = this;
+	            var _this3 = this;
 	
 	            this.title = title;
 	            if (document.title === title) {
@@ -8406,14 +8413,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (this.isWeixinBrowser && this.isIOS) {
 	                (function () {
 	                    if (_$iframe === null) {
-	                        _$iframe = _this2.util.get$()('<iframe style="width: 0; height: 0" src="/favicon.ico"></iframe>');
+	                        _$iframe = _this3.util.get$()('<iframe style="width: 0; height: 0" src="/favicon.ico"></iframe>');
 	                    }
 	                    var $iframe = _$iframe;
 	                    $iframe.one('load', function () {
-	                        _this2.nextTick(function () {
+	                        _this3.nextTick(function () {
 	                            $iframe.remove();
 	                        });
-	                    }).appendTo(_this2.$body);
+	                    }).appendTo(_this3.$body);
 	                })();
 	            }
 	        }
@@ -8640,8 +8647,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            var instantiate = new View($el, this);
 	            if (refs) {
-	                instantiate.virtualDom = virtualDom;
-	                instantiate.refs = refs;
+	                instantiate.useVirtualDom(virtualDom, refs);
+	                // instantiate.refs = refs;
+	                // console.log(instantiate);
 	            }
 	
 	            this.curView = {

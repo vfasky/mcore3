@@ -66,23 +66,26 @@ function applyPatches(node, currentPatches){
             case PROPS:
                 if(node._element && node._element.template){
                     let propkeys = Object.keys(currentPatch.props);
+                    let isComponent = !node._element._component ? false : true;
+                    let isMount = isComponent && node._element._component.isMount();
                     for(let attr of propkeys){
                         let value = currentPatch.props[attr];
                         let status = value !== undefined ? 'update' : 'remove';
                         node._element.template.setAttr(attr.toLowerCase(), value, true, status);
-                        if(node._element._component){
+                        if(isComponent && isMount){
                             node._element._component.set(attr.toLowerCase(), value);
                         }
                     }
-                    if(node._element._component && !node._element._component.isMount()){
-                        console.log(node._element._component.parentView());
-                        node._element._component.renderQueue(true);
-                        for(let attr of propkeys){
-                            let value = currentPatch.props[attr];
-                            attr = attr.toLowerCase();
-                            console.log('update:' + attr, value);
-                            node._element._component.emit('update:' + attr, value);
-                        }
+                    if(isComponent && !isMount){
+                        node._element._component.init();
+                        // console.log(node._element._component.parentView());
+                        // node._element._component.renderQueue(true);
+                        // for(let attr of propkeys){
+                        //     let value = currentPatch.props[attr];
+                        //     attr = attr.toLowerCase();
+                        //     // console.log('update:' + attr, value);
+                        //     node._element._component.emit('update:' + attr, value);
+                        // }
                     }
                 }
                 else if(node.textContent){

@@ -228,6 +228,7 @@ export default class Component extends EventEmitter {
         }
         else{
             let oldRefs = this.refs;
+            // console.log(this.virtualDom, virtualDom);
 
             //处理 root dom 就被替换的情况
             if(this.virtualDom.tagName != virtualDom.tagName){

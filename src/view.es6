@@ -6,6 +6,7 @@
 "use strict";
 
 import Component from './component';
+import {getComponents} from './util';
 
 let _$iframe = null;
 
@@ -15,6 +16,21 @@ export default class View extends Component{
         this.$el = $el;
         // this.el = $el[0];
 
+    }
+
+    useVirtualDom(virtualDom, refs){
+        this.refs = refs;
+        this.virtualDom = virtualDom;
+        this.virtualDom.view = this;
+
+        getComponents(this.virtualDom).forEach((component)=>{
+            if(component.parentElement){
+                component.parentElement.view = this;
+            }
+            // console.log(component);
+        });
+
+        // console.log(virtualDom);
     }
 
 

@@ -63,6 +63,10 @@ function dfsWalk(oldNode, newNode, index, patches){
             newNode.cloneElement(oldNode);
             // console.log(newNode);
         }
+        // if(newNode._component){
+        //     console.log(newNode._component.parentElement.view);
+        //     console.log(oldNode._component.parentElement.view);
+        // }
         // if(!newNode.template && oldNode.template){
         //     newNode.template = oldNode.template;
         //     newNode.template.element = newNode;
