@@ -8659,10 +8659,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	if (typeof _promise2.default.prototype.always == 'undefined') {
 	    _promise2.default.prototype.always = function (onResolveOrReject) {
-	        return this.then(onResolveOrReject, function (reason) {
-	            onResolveOrReject(reason);
-	            throw reason;
-	        });
+	        try {
+	            return this.then(onResolveOrReject, function (reason) {
+	                onResolveOrReject(reason);
+	                throw reason;
+	            });
+	        } catch (err) {
+	            onResolveOrReject();
+	        }
 	    };
 	}
 	

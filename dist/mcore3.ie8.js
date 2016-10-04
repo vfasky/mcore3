@@ -8976,7 +8976,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                node._element.template.setAttr(attr.toLowerCase(), value, true, status);
 	                                if (node._element._component) {
 	                                    // console.log(node._element._component.set);
-	                                    node._element._component.set(attr.toLowerCase(), value, true, status);
+	                                    node._element._component.set(attr.toLowerCase(), value);
 	                                }
 	                            }
 	                        } catch (err) {
