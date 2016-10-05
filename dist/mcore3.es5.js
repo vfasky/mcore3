@@ -4577,7 +4577,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 	
-	binders['load-data'] = binders['from-load-data'] = {
+	binders['load-data'] = binders['form-load-data'] = {
 	    init: function init(el, data) {
 	        if (el.tagName.toLowerCase() !== 'form' || !el._element) {
 	            return el.setAttribute('load-data', data);
@@ -6318,7 +6318,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                node._element.template.setAttr(attr.toLowerCase(), value, true, status);
 	                                if (node._element._component) {
 	                                    // console.log(node._element._component.set);
-	                                    node._element._component.set(attr.toLowerCase(), value, true, status);
+	                                    node._element._component.set(attr.toLowerCase(), value);
 	                                }
 	                            }
 	                        } catch (err) {
@@ -8659,14 +8659,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	if (typeof _promise2.default.prototype.always == 'undefined') {
 	    _promise2.default.prototype.always = function (onResolveOrReject) {
-	        try {
-	            return this.then(onResolveOrReject, function (reason) {
-	                onResolveOrReject(reason);
-	                throw reason;
-	            });
-	        } catch (err) {
-	            onResolveOrReject();
-	        }
+	        return this.then(onResolveOrReject, function (reason) {
+	            onResolveOrReject(reason);
+	            throw reason;
+	        });
 	    };
 	}
 	

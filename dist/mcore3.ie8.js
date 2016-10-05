@@ -7235,7 +7235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 	
-	binders['load-data'] = binders['from-load-data'] = {
+	binders['load-data'] = binders['form-load-data'] = {
 	    init: function init(el, data) {
 	        if (el.tagName.toLowerCase() !== 'form' || !el._element) {
 	            return el.setAttribute('load-data', data);
