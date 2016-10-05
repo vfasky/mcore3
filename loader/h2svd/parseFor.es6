@@ -13,7 +13,7 @@ import {variable} from './config';
 
 let buildArray = (domAttr, iName, vName)=>{
     let code = `
-
+        // buildArray
         ${variable.forArrayName}.forEach(function(${vName}, ${iName}){
             ${ifBegin(domAttr)}
                 var ${variable.childrenName};
@@ -27,13 +27,15 @@ let buildArray = (domAttr, iName, vName)=>{
 
 let buildObject = (domAttr, kName, vName, oName)=>{
     let code = `
-
+        // buildObject
         ${variable.forObjKeysName}.forEach(function(${kName}, ${variable.forIName}){
             var ${vName} = ${oName}[${kName}];
             ${ifBegin(domAttr)}
                 var ${variable.childrenName};
+                // parseAttr
                 ${parseAttr(domAttr)}
-                ${build(domAttr, variable.pathName + ' + \'.\' + ' + variable.pathIName)}
+               
+                ${build(domAttr, variable.pathName + ' + \'.\' + ' + variable.forIName)}
             ${ifEnd(domAttr)}
         });
     `;
@@ -45,6 +47,7 @@ export default (domAttr)=>{
 
     if(!domAttr.attribs['mc-for']){
         code = `
+            // ![mc-for]
             var ${variable.forArrayName} = [0];
             ${buildArray(domAttr, variable.forIName, variable.forVName, variable.pathStaticIName)}
 

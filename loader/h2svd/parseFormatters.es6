@@ -92,7 +92,7 @@ export default (name, dynamicVal, dynamicAttrName)=>{
         `;
     });
 
-    let code = `
+    let code = ` // parseFormatters.es6
         var ${variable.tmpAttrName};
         try{
             ${variable.tmpAttrName} = ${startVal};

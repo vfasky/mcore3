@@ -31,7 +31,7 @@ export default (domAttr, key)=>{
     }
 
     let code = `
-
+        // build.es6
         ${variable.childrenName} = [];
 
 

@@ -28,7 +28,7 @@ export default (html, options = {})=>{
         `;
     });
 
-    let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){
+    let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){ //index.es6
             var ${variable.utilName} = {
                 clone: ${variable.mcoreName}.util.clone,
                 build: function(tagName, key, attr, dynamicAttr, events, children){

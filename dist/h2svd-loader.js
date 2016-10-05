@@ -124,7 +124,7 @@ module.exports =
 	        forCode += '\n            (' + (0, _parseDomDef2.default)(domAttr) + ')(' + _config.variable.scopeName + ', ' + _config.variable.treeName + ', \'' + k + '\');\n        ';
 	    });
 	
-	    var code = 'function(' + _config.variable.scopeName + ', ' + _config.variable.viewName + ', ' + _config.variable.mcoreName + '){\n            var ' + _config.variable.utilName + ' = {\n                clone: ' + _config.variable.mcoreName + '.util.clone,\n                build: function(tagName, key, attr, dynamicAttr, events, children){\n                    return new ' + _config.variable.mcoreName + '.Element(tagName, key, attr, dynamicAttr, children, events, ' + _config.variable.viewName + ');\n                },\n                parseDynamicVal: function(dynamicCode, dynamicCodeStr){\n                    return ' + _config.variable.mcoreName + '.util.parseDynamicVal(dynamicCode, dynamicCodeStr, ' + _config.variable.viewName + ');\n                },\n                callFormatter: function(formatterName){\n                    return ' + _config.variable.mcoreName + '.util.callFormatter(formatterName, ' + _config.variable.mcoreName + ');\n                },\n            };\n            var ' + _config.variable.treeName + ' = [];\n            ' + forCode + '\n            return ' + _config.variable.treeName + ';\n        };\n    ';
+	    var code = 'function(' + _config.variable.scopeName + ', ' + _config.variable.viewName + ', ' + _config.variable.mcoreName + '){ //index.es6\n            var ' + _config.variable.utilName + ' = {\n                clone: ' + _config.variable.mcoreName + '.util.clone,\n                build: function(tagName, key, attr, dynamicAttr, events, children){\n                    return new ' + _config.variable.mcoreName + '.Element(tagName, key, attr, dynamicAttr, children, events, ' + _config.variable.viewName + ');\n                },\n                parseDynamicVal: function(dynamicCode, dynamicCodeStr){\n                    return ' + _config.variable.mcoreName + '.util.parseDynamicVal(dynamicCode, dynamicCodeStr, ' + _config.variable.viewName + ');\n                },\n                callFormatter: function(formatterName){\n                    return ' + _config.variable.mcoreName + '.util.callFormatter(formatterName, ' + _config.variable.mcoreName + ');\n                },\n            };\n            var ' + _config.variable.treeName + ' = [];\n            ' + forCode + '\n            return ' + _config.variable.treeName + ';\n        };\n    ';
 	
 	    code = (0, _jsBeautify.js_beautify)(code, {
 	        indent_size: 4
@@ -213,7 +213,7 @@ module.exports =
 	  // if(domAttr.type === 'text'){
 	  //     return parseText(domAttr);
 	  // }
-	  var code = 'function(' + _config.variable.scopeName + ', ' + _config.variable.treeName + ', ' + _config.variable.pathName + '){\n        ' + (domAttr.type === 'text' ? (0, _parseText2.default)(domAttr) : (0, _parseFor2.default)(domAttr)) + '\n    }';
+	  var code = 'function(' + _config.variable.scopeName + ', ' + _config.variable.treeName + ', ' + _config.variable.pathName + '){ // parseDomDef.es6\n        ' + (domAttr.type === 'text' ? (0, _parseText2.default)(domAttr) : (0, _parseFor2.default)(domAttr)) + '\n    }';
 	
 	  return code;
 	};
@@ -252,12 +252,12 @@ module.exports =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var buildArray = function buildArray(domAttr, iName, vName) {
-	    var code = '\n\n        ' + _config.variable.forArrayName + '.forEach(function(' + vName + ', ' + iName + '){\n            ' + (0, _parseIf.begin)(domAttr) + '\n                var ' + _config.variable.childrenName + ';\n                ' + (0, _parseAttr2.default)(domAttr) + '\n                ' + (0, _build2.default)(domAttr, _config.variable.pathName + ' + \'.\' + (' + _config.variable.treeName + '.length)') + '\n            ' + (0, _parseIf.end)(domAttr) + '\n        });\n    ';
+	    var code = '\n        // buildArray\n        ' + _config.variable.forArrayName + '.forEach(function(' + vName + ', ' + iName + '){\n            ' + (0, _parseIf.begin)(domAttr) + '\n                var ' + _config.variable.childrenName + ';\n                ' + (0, _parseAttr2.default)(domAttr) + '\n                ' + (0, _build2.default)(domAttr, _config.variable.pathName + ' + \'.\' + (' + _config.variable.treeName + '.length)') + '\n            ' + (0, _parseIf.end)(domAttr) + '\n        });\n    ';
 	    return code;
 	};
 	
 	var buildObject = function buildObject(domAttr, kName, vName, oName) {
-	    var code = '\n\n        ' + _config.variable.forObjKeysName + '.forEach(function(' + kName + ', ' + _config.variable.forIName + '){\n            var ' + vName + ' = ' + oName + '[' + kName + '];\n            ' + (0, _parseIf.begin)(domAttr) + '\n                var ' + _config.variable.childrenName + ';\n                ' + (0, _parseAttr2.default)(domAttr) + '\n                ' + (0, _build2.default)(domAttr, _config.variable.pathName + ' + \'.\' + ' + _config.variable.pathIName) + '\n            ' + (0, _parseIf.end)(domAttr) + '\n        });\n    ';
+	    var code = '\n        // buildObject\n        ' + _config.variable.forObjKeysName + '.forEach(function(' + kName + ', ' + _config.variable.forIName + '){\n            var ' + vName + ' = ' + oName + '[' + kName + '];\n            ' + (0, _parseIf.begin)(domAttr) + '\n                var ' + _config.variable.childrenName + ';\n                // parseAttr\n                ' + (0, _parseAttr2.default)(domAttr) + '\n               \n                ' + (0, _build2.default)(domAttr, _config.variable.pathName + ' + \'.\' + ' + _config.variable.forIName) + '\n            ' + (0, _parseIf.end)(domAttr) + '\n        });\n    ';
 	    return code;
 	};
 	
@@ -265,7 +265,7 @@ module.exports =
 	    var code = '';
 	
 	    if (!domAttr.attribs['mc-for']) {
-	        code = '\n            var ' + _config.variable.forArrayName + ' = [0];\n            ' + buildArray(domAttr, _config.variable.forIName, _config.variable.forVName, _config.variable.pathStaticIName) + '\n\n        ';
+	        code = '\n            // ![mc-for]\n            var ' + _config.variable.forArrayName + ' = [0];\n            ' + buildArray(domAttr, _config.variable.forIName, _config.variable.forVName, _config.variable.pathStaticIName) + '\n\n        ';
 	    } else {
 	        var forCode = domAttr.attribs['mc-for'];
 	
@@ -328,7 +328,7 @@ module.exports =
 	        });
 	    }
 	
-	    var code = '\n\n        ' + _config.variable.childrenName + ' = [];\n\n\n        ' + forCode + '\n        ' + _config.variable.treeName + '.push(\n            ' + _config.variable.utilName + '.build(\n                \'' + domAttr.name + '\', ' + _config.variable.pathSubIName + ', ' + _config.variable.attrName + ',\n                ' + _config.variable.dynamicAttrName + ', ' + _config.variable.eventName + ', ' + _config.variable.childrenName + '\n            )\n        );\n    ';
+	    var code = '\n        // build.es6\n        ' + _config.variable.childrenName + ' = [];\n\n\n        ' + forCode + '\n        ' + _config.variable.treeName + '.push(\n            ' + _config.variable.utilName + '.build(\n                \'' + domAttr.name + '\', ' + _config.variable.pathSubIName + ', ' + _config.variable.attrName + ',\n                ' + _config.variable.dynamicAttrName + ', ' + _config.variable.eventName + ', ' + _config.variable.childrenName + '\n            )\n        );\n    ';
 	
 	    return code;
 	};
@@ -554,7 +554,7 @@ module.exports =
 	        formatterCode += '\n            x = ' + _config.variable.utilName + '.callFormatter(\'' + formatter + '\')(' + args.join(',') + ');\n        ';
 	    });
 	
-	    var code = '\n        var ' + _config.variable.tmpAttrName + ';\n        try{\n            ' + _config.variable.tmpAttrName + ' = ' + startVal + ';\n        }catch(err){}\n\n        ' + dynamicAttrName + '[\'' + name + '\'] = (function(x){\n            ' + formatterCode + '\n            return x === undefined ? \'\' : x;\n        })(' + _config.variable.tmpAttrName + ');\n    ';
+	    var code = ' // parseFormatters.es6\n        var ' + _config.variable.tmpAttrName + ';\n        try{\n            ' + _config.variable.tmpAttrName + ' = ' + startVal + ';\n        }catch(err){}\n\n        ' + dynamicAttrName + '[\'' + name + '\'] = (function(x){\n            ' + formatterCode + '\n            return x === undefined ? \'\' : x;\n        })(' + _config.variable.tmpAttrName + ');\n    ';
 	
 	    return code;
 	};
