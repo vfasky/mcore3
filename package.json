@@ -9,6 +9,7 @@
     "h2svd": "webpack --config ./build/h2svd.js --display-error-details",
     "dev": "webpack --config ./build/test.js --display-error-details -w",
     "test": "./node_modules/.bin/mocha test/*.test.js",
+    "fix": "./node_modules/.bin/eslint build/**/*.js --fix",
     "test-browser": "browser-sync start --server --startPath test --files test/* & webpack --config ./build/test.js --display-error-details -w"
   },
   "repository": {
@@ -26,6 +27,8 @@
   },
   "homepage": "https://github.com/vfasky/mcore3#readme",
   "devDependencies": {
+    "@types/htmlparser2": "^3.7.29",
+    "@types/js-beautify": "0.0.28",
     "array.from": "^1.0.2",
     "array.observe": "0.0.1",
     "babel-cli": "^6.10.1",
@@ -38,6 +41,11 @@
     "babel-preset-stage-0": "^6.5.0",
     "chai": "^3.5.0",
     "es5-shim": "^4.5.9",
+    "eslint": "^3.7.1",
+    "eslint-config-standard": "^6.2.0",
+    "eslint-plugin-html": "^1.5.3",
+    "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-standard": "^2.0.1",
     "eventemitter3": "^1.2.0",
     "jquery": "^3.1.0",
     "jsdom": "^9.4.1",
@@ -49,6 +57,8 @@
     "object-assign": "^4.1.0",
     "object.observe": "^0.2.6",
     "path-to-regexp": "^1.5.3",
+    "ts-loader": "^0.8.2",
+    "typescript": "^2.0.3",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   },
