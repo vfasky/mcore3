@@ -3,11 +3,11 @@
  * diff Element
  * @author vfasky <vfasky@gmail.com>
  **/
-"use strict";
+'use strict'
 
-import patch from './patch';
-import listDiff from 'list-diff2';
-import {isString} from './util';
+import patch from './patch'
+import listDiff from 'list-diff2'
+import {isString} from './util'
 
 /**
  * 比对两个虚拟dom, 标出变更部分
@@ -18,10 +18,10 @@ import {isString} from './util';
  * @param  {[type]} patches
  * @return {[type]} [description]
  */
-function dfsWalk(oldNode, newNode, index, patches){
-    let currentPatch = [];
+function dfsWalk (oldNode, newNode, index, patches) {
+    let currentPatch = []
     // node is removed
-    if(newNode === null){
+    if (newNode === null) {
 
     }
     // 文本替换
@@ -35,32 +35,30 @@ function dfsWalk(oldNode, newNode, index, patches){
     // }
     // 文本替换
     else if (oldNode.tagName === '_textnode' && oldNode.tagName === newNode.tagName) {
-        let oldText = String(oldNode.dynamicProps.hasOwnProperty('text') ? oldNode.dynamicProps.text : oldNode.props.text);
-        let newText = String(newNode.dynamicProps.hasOwnProperty('text') ? newNode.dynamicProps.text : newNode.props.text);
-        if(oldText != newText){
+        let oldText = String(oldNode.dynamicProps.hasOwnProperty('text') ? oldNode.dynamicProps.text : oldNode.props.text)
+        let newText = String(newNode.dynamicProps.hasOwnProperty('text') ? newNode.dynamicProps.text : newNode.props.text)
+        if (oldText != newText) {
             currentPatch.push({
                 type: patch.TEXT,
-                content: newText == 'undefined' ? '' : newText,
-            });
-
+                content: newText == 'undefined' ? '' : newText
+            })
         }
-
     }
     // 同一 node, 更新属性
-    else if(oldNode.tagName === newNode.tagName && oldNode._key === newNode._key){
+    else if (oldNode.tagName === newNode.tagName && oldNode._key === newNode._key) {
         // 变更静态属性
-        diffAndPatchStaticProps(oldNode, newNode);
+        diffAndPatchStaticProps(oldNode, newNode)
 
-        let propsPatches = diffProps(oldNode, newNode);
-        if(propsPatches){
+        let propsPatches = diffProps(oldNode, newNode)
+        if (propsPatches) {
             currentPatch.push({
                 type: patch.PROPS,
-                props: propsPatches,
-            });
+                props: propsPatches
+            })
         }
-        if(!newNode.refs && oldNode.refs){
+        if (!newNode.refs && oldNode.refs) {
             // newNode.render(oldNode.refs);
-            newNode.cloneElement(oldNode);
+            newNode.cloneElement(oldNode)
             // console.log(newNode);
         }
         // if(!newNode.template && oldNode.template){
@@ -69,49 +67,48 @@ function dfsWalk(oldNode, newNode, index, patches){
         // }
         // 没有声明不要 diff 子元素
         // console.log(newNode._noDiffChild);
-        if(!oldNode || !oldNode._noDiffChild || !newNode._noDiffChild){
-            diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
+        if (!oldNode || !oldNode._noDiffChild || !newNode._noDiffChild) {
+            diffChildren(oldNode.children, newNode.children, index, patches, currentPatch)
         }
     }
     // 替换
-    else{
+    else {
         currentPatch.push({
             type: patch.REPLACE,
-            node: newNode,
-        });
+            node: newNode
+        })
     }
 
-    if(currentPatch.length){
-        patches[index] = currentPatch;
+    if (currentPatch.length) {
+        patches[index] = currentPatch
     }
-
 }
 
-function diffChildren(oldChildren, newChildren, index, patches, currentPatch){
-    let diffs = listDiff(oldChildren, newChildren, 'key');
-    newChildren = diffs.children;
+function diffChildren (oldChildren, newChildren, index, patches, currentPatch) {
+    let diffs = listDiff(oldChildren, newChildren, 'key')
+    newChildren = diffs.children
     // 有移动
-    if(diffs.moves.length){
+    if (diffs.moves.length) {
         let reorderPatch = {
             type: patch.REORDER,
-            moves: diffs.moves,
-        };
+            moves: diffs.moves
+        }
         // console.log(diffs, oldChildren, newChildren);
-        currentPatch.push(reorderPatch);
+        currentPatch.push(reorderPatch)
     }
-    let leftNode = null;
-    let currentNodeIndex = index;
-    Array.from(oldChildren).forEach((child, i)=>{
-        let newChild = newChildren[i];
-        if(leftNode && leftNode.count){
-            currentNodeIndex += leftNode.count + 1;
+    let leftNode = null
+    let currentNodeIndex = index
+    Array.from(oldChildren).forEach((child, i) => {
+        let newChild = newChildren[i]
+        if (leftNode && leftNode.count) {
+            currentNodeIndex += leftNode.count + 1
         }
-        else{
-            currentNodeIndex++;
+        else {
+            currentNodeIndex++
         }
-        dfsWalk(child, newChild, currentNodeIndex, patches);
-        leftNode = child;
-    });
+        dfsWalk(child, newChild, currentNodeIndex, patches)
+        leftNode = child
+    })
 }
 
 /**
@@ -121,52 +118,51 @@ function diffChildren(oldChildren, newChildren, index, patches, currentPatch){
  * @param  {Element}        newNode
  * @return {Object | Null}        [description]
  */
-function diffAndPatchStaticProps(oldNode, newNode){
+function diffAndPatchStaticProps (oldNode, newNode) {
     // if(oldNode._noDiffChild || oldNode._component){
     //     return;
     // }
-    let oldProps = oldNode.props;
-    let newProps = newNode.props;
-    let node = oldNode.refs;
-    let propsPatches = {};
+    let oldProps = oldNode.props
+    let newProps = newNode.props
+    let node = oldNode.refs
+    let propsPatches = {}
 
-    if(!node){
-        throw new Error('node not inexistence');
+    if (!node) {
+        throw new Error('node not inexistence')
     }
 
-    //判断旧值变更或删除
-    Object.keys(oldProps).forEach((attr)=>{
+    // 判断旧值变更或删除
+    Object.keys(oldProps).forEach((attr) => {
         // if(attr === '_key'){
         //     return;
         // }
-        let value = oldProps[attr];
-        if(newProps[attr] !== value){
-            propsPatches[attr] = newProps[attr];
-            if(newProps[attr] === undefined){
-                node.removeAttribute(attr);
+        let value = oldProps[attr]
+        if (newProps[attr] !== value) {
+            propsPatches[attr] = newProps[attr]
+            if (newProps[attr] === undefined) {
+                node.removeAttribute(attr)
             }
-            else{
-                node.setAttribute(attr, newProps[attr]);
+            else {
+                node.setAttribute(attr, newProps[attr])
             }
         }
-    });
+    })
 
     // 查找新添加的值
-    Object.keys(newProps).forEach((attr)=>{
-        if(false === propsPatches.hasOwnProperty(attr)){
-            node.setAttribute(attr, newProps[attr]);
+    Object.keys(newProps).forEach((attr) => {
+        if (propsPatches.hasOwnProperty(attr) === false) {
+            node.setAttribute(attr, newProps[attr])
         }
+    })
 
-    });
-
-    if(oldNode._binder){
-        for(let i = node.attributes.length - 1; i >= 0; i--){
-            let attr = String(node.attributes[i].name);
+    if (oldNode._binder) {
+        for (let i = node.attributes.length - 1; i >= 0; i--) {
+            let attr = String(node.attributes[i].name)
             // if(attr === '_key'){
             //     return;
             // }
-            if(false === newProps.hasOwnProperty(attr)){
-                node.removeAttribute(attr);
+            if (newProps.hasOwnProperty(attr) === false) {
+                node.removeAttribute(attr)
             }
         }
     }
@@ -179,39 +175,37 @@ function diffAndPatchStaticProps(oldNode, newNode){
  * @param  {Element}  newNode
  * @return {Object | Null}  [description]
  */
-function diffProps(oldNode, newNode){
+function diffProps (oldNode, newNode) {
+    let count = 0
+    let oldProps = oldNode.dynamicProps
+    let newProps = newNode.dynamicProps
+    let propsPatches = {}
 
-    let count = 0;
-    let oldProps = oldNode.dynamicProps;
-    let newProps = newNode.dynamicProps;
-    let propsPatches = {};
-
-
-    //判断旧值变更或删除
-    Object.keys(oldProps).forEach((attr)=>{
-        let value = oldProps[attr];
-        if(newProps[attr] !== value){
-            count++;
-            propsPatches[attr] = newProps[attr];
+    // 判断旧值变更或删除
+    Object.keys(oldProps).forEach((attr) => {
+        let value = oldProps[attr]
+        if (newProps[attr] !== value) {
+            count++
+            propsPatches[attr] = newProps[attr]
         }
-    });
+    })
 
     // 查找新添加的值
-    Object.keys(newProps).forEach((attr)=>{
-        if(false === propsPatches.hasOwnProperty(attr)){
-            count++;
-            propsPatches[attr] = newProps[attr];
+    Object.keys(newProps).forEach((attr) => {
+        if (propsPatches.hasOwnProperty(attr) === false) {
+            count++
+            propsPatches[attr] = newProps[attr]
         }
-    });
-    if(count === 0){
-        return null;
+    })
+    if (count === 0) {
+        return null
     }
-    return propsPatches;
+    return propsPatches
 }
 
-export default function diff(oldTree, newTree){
-    let index = 0;
-    let patches = {};
-    dfsWalk(oldTree, newTree, index, patches);
-    return patches;
+export default function diff (oldTree, newTree) {
+    let index = 0
+    let patches = {}
+    dfsWalk(oldTree, newTree, index, patches)
+    return patches
 }

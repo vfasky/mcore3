@@ -50,7 +50,7 @@ module.exports =
 	 * webpack loader
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	var _index = __webpack_require__(1);
 	
@@ -58,7 +58,7 @@ module.exports =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var loaderUtils = __webpack_require__(14);
+	var loaderUtils = __webpack_require__(13);
 	
 	module.exports = function (html) {
 	    var callback = void 0,
@@ -84,7 +84,7 @@ module.exports =
 	 * 将 html 解释成 virtual-dom 的定义
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -129,7 +129,7 @@ module.exports =
 	    code = (0, _jsBeautify.js_beautify)(code, {
 	        indent_size: 4
 	    });
-	    //console.log(code);
+	    // console.log(code);
 	    return code;
 	};
 
@@ -154,7 +154,7 @@ module.exports =
 	 * 过滤掉不需要的 dom
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -164,9 +164,9 @@ module.exports =
 	    var domTree = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 	
 	    return domTree.filter(function (dom) {
-	        if (dom.type == 'comment') {
+	        if (dom.type === 'comment') {
 	            return false;
-	        } else if (dom.type == 'text' && dom.data.trim().length === 0) {
+	        } else if (dom.type === 'text' && dom.data.trim().length === 0) {
 	            return false;
 	        }
 	        return true;
@@ -182,21 +182,17 @@ module.exports =
 	 * 解释 dom, 并生成 virtual-dom 定义
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
-	var _filter = __webpack_require__(4);
-	
-	var _filter2 = _interopRequireDefault(_filter);
-	
 	var _parseFor = __webpack_require__(6);
 	
 	var _parseFor2 = _interopRequireDefault(_parseFor);
 	
-	var _parseText = __webpack_require__(13);
+	var _parseText = __webpack_require__(12);
 	
 	var _parseText2 = _interopRequireDefault(_parseText);
 	
@@ -227,7 +223,7 @@ module.exports =
 	 * 解释 for 标签
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -237,15 +233,11 @@ module.exports =
 	
 	var _build2 = _interopRequireDefault(_build);
 	
-	var _util = __webpack_require__(9);
-	
-	var _util2 = _interopRequireDefault(_util);
-	
-	var _parseAttr = __webpack_require__(10);
+	var _parseAttr = __webpack_require__(9);
 	
 	var _parseAttr2 = _interopRequireDefault(_parseAttr);
 	
-	var _parseIf = __webpack_require__(12);
+	var _parseIf = __webpack_require__(11);
 	
 	var _config = __webpack_require__(8);
 	
@@ -297,7 +289,7 @@ module.exports =
 	 * 生成 dom 定义
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -316,19 +308,17 @@ module.exports =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	exports.default = function (domAttr, key) {
-	
 	    var forCode = '\n\n        var ' + _config.variable.pathSubIName + ' = String(' + key + ');\n        var ' + _config.variable.textNodeTotal + ' = 0;\n    ';
 	
 	    if (Array.isArray(domAttr.children)) {
 	        var childrens = (0, _filter2.default)(domAttr.children);
-	        var len = childrens.length;
 	
 	        childrens.forEach(function (attr, k) {
 	            forCode += '\n                (' + (0, _parseDomDef2.default)(attr) + ')(' + _config.variable.scopeName + ', ' + _config.variable.childrenName + ', ' + _config.variable.pathSubIName + ');\n            ';
 	        });
 	    }
 	
-	    var code = '\n        // build.es6\n        ' + _config.variable.childrenName + ' = [];\n\n\n        ' + forCode + '\n        ' + _config.variable.treeName + '.push(\n            ' + _config.variable.utilName + '.build(\n                \'' + domAttr.name + '\', ' + _config.variable.pathSubIName + ', ' + _config.variable.attrName + ',\n                ' + _config.variable.dynamicAttrName + ', ' + _config.variable.eventName + ', ' + _config.variable.childrenName + '\n            )\n        );\n    ';
+	    var code = '\n        // build.es6\n        ' + _config.variable.childrenName + ' = [];\n\n        ' + forCode + '\n        ' + _config.variable.treeName + '.push(\n            ' + _config.variable.utilName + '.build(\n                \'' + domAttr.name + '\', ' + _config.variable.pathSubIName + ', ' + _config.variable.attrName + ',\n                ' + _config.variable.dynamicAttrName + ', ' + _config.variable.eventName + ', ' + _config.variable.childrenName + '\n            )\n        );\n    ';
 	
 	    return code;
 	};
@@ -342,7 +332,7 @@ module.exports =
 	 * 生成变量配置
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -370,16 +360,11 @@ module.exports =
 	    pathSubIName: '__mc__pathSubI',
 	    pathSubArr: '__mc__pathSubArr',
 	    pathStaticIName: '__mc__pathStaticI'
+	    // textNodeTotal: '__mc__textNodeTotal',
 	};
 
 /***/ },
 /* 9 */
-/***/ function(module, exports) {
-
-	module.exports = require("util");
-
-/***/ },
-/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -387,13 +372,13 @@ module.exports =
 	 * 解释 属性
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 	
-	var _parseFormatters = __webpack_require__(11);
+	var _parseFormatters = __webpack_require__(10);
 	
 	var _parseFormatters2 = _interopRequireDefault(_parseFormatters);
 	
@@ -429,14 +414,14 @@ module.exports =
 	    var code = '\n        var ' + _config.variable.attrName + ' = {}, ' + _config.variable.dynamicAttrName + ' = {}, ' + _config.variable.eventName + ' = {};\n        \n    ';
 	
 	    attrKeys.forEach(function (v) {
-	        if (igKeys.indexOf(v) != -1) {
+	        if (igKeys.indexOf(v) !== -1) {
 	            return false;
 	        }
-	        //解释事件
+	        // 解释事件
 	        if (v.indexOf('mc-on-') === 0) {
 	            var eventFunCode = domAttr.attribs[v];
-	            var funName = void 0,
-	                args = [];
+	            var funName = void 0;
+	            var args = [];
 	            if (_funReg.test(eventFunCode)) {
 	                funName = eventFunCode.substr(0, eventFunCode.indexOf('('));
 	                args = eventFunCode.substr(eventFunCode.indexOf('(') + 1);
@@ -447,7 +432,7 @@ module.exports =
 	            code += '\n                ' + _config.variable.eventName + '[\'' + v.replace('mc-on-', '') + '\'] = {\n                    \'funName\': \'' + funName + '\',\n                    \'args\': [' + args.join(', ') + ']\n                };\n            ';
 	            return false;
 	        }
-	        //解释静态属性
+	        // 解释静态属性
 	        if (v.indexOf('mc-') !== 0) {
 	            code += '\n                ' + _config.variable.attrName + '[\'' + v + '\'] = \'' + domAttr.attribs[v] + '\';\n            ';
 	        } else {
@@ -459,7 +444,7 @@ module.exports =
 	};
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -467,7 +452,7 @@ module.exports =
 	 * 解释过滤函数
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -485,10 +470,9 @@ module.exports =
 	
 	    funcs.forEach(function (fun) {
 	        var args = [];
-	        var isHasTag = false;
 	        fun = String(fun);
 	
-	        if (fun.indexOf('(') == -1) {
+	        if (fun.indexOf('(') === -1) {
 	            fun.replace(_formattersArgsReg, function (v) {
 	                if (v === ']' && args.length > 2) {
 	                    var _attr = args.pop();
@@ -508,9 +492,9 @@ module.exports =
 	                // 处理 xx xx
 	                var mIx = -1;
 	                args.forEach(function (v, k) {
-	                    if (mIx == -1 && v.indexOf("'") === 0 && v.slice(1).indexOf("'") == -1) {
+	                    if (mIx === -1 && v.indexOf("'") === 0 && v.slice(1).indexOf("'") === -1) {
 	                        mIx = k;
-	                    } else if (mIx != -1 && v.indexOf("'") != -1) {
+	                    } else if (mIx !== -1 && v.indexOf("'") !== -1) {
 	                        var strVal = [];
 	                        for (var i = mIx; i < k + 1; i++) {
 	                            strVal.push(args[i]);
@@ -560,7 +544,7 @@ module.exports =
 	};
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/**
@@ -568,7 +552,7 @@ module.exports =
 	 * 解释 if unless
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -595,7 +579,7 @@ module.exports =
 	}
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -603,13 +587,13 @@ module.exports =
 	 * 解释文本
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 	
-	var _parseFormatters = __webpack_require__(11);
+	var _parseFormatters = __webpack_require__(10);
 	
 	var _parseFormatters2 = _interopRequireDefault(_parseFormatters);
 	
@@ -630,7 +614,7 @@ module.exports =
 	            code += 'var ' + _config.variable.strValsName + ' = {}';
 	            var mapTree = [];
 	            var mapTreeId = 0;
-	            var runtimeCode = text.replace(_signReg, function (key, val) {
+	            var runtimeCode = text.replace(/\s+/g, ' ').replace(_signReg, function (key, val) {
 	                var reKey = 'rp_' + mapTreeId++;
 	                mapTree.push({
 	                    key: reKey,
@@ -640,7 +624,7 @@ module.exports =
 	            });
 	
 	            runtimeCode = '"' + runtimeCode;
-	            if (false === _strEndReg.test(runtimeCode)) {
+	            if (_strEndReg.test(runtimeCode) === false) {
 	                runtimeCode += '"';
 	            }
 	
@@ -661,7 +645,7 @@ module.exports =
 	};
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports) {
 
 	module.exports = require("loader-utils");

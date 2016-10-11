@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-var path = require('path');
-var distPath = path.join(__dirname, '../dist');
+var path = require('path')
+var distPath = path.join(__dirname, '../dist')
 
 module.exports = {
     entry: {
@@ -20,7 +20,7 @@ module.exports = {
             exclude: /node_modules/,
             query: {
                 plugins: ['transform-runtime'],
-                presets: ['es2015'],
+                presets: ['es2015']
             }
         }]
     },
@@ -31,10 +31,10 @@ module.exports = {
     },
     externals: {
         jquery: {
-          root: '$',
-          commonjs2: 'jquery',
-          commonjs: 'jquery',
-          amd: 'jquery'
+            root: '$',
+            commonjs2: 'jquery',
+            commonjs: 'jquery',
+            amd: 'jquery'
         }
     }
-};
+}

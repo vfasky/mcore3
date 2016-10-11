@@ -59,7 +59,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * es5 兼容包
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	__webpack_require__(1);
 	
@@ -1753,7 +1753,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * mcore version 3
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -1821,7 +1821,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 工具类
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -2014,7 +2014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof dynamicCode === 'function') {
 	        typeof console !== 'undefined' && console.error('dynamicCode can not be a function');
 	        return '';
-	    } else if (typeof dynamicCode != 'undefined' && (typeof Element === 'function' || (typeof Element === 'undefined' ? 'undefined' : (0, _typeof3.default)(Element)) === 'object') && false === dynamicCode instanceof Element) {
+	    } else if (typeof dynamicCode != 'undefined' && (typeof Element === 'function' || (typeof Element === 'undefined' ? 'undefined' : (0, _typeof3.default)(Element)) === 'object') && dynamicCode instanceof Element === false) {
 	        return dynamicCode == 'undefined' ? '' : dynamicCode;
 	    } else if (typeof view[dynamicCode] != 'undefined') {
 	        return view[dynamicCode];
@@ -3392,7 +3392,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * mcore element
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -3430,30 +3430,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        this.tagName = tagName.trim().toLowerCase();
 	        this.key = key;
-	        //静态属性
+	        // 静态属性
 	        this.props = props;
 	        // this.props._key = key;
-	        //动态属性
+	        // 动态属性
 	        this.dynamicProps = dynamicProps;
-	        //子元素
+	        // 子元素
 	        this.children = children;
-	        //事件
+	        // 事件
 	        this.events = events;
 	
-	        //上级 element
+	        // 上级 element
 	        this.parentElement = null;
 	
-	        //所属的view
+	        // 所属的view
 	        this.view = view;
 	
-	        if (false === Array.isArray(children)) {
+	        if (Array.isArray(children) === false) {
 	            children = [];
 	        }
 	
 	        var count = 0;
 	        children.forEach(function (child, i) {
 	            if (child instanceof Element) {
-	                //指定上级
+	                // 指定上级
 	                child.parentElement = _this;
 	                count += child.count;
 	            } else {
@@ -3461,7 +3461,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            count++;
 	        });
-	        //子节点数量
+	        // 子节点数量
 	        this.count = count;
 	    }
 	
@@ -3475,7 +3475,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.template.element = this;
 	            this.refs = element.refs;
 	
-	            //设置动态属性
+	            // 设置动态属性
 	            (0, _keys2.default)(this.dynamicProps).forEach(function (attr) {
 	                // console.log(attr);
 	                _this2.template.setAttr(attr.toLowerCase(), _this2.dynamicProps[attr], true, 'update');
@@ -3581,7 +3581,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 模板渲染
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -3647,14 +3647,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function Template(element) {
 	        (0, _classCallCheck3.default)(this, Template);
 	
-	        //标记是否监听事件
+	        // 标记是否监听事件
 	
 	        var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Template).call(this));
 	
 	        _this._isWatchEvent = false;
 	
 	        _this.element = element;
-	        //子元素的自定义组件
+	        // 子元素的自定义组件
 	        _this.childrenComponent = [];
 	        return _this;
 	    }
@@ -3662,7 +3662,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    (0, _createClass3.default)(Template, [{
 	        key: 'destroy',
 	        value: function destroy(notRemove) {
-	
 	            getComponents(this.element).forEach(function (component) {
 	                component.destroy();
 	            });
@@ -3689,7 +3688,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            var node = void 0;
 	            if (this.element.tagName == '_textnode') {
-	
 	                if (this.element.dynamicProps.hasOwnProperty('text')) {
 	                    node = document.createTextNode(this.element.dynamicProps.text);
 	                } else {
@@ -3713,7 +3711,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                (0, _keys2.default)(this.element.props).forEach(function (attr) {
 	                    _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
 	                });
-	                //设置动态属性
+	                // 设置动态属性
 	                (0, _keys2.default)(this.element.dynamicProps).forEach(function (attr) {
 	                    _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
 	                });
@@ -3723,7 +3721,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.element.children = [];
 	                this.element.count = 0;
 	                node._component = this.element._component;
-	                //兼容mcore2 要开启
+	                // 兼容mcore2 要开启
 	                // Object.keys(this.element.dynamicProps).forEach((attr)=>{
 	                //     this.element._component.update(attr.toLowerCase(), this.element.dynamicProps[attr]);
 	                // });
@@ -3734,11 +3732,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        if (child.render) {
 	                            var childNode = child.render();
 	                            if (childNode) {
-	                                //收集自定义组件
+	                                // 收集自定义组件
 	                                if (child._component) {
 	                                    _this2.childrenComponent.push(child._component);
 	                                }
-	                                //收集子元素的所有自定义组件
+	                                // 收集子元素的所有自定义组件
 	                                if (child.childrenComponent && child.childrenComponent.length) {
 	                                    child.childrenComponent.forEach(function (c) {
 	                                        _this2.childrenComponent.push(c);
@@ -3754,11 +3752,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            throw new Error('child not Mcore Element');
 	                        }
 	                    });
-	                    //设置静态属性
+	                    // 设置静态属性
 	                    (0, _keys2.default)(this.element.props).forEach(function (attr) {
 	                        _this2.setAttr(attr.toLowerCase(), _this2.element.props[attr]);
 	                    });
-	                    //设置动态属性
+	                    // 设置动态属性
 	                    (0, _keys2.default)(this.element.dynamicProps).forEach(function (attr) {
 	                        _this2.setAttr(attr.toLowerCase(), _this2.element.dynamicProps[attr], true);
 	                    });
@@ -3790,7 +3788,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this.element._binder = true;
 	                    binder.init(this.refs, value, attrValue);
 	                }
-	                //兼容mcore2
+	                // 兼容mcore2
 	                if ((0, _util.isFunction)(binder.rendered)) {
 	                    this.element._binder = true;
 	                    binder.rendered(this.refs, value, attrValue);
@@ -3833,9 +3831,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var isDynamic = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 	            var status = arguments.length <= 3 || arguments[3] === undefined ? 'init' : arguments[3];
 	
-	            //处理动态属性
+	            // 处理动态属性
 	            if (isDynamic) {
-	                if (false === this.element.dynamicProps.hasOwnProperty(attr)) {
+	                if (this.element.dynamicProps.hasOwnProperty(attr) === false) {
 	                    return;
 	                }
 	                if (Template.binders.hasOwnProperty(attr)) {
@@ -3843,7 +3841,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this.callBinder(binder, status, value);
 	                    return;
 	                }
-	                //处理 mc-class-* (mc-class-test="true" => 'class-test': true)的情况
+	                // 处理 mc-class-* (mc-class-test="true" => 'class-test': true)的情况
 	                var TemplateBinderKeys = (0, _keys2.default)(Template.binders);
 	                var _iteratorNormalCompletion = true;
 	                var _didIteratorError = false;
@@ -3930,7 +3928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	Template.formatters = _formatters2.default;
 	
-	//兼容mcore2
+	// 兼容mcore2
 	Template.strToFun = function (el, value) {
 	    if (!el._element || !el._element.view || !el._element.view[value]) {
 	        return function () {};
@@ -4181,7 +4179,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * event Emitter
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -4499,7 +4497,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 模板自定义属性
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -4524,11 +4522,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	binders.checked = function (el, value) {
-	    el.checked = value ? true : false;
+	    if (value) {
+	        el.checked = true;
+	    } else {
+	        el.checked = false;
+	    }
 	};
 	
 	binders.disabled = function (el, value) {
-	    el.disabled = value ? true : false;
+	    if (value) {
+	        el.disabled = true;
+	    } else {
+	        el.disabled = false;
+	    }
 	};
 	
 	binders.focus = function (el, value) {
@@ -4548,13 +4554,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	binders.html = function (el, value) {
-	    el.innerHTML = value ? value : '';
+	    el.innerHTML = value || '';
 	    el._element._noDiffChild = true;
 	};
 	
 	// 声明不要diff子节点
 	binders['no-diff-child'] = function (el, value) {
-	    el._element._noDiffChild = value ? true : false;
+	    el._element._noDiffChild = value;
 	};
 	
 	binders['class-*'] = function (el, value, attrValue) {
@@ -4569,11 +4575,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            classNames.splice(ix, 1);
 	            el.className = classNames.join(' ');
 	        }
-	    } else {
-	        if (ix == -1) {
-	            classNames.push(attrValue);
-	            el.className = classNames.join(' ');
-	        }
+	    } else if (ix === -1) {
+	        classNames.push(attrValue);
+	        el.className = classNames.join(' ');
 	    }
 	};
 	
@@ -4588,7 +4592,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var v = data[k];
 	            var $el = $form.find('[name=' + k + ']');
 	            if ($el.is('[type=checkbox],[type=radio]')) {
-	                $el.prop('checked', String($el.val()) == String(v));
+	                $el.prop('checked', String($el.val()) === String(v));
 	            } else {
 	                $el.val(v);
 	            }
@@ -4635,7 +4639,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 过滤函数
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -4648,8 +4652,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _util = __webpack_require__(30);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var $ = (0, _util.get$)();
 	
 	var formatters = {};
 	
@@ -4700,7 +4702,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 组件
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -4815,7 +4817,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _this[key] = args[key];
 	        });
 	        _this.parentNode = parentNode;
-	        //兼容mcore2
+	        // 兼容mcore2
 	        _this.el = parentNode;
 	        _this.parentElement = parentElement;
 	        // 渲染完成，回调队列
@@ -4855,7 +4857,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.beforeInit();
 	        _this.init();
 	        _this.watch();
-	
 	        return _this;
 	    }
 	
@@ -4938,7 +4939,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        args = [];
 	                    }
 	                }
-	                //如果模板事件有参数，追加在最后一个参数
+	                // 如果模板事件有参数，追加在最后一个参数
 	                if (Array.isArray(eventCtx.args) && eventCtx.args.length) {
 	                    // args.push({
 	                    //     type: 'eventContext',
@@ -4962,15 +4963,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function renderQueue(doneOrAsync) {
 	            var _this2 = this;
 	
-	            //加入成功回调队列
+	            // 加入成功回调队列
 	            if (isFunction(doneOrAsync)) {
 	                this._queueCallbacks.push(doneOrAsync);
 	            }
 	            if (this._queueId) {
 	                nextTick.clear(this._queueId);
 	            }
-	            //马上渲染，不进队列
-	            if (true === doneOrAsync) {
+	            // 马上渲染，不进队列
+	            if (doneOrAsync === true) {
 	                return this._render();
 	            } else {
 	                this._queueId = nextTick(function () {
@@ -5010,11 +5011,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.mount();
 	            } else {
 	                var patches = (0, _diff2.default)(this.virtualDom, virtualDom);
-	                //先移除事件绑定
+	                // 先移除事件绑定
 	                // if(this.$refs){
 	                //     this.$refs.off();
 	                // }
-	                //更新dom
+	                // 更新dom
 	                (0, _patch2.default)(this.refs, patches);
 	                // console.log(this.refs);
 	                // this.$refs = $(this.refs);
@@ -5062,7 +5063,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            args = args.concat(ctx.args);
 	                            // console.log(ctx.element);
 	                            res = callback.apply(this, args);
-	                            if (false === res) {
+	                            if (res === false) {
 	                                break;
 	                            }
 	                        }
@@ -5246,7 +5247,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    _this7.set(attr, results[ix]);
 	                });
 	
-	                //马上渲染
+	                // 马上渲染
 	                if (doneOrAsync === true) {
 	                    return _this7.renderQueue(doneOrAsync);
 	                }
@@ -5981,7 +5982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * diff Element
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -6128,7 +6129,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        throw new Error('node not inexistence');
 	    }
 	
-	    //判断旧值变更或删除
+	    // 判断旧值变更或删除
 	    (0, _keys2.default)(oldProps).forEach(function (attr) {
 	        // if(attr === '_key'){
 	        //     return;
@@ -6146,7 +6147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    // 查找新添加的值
 	    (0, _keys2.default)(newProps).forEach(function (attr) {
-	        if (false === propsPatches.hasOwnProperty(attr)) {
+	        if (propsPatches.hasOwnProperty(attr) === false) {
 	            node.setAttribute(attr, newProps[attr]);
 	        }
 	    });
@@ -6157,7 +6158,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // if(attr === '_key'){
 	            //     return;
 	            // }
-	            if (false === newProps.hasOwnProperty(attr)) {
+	            if (newProps.hasOwnProperty(attr) === false) {
 	                node.removeAttribute(attr);
 	            }
 	        }
@@ -6172,13 +6173,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @return {Object | Null}  [description]
 	 */
 	function diffProps(oldNode, newNode) {
-	
 	    var count = 0;
 	    var oldProps = oldNode.dynamicProps;
 	    var newProps = newNode.dynamicProps;
 	    var propsPatches = {};
 	
-	    //判断旧值变更或删除
+	    // 判断旧值变更或删除
 	    (0, _keys2.default)(oldProps).forEach(function (attr) {
 	        var value = oldProps[attr];
 	        if (newProps[attr] !== value) {
@@ -6189,7 +6189,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    // 查找新添加的值
 	    (0, _keys2.default)(newProps).forEach(function (attr) {
-	        if (false === propsPatches.hasOwnProperty(attr)) {
+	        if (propsPatches.hasOwnProperty(attr) === false) {
 	            count++;
 	            propsPatches[attr] = newProps[attr];
 	        }
@@ -6216,7 +6216,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 应用比对结果
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	// 替换
 	
@@ -6252,7 +6252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var patches = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	
 	    var currentPatches = patches[walker.index];
-	    //计算子节点数量
+	    // 计算子节点数量
 	    var len = void 0;
 	
 	    if (!node.childNodes || node._element && node._element._noDiffChild) {
@@ -6616,7 +6616,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * watch
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -7638,7 +7638,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 路由
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -7771,7 +7771,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            (0, _util.each)(this.rule, function (v) {
 	                var res = v.reg.exec(path);
-	                if (null === res) {
+	                if (res === null) {
 	                    return;
 	                }
 	                isMatch = true;
@@ -7797,6 +7797,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        context: context,
 	                        keys: v.keys,
 	                        data: data
+	                        // compile: pathToRegexp.compile(v.path),
 	                    };
 	                    v.fn.apply(env, args);
 	                    return false;
@@ -8273,7 +8274,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * view
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -8317,7 +8318,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        _this.$el = $el;
 	        // this.el = $el[0];
-	
 	        return _this;
 	    }
 	
@@ -8382,7 +8382,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * app es6
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -8465,7 +8465,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function route(path, View) {
 	            var _this2 = this;
 	
-	            //兼容 esModule
+	            // 兼容 esModule
 	            if (View.default) {
 	                View = View.default;
 	            }
@@ -8624,7 +8624,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * http
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true

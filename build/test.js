@@ -3,10 +3,10 @@
  *
  * @author vfasky <vfasky@gmail.com>
  **/
-"use strict";
+'use strict'
 
-var path = require('path');
-var distPath = path.join(__dirname, '../test');
+var path = require('path')
+var distPath = path.join(__dirname, '../test')
 
 module.exports = {
     entry: 'mocha!' + path.join(__dirname, '../test/index.es6'),
@@ -22,11 +22,11 @@ module.exports = {
             loader: 'babel-loader',
             exclude: /node_modules/,
             query: {
-                presets: ['es2015'],
+                presets: ['es2015']
             }
-        },{
+        }, {
             test: /\.html$/,
-            loader: path.resolve(__dirname, '../loader/h2svd/loader.es6'),
+            loader: path.resolve(__dirname, '../loader/h2svd/loader.es6')
         }]
     },
     resolve: {
@@ -37,4 +37,4 @@ module.exports = {
     externals: {
         jquery: 'jQuery'
     }
-};
+}

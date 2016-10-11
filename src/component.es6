@@ -3,26 +3,26 @@
  * 组件
  * @author vfasky <vfasky@gmail.com>
  **/
-"use strict";
+'use strict'
 
-import EventEmitter from './eventEmitter';
-import * as util from './util';
-import Template from './template';
-import Element from './element';
-import diff from './diff';
-import patch from './patch';
-import Watch from './watch';
+import EventEmitter from './eventEmitter'
+import * as util from './util'
+import Template from './template'
+import Element from './element'
+import diff from './diff'
+import patch from './patch'
+import Watch from './watch'
 
-const isFunction = util.isFunction;
-const nextTick = util.nextTick;
-const getEvents = util.getEvents;
-const getComponents = util.getComponents;
+const isFunction = util.isFunction
+const nextTick = util.nextTick
+const getEvents = util.getEvents
+const getComponents = util.getComponents
 
 const templateHelper = {
     Template: Template,
     util: util,
-    Element: Element,
-};
+    Element: Element
+}
 
 const keyCode = {
     keyenter: 13, // mcore 2
@@ -35,99 +35,94 @@ const keyCode = {
     'key-up': 38,
     'key-right': 39,
     'key-down': 40,
-    'key-escape': 27,
-};
+    'key-escape': 27
+}
 
-let $_win = null;
-let $_body = null;
-let _id = 0;
+let $_win = null
+let $_body = null
+let _id = 0
 
-const notProxyEvents = ['focus', 'blur'];
+const notProxyEvents = ['focus', 'blur']
 
 export default class Component extends EventEmitter {
-    constructor(parentNode, parentElement = {}, args = {}) {
-        super();
-        Object.keys(args).forEach((key)=>{
-            this[key] = args[key];
-        });
-        this.parentNode = parentNode;
-        //兼容mcore2
-        this.el = parentNode;
-        this.parentElement = parentElement;
+    constructor (parentNode, parentElement = {}, args = {}) {
+        super()
+        Object.keys(args).forEach((key) => {
+            this[key] = args[key]
+        })
+        this.parentNode = parentNode
+        // 兼容mcore2
+        this.el = parentNode
+        this.parentElement = parentElement
         // 渲染完成，回调队列
-        this._queueCallbacks = [];
+        this._queueCallbacks = []
         // 正在排队的渲染队列id
-        this._queueId = null;
+        this._queueId = null
         // 存放注册事件
-        this._regEvents = [];
+        this._regEvents = []
 
-        this._initWatchScope = false;
+        this._initWatchScope = false
 
-        this.id = _id++;
+        this.id = _id++
 
-        this.virtualDom = null;
+        this.virtualDom = null
 
         // 存放 window 及 body 引用
-        if($_win === null || $_body === null){
-            $_win = util.get$()(window);
-            $_body = util.get$()('body');
+        if ($_win === null || $_body === null) {
+            $_win = util.get$()(window)
+            $_body = util.get$()('body')
         }
-        this.$win = $_win;
-        this.$body = $_body;
+        this.$win = $_win
+        this.$body = $_body
 
-        this.util = util;
-        this.nextTick = util.nextTick;
+        this.util = util
+        this.nextTick = util.nextTick
         // 是否在微信中打开
-        this.isWeixinBrowser = util.isWeixinBrowser();
+        this.isWeixinBrowser = util.isWeixinBrowser()
         // 是否在ios中打开
-        this.isIOS = util.isIOS();
+        this.isIOS = util.isIOS()
 
         // 模板 scope
-        this.scope = parentElement.props || {};
-        Object.keys(parentElement.dynamicProps || {}).forEach((attr)=>{
-            this.scope[attr] = parentElement.dynamicProps[attr];
-        });
+        this.scope = parentElement.props || {}
+        Object.keys(parentElement.dynamicProps || {}).forEach((attr) => {
+            this.scope[attr] = parentElement.dynamicProps[attr]
+        })
 
-        this.beforeInit();
-        this.init();
-        this.watch();
-
-
-
-
+        this.beforeInit()
+        this.init()
+        this.watch()
     }
-    beforeInit(){}
-    init(){}
-    watch(){}
+    beforeInit () {}
+    init () {}
+    watch () {}
 
-    mount(parentEl = this.parentNode){
-        if(this.refs && parentEl.appendChild && !(util.get$().contains(parentEl, this.refs))){
-            parentEl.appendChild(this.refs);
-            this.emit('mount', this.refs);
+    mount (parentEl = this.parentNode) {
+        if (this.refs && parentEl.appendChild && !(util.get$().contains(parentEl, this.refs))) {
+            parentEl.appendChild(this.refs)
+            this.emit('mount', this.refs)
         }
     }
 
-    destroy(notRemove){
-        if(this._initWatchScope){
-            this.watchScope.unwatch();
+    destroy (notRemove) {
+        if (this._initWatchScope) {
+            this.watchScope.unwatch()
         }
 
         // console.log(getComponents(this.virtualDom));
-        getComponents(this.virtualDom).forEach((component)=>{
-            component.destroy();
-        });
+        getComponents(this.virtualDom).forEach((component) => {
+            component.destroy()
+        })
 
-        if(!notRemove && this.$refs){
-            this.$refs.remove();
-            this.$refs = null;
+        if (!notRemove && this.$refs) {
+            this.$refs.remove()
+            this.$refs = null
         }
-        else if(this.$refs){
-            this.$refs.off();
+        else if (this.$refs) {
+            this.$refs.off()
         }
 
         // 渲染完成，回调队列
-        this._queueCallbacks = [];
-
+        this._queueCallbacks = []
     }
 
     /**
@@ -135,8 +130,8 @@ export default class Component extends EventEmitter {
      * @method parent
      * @return {View}
      */
-    parentView(){
-        return this.parentElement.view;
+    parentView () {
+        return this.parentElement.view
     }
 
     /**
@@ -146,31 +141,31 @@ export default class Component extends EventEmitter {
      * @param  {Array}  args
      * @return {Void}
      */
-    emitEvent(eventName, args){
-        let parentView = this.parentView();
-        if(parentView && this.parentElement.events.hasOwnProperty(eventName)){
-            let eventCtx = this.parentElement.events[eventName];
-            let callback = parentView[eventCtx.funName];
-            if(!isFunction(callback)){
-                return;
+    emitEvent (eventName, args) {
+        let parentView = this.parentView()
+        if (parentView && this.parentElement.events.hasOwnProperty(eventName)) {
+            let eventCtx = this.parentElement.events[eventName]
+            let callback = parentView[eventCtx.funName]
+            if (!isFunction(callback)) {
+                return
             }
-            if(!Array.isArray(args)){
-                if(args && args.length !== undefined){
-                    args = Array.from(args);
+            if (!Array.isArray(args)) {
+                if (args && args.length !== undefined) {
+                    args = Array.from(args)
                 }
-                else{
-                    args = [];
+                else {
+                    args = []
                 }
             }
-            //如果模板事件有参数，追加在最后一个参数
-            if(Array.isArray(eventCtx.args) && eventCtx.args.length){
+            // 如果模板事件有参数，追加在最后一个参数
+            if (Array.isArray(eventCtx.args) && eventCtx.args.length) {
                 // args.push({
                 //     type: 'eventContext',
                 //     args: eventCtx.args,
                 // });
-                args = args.concat(eventCtx.args);
+                args = args.concat(eventCtx.args)
             }
-            callback.apply(parentView, args);
+            callback.apply(parentView, args)
         }
     }
 
@@ -180,22 +175,22 @@ export default class Component extends EventEmitter {
      * @param  {Function | Boolean}    doneOrAsync
      * @return {Void}
      */
-    renderQueue(doneOrAsync){
-        //加入成功回调队列
-        if(isFunction(doneOrAsync)){
-            this._queueCallbacks.push(doneOrAsync);
+    renderQueue (doneOrAsync) {
+        // 加入成功回调队列
+        if (isFunction(doneOrAsync)) {
+            this._queueCallbacks.push(doneOrAsync)
         }
-        if(this._queueId){
-            nextTick.clear(this._queueId);
+        if (this._queueId) {
+            nextTick.clear(this._queueId)
         }
-        //马上渲染，不进队列
-        if(true === doneOrAsync){
-            return this._render();
+        // 马上渲染，不进队列
+        if (doneOrAsync === true) {
+            return this._render()
         }
-        else{
-            this._queueId = nextTick(()=>{
-                this._render();
-            });
+        else {
+            this._queueId = nextTick(() => {
+                this._render()
+            })
         }
     }
 
@@ -204,145 +199,144 @@ export default class Component extends EventEmitter {
      * @method _render
      * @return {[type]} [description]
      */
-    _render(){
-        if(!this.virtualDomDefine){
-            return;
+    _render () {
+        if (!this.virtualDomDefine) {
+            return
         }
-        const $ = util.get$();
+        const $ = util.get$()
 
-        let virtualDoms = this.virtualDomDefine(this.scope, this, templateHelper);
-        let virtualDom;
-        if(virtualDoms.length == 1){
-            virtualDom = virtualDoms[0];
+        let virtualDoms = this.virtualDomDefine(this.scope, this, templateHelper)
+        let virtualDom
+        if (virtualDoms.length == 1) {
+            virtualDom = virtualDoms[0]
         }
-        else{
-            virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms);
+        else {
+            virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms)
         }
         // 未渲染，不用对比
-        if(!this.virtualDom){
-            this.virtualDom = virtualDom;
-            this.refs = this.virtualDom.render();
-            this.$refs = $(this.refs);
-            this.mount();
+        if (!this.virtualDom) {
+            this.virtualDom = virtualDom
+            this.refs = this.virtualDom.render()
+            this.$refs = $(this.refs)
+            this.mount()
         }
-        else{
-            let patches = diff(this.virtualDom, virtualDom);
-            //先移除事件绑定
+        else {
+            let patches = diff(this.virtualDom, virtualDom)
+            // 先移除事件绑定
             // if(this.$refs){
             //     this.$refs.off();
             // }
-            //更新dom
-            patch(this.refs, patches);
+            // 更新dom
+            patch(this.refs, patches)
             // console.log(this.refs);
             // this.$refs = $(this.refs);
-            this.virtualDom = virtualDom;
+            this.virtualDom = virtualDom
         }
         // 绑定事件
-        this.bindEvents();
+        this.bindEvents()
 
-        this.emit('rendered', this.refs);
-        this._queueCallbacks.forEach((done, ix)=>{
-            if(isFunction(done)){
-                done(this.refs);
-                this._queueCallbacks[ix] = null;
+        this.emit('rendered', this.refs)
+        this._queueCallbacks.forEach((done, ix) => {
+            if (isFunction(done)) {
+                done(this.refs)
+                this._queueCallbacks[ix] = null
             }
-        });
+        })
 
-        if(!this._initWatchScope){
-            this._initWatchScope = true;
+        if (!this._initWatchScope) {
+            this._initWatchScope = true
             // 观察scope, 如果改动，渲染模板
-            this.watchScope = new Watch(this.scope, (path)=>{
-                this.renderQueue();
-            });
+            this.watchScope = new Watch(this.scope, (path) => {
+                this.renderQueue()
+            })
         }
 
-        return this.refs;
+        return this.refs
     }
 
-    callEvent(event, eventName){
-        const $ = util.get$();
-        var res = null;
-        let target = event.target;
-        let eventData = this.events[eventName];
-        if(Array.isArray(eventData)){
+    callEvent (event, eventName) {
+        const $ = util.get$()
+        var res = null
+        let target = event.target
+        let eventData = this.events[eventName]
+        if (Array.isArray(eventData)) {
             // console.log(eventData, eventName);
-            for(let i = 0, len = eventData.length; i < len; i++){
-                let ctx = eventData[i];
-                let ctxTarget = ctx.target();
+            for (let i = 0, len = eventData.length; i < len; i++) {
+                let ctx = eventData[i]
+                let ctxTarget = ctx.target()
                 // console.log(ctxTarget, target);
-                if(ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))){
-                    let callback = this[ctx.funName];
+                if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
+                    let callback = this[ctx.funName]
                     // console.log(callback, ctx.args);
-                    if(isFunction(callback)){
-                        let args = [event, ctxTarget];
-                        args = args.concat(ctx.args);
+                    if (isFunction(callback)) {
+                        let args = [event, ctxTarget]
+                        args = args.concat(ctx.args)
                         // console.log(ctx.element);
-                        res = callback.apply(this, args);
-                        if(false === res){
-                            break;
+                        res = callback.apply(this, args)
+                        if (res === false) {
+                            break
                         }
                     }
                 }
             }
         }
-        return res;
+        return res
     }
 
-    regEvent(eventName){
-        const $ = util.get$();
-        if(this._regEvents.indexOf(eventName) === -1){
-            this._regEvents.push(eventName);
+    regEvent (eventName) {
+        const $ = util.get$()
+        if (this._regEvents.indexOf(eventName) === -1) {
+            this._regEvents.push(eventName)
 
-            if(keyCode.hasOwnProperty(eventName)){
-                this.$refs.on('keyup', (event)=>{
-                    if(event.keyCode == keyCode[eventName]){
-                        return this.callEvent(event, eventName);
+            if (keyCode.hasOwnProperty(eventName)) {
+                this.$refs.on('keyup', (event) => {
+                    if (event.keyCode == keyCode[eventName]) {
+                        return this.callEvent(event, eventName)
                     }
-                });
+                })
             }
-            else if(notProxyEvents.indexOf(eventName) === -1){
-                this.$refs.on(eventName, (event)=>{
-                    return this.callEvent(event, eventName);
-                });
+            else if (notProxyEvents.indexOf(eventName) === -1) {
+                this.$refs.on(eventName, (event) => {
+                    return this.callEvent(event, eventName)
+                })
             }
-            else if(['focus', 'blur'].indexOf(eventName) !== -1){
-                this.$refs.on(eventName, 'input, textarea, select, [tabindex]', (event)=>{
-                    return this.callEvent(event, eventName);
-                });
+            else if (['focus', 'blur'].indexOf(eventName) !== -1) {
+                this.$refs.on(eventName, 'input, textarea, select, [tabindex]', (event) => {
+                    return this.callEvent(event, eventName)
+                })
             }
         }
     }
 
-    unRegEvent(eventName){
-        let ix = this._regEvents.indexOf(eventName);
-        if(ix !== -1){
-            this.$refs.off(eventName);
-            this._regEvents.splice(ix, 1);
+    unRegEvent (eventName) {
+        let ix = this._regEvents.indexOf(eventName)
+        if (ix !== -1) {
+            this.$refs.off(eventName)
+            this._regEvents.splice(ix, 1)
         }
     }
 
-    bindEvents(){
-        if(!this.$refs){
-            return;
+    bindEvents () {
+        if (!this.$refs) {
+            return
         }
-        const $ = util.get$();
-        if(this.events){
-            this.oldEvents = this.events;
+        const $ = util.get$()
+        if (this.events) {
+            this.oldEvents = this.events
         }
-        this.events = getEvents(this.virtualDom);
-        let curEvents = Object.keys(this.events);
+        this.events = getEvents(this.virtualDom)
+        let curEvents = Object.keys(this.events)
         // console.log(curEvents, this.events);
 
-        this._regEvents.forEach((regEventName)=>{
-            if(curEvents.indexOf(regEventName) === -1){
-                this.unRegEvent(regEventName);
+        this._regEvents.forEach((regEventName) => {
+            if (curEvents.indexOf(regEventName) === -1) {
+                this.unRegEvent(regEventName)
             }
-        });
+        })
 
-        curEvents.forEach((eventName)=>{
-            this.regEvent(eventName);
-        });
-
+        curEvents.forEach((eventName) => {
+            this.regEvent(eventName)
+        })
     }
 
     /**
@@ -352,26 +346,26 @@ export default class Component extends EventEmitter {
      * @param  {Mixed} value
      * @param  {Function | Boolean} doneOrAsync
      */
-    set(attr, value, doneOrAsync = null, isPromeisCallback = false){
-        if(isPromeisCallback || !value || !isFunction(value.then)){
-            let isChange = this.scope[attr] !== value;
-            if(isChange){
-                this.scope[attr] = value;
+    set (attr, value, doneOrAsync = null, isPromeisCallback = false) {
+        if (isPromeisCallback || !value || !isFunction(value.then)) {
+            let isChange = this.scope[attr] !== value
+            if (isChange) {
+                this.scope[attr] = value
                 // for mcore3
-                this.emit('update:' + attr, value);
+                this.emit('update:' + attr, value)
             }
             // else{
             //     this.renderQueue(doneOrAsync);
             // }
-            this.emit('changeScope', this.scope, attr, value);
-            this.emit('change:' + attr, value);
-            return isChange;
+            this.emit('changeScope', this.scope, attr, value)
+            this.emit('change:' + attr, value)
+            return isChange
         }
-        else{
-            return value.then((val)=>{
-                let isChange = this.set(attr, val, doneOrAsync, true);
-                return isChange;
-            });
+        else {
+            return value.then((val) => {
+                let isChange = this.set(attr, val, doneOrAsync, true)
+                return isChange
+            })
         }
     }
 
@@ -382,11 +376,11 @@ export default class Component extends EventEmitter {
      * @param  {Mixed} defaultVal = null
      * @return {Mixed}
      */
-    get(attr, defaultVal = null){
-        if(this.scope.hasOwnProperty(attr)){
-            return this.scope[attr];
+    get (attr, defaultVal = null) {
+        if (this.scope.hasOwnProperty(attr)) {
+            return this.scope[attr]
         }
-        return defaultVal;
+        return defaultVal
     }
 
     /**
@@ -396,14 +390,13 @@ export default class Component extends EventEmitter {
      * @param  {Mixed} doneOrAsync = null
      * @return {Void}
      */
-    remove(attr, doneOrAsync = null){
-        if(this.scope.hasOwnProperty(attr)){
-            delete this.scope[attr];
-            this.emit('removeScope', this.scope, attr);
-            this.emit('change:' + attr, null);
+    remove (attr, doneOrAsync = null) {
+        if (this.scope.hasOwnProperty(attr)) {
+            delete this.scope[attr]
+            this.emit('removeScope', this.scope, attr)
+            this.emit('change:' + attr, null)
         }
-        this.renderQueue(doneOrAsync);
-
+        this.renderQueue(doneOrAsync)
     }
 
     /**
@@ -414,38 +407,37 @@ export default class Component extends EventEmitter {
      * @param  {String} status
      * @return {Void}
      */
-    update(attr, value, status){
-        if(status === 'remove'){
-            return this.remove(attr);
+    update (attr, value, status) {
+        if (status === 'remove') {
+            return this.remove(attr)
         }
-        this.set(attr, value);
+        this.set(attr, value)
     }
 
-    render(virtualDomDefine, scope = {}, doneOrAsync = null){
-        this.virtualDomDefine = virtualDomDefine;
-        let scopeKeys = Object.keys(scope);
-        let promiseVals = [];
-        scopeKeys.forEach((attr)=>{
-            promiseVals.push(scope[attr]);
-        });
-        return Promise.all(promiseVals).then((results)=>{
-            scopeKeys.forEach((attr, ix)=>{
-                this.set(attr, results[ix]);
-            });
+    render (virtualDomDefine, scope = {}, doneOrAsync = null) {
+        this.virtualDomDefine = virtualDomDefine
+        let scopeKeys = Object.keys(scope)
+        let promiseVals = []
+        scopeKeys.forEach((attr) => {
+            promiseVals.push(scope[attr])
+        })
+        return Promise.all(promiseVals).then((results) => {
+            scopeKeys.forEach((attr, ix) => {
+                this.set(attr, results[ix])
+            })
 
-            //马上渲染
-            if(doneOrAsync === true){
-                return this.renderQueue(doneOrAsync);
+            // 马上渲染
+            if (doneOrAsync === true) {
+                return this.renderQueue(doneOrAsync)
             }
-            return new Promise((resolve)=>{
-                this.renderQueue((refs)=>{
-                    if(isFunction(doneOrAsync)){
-                        doneOrAsync(refs);
+            return new Promise((resolve) => {
+                this.renderQueue((refs) => {
+                    if (isFunction(doneOrAsync)) {
+                        doneOrAsync(refs)
                     }
-                    resolve(refs);
-                });
-            });
-        });
-
+                    resolve(refs)
+                })
+            })
+        })
     }
 }
