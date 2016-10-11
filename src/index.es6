@@ -3,17 +3,17 @@
  * mcore version 3
  * @author vfasky <vfasky@gmail.com>
  **/
-"use strict";
+'use strict'
 
-import * as util from './util';
-import Element from './element';
-import Template from './template';
-import EventEmitter from './eventEmitter';
-import Component from './component';
-import * as route from './route';
-import View from './view';
-import App from './app';
-import http from './http';
+import * as util from './util'
+import Element from './element'
+import Template from './template'
+import EventEmitter from './eventEmitter'
+import Component from './component'
+import * as route from './route'
+import View from './view'
+import App from './app'
+import http from './http'
 
 export default {
     version: '3',
@@ -25,5 +25,5 @@ export default {
     EventEmitter: EventEmitter,
     Component: Component,
     View: View,
-    App: App,
-};
+    App: App
+}

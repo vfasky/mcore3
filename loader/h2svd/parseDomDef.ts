@@ -5,4 +5,23 @@
  **/
 'use strict'
 
-import * as filter from './filter'
+import parseFor from './parseFor'
+import parseText from './parseText'
+import {variable} from './config'
+
+import {htmlParserDom} from './interface'
+
+/**
+ * 解释并生成 virtual-dom 定义
+ * @return Array
+ */
+export default function (domAttr:htmlParserDom){
+    // if(domAttr.type === 'text'){
+    //     return parseText(domAttr);
+    // }
+    let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.pathName}){ // parseDomDef.es6
+        ${domAttr.type === 'text' ? parseText(domAttr) : parseFor(domAttr)}
+    }`
+
+    return code
+}

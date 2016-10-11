@@ -3,48 +3,46 @@
  * view
  * @author vfasky <vfasky@gmail.com>
  **/
-"use strict";
+'use strict'
 
-import Component from './component';
+import Component from './component'
 
-let _$iframe = null;
+let _$iframe = null
 
-export default class View extends Component{
-    constructor($el, app){
-        super($el[0], {}, {app: app});
-        this.$el = $el;
+export default class View extends Component {
+    constructor ($el, app) {
+        super($el[0], {}, {app: app})
+        this.$el = $el
         // this.el = $el[0];
-
     }
 
-
-    setTitle(title){
-        this.title = title;
-        if(document.title === title){
-            return;
+    setTitle (title) {
+        this.title = title
+        if (document.title === title) {
+            return
         }
-        document.title = title;
-        if(this.isWeixinBrowser && this.isIOS){
-            if(_$iframe === null){
-                _$iframe = this.util.get$()('<iframe style="width: 0; height: 0" src="/favicon.ico"></iframe>');
+        document.title = title
+        if (this.isWeixinBrowser && this.isIOS) {
+            if (_$iframe === null) {
+                _$iframe = this.util.get$()('<iframe style="width: 0; height: 0" src="/favicon.ico"></iframe>')
             }
-            let $iframe = _$iframe;
-            $iframe.one('load', ()=>{
-                this.nextTick(()=>{
-                    $iframe.remove();
-                });
-            }).appendTo(this.$body);
+            let $iframe = _$iframe
+            $iframe.one('load', () => {
+                this.nextTick(() => {
+                    $iframe.remove()
+                })
+            }).appendTo(this.$body)
         }
     }
 
-    back(){
-        if(window.history.length >= 1){
-            window.history.back();
+    back () {
+        if (window.history.length >= 1) {
+            window.history.back()
         }
-        else{
-            window.location.href = '#';
+        else {
+            window.location.href = '#'
         }
-        return false;
+        return false
     }
 
     // destroy(){
@@ -52,6 +50,6 @@ export default class View extends Component{
     //     super.destroy();
     // }
 
-    run(){}
-    afterRun(){}
+    run () {}
+    afterRun () {}
 }

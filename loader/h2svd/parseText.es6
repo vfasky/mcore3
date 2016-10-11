@@ -3,42 +3,42 @@
  * 解释文本
  * @author vfasky <vfasky@gmail.com>
  **/
-"use strict";
+'use strict'
 
-import parseFormatters from './parseFormatters';
-import {variable} from './config';
+import parseFormatters from './parseFormatters'
+import {variable} from './config'
 
-let _signReg = /\{([^}]+)\}/g;
-let _strEndReg = /[^]+""$/;
+let _signReg = /\{([^}]+)\}/g
+let _strEndReg = /[^]+""$/
 
-export default (domAttr)=>{
-    domAttr.data = domAttr.data.replace(/\n/g, ' ');
-    let text = domAttr.data;
+export default (domAttr) => {
+    domAttr.data = domAttr.data.replace(/\n/g, ' ')
+    let text = domAttr.data
     let code = `
         var ${variable.pathStaticIName} = ${variable.pathName} + '.' + ${variable.treeName}.length;
-    `;
+    `
 
-    if(_signReg.test(text)){
-        code += `var ${variable.strValsName} = {}`;
-        let mapTree = [];
-        let mapTreeId = 0;
-        let runtimeCode = text.replace(_signReg, (key, val)=>{
-            let reKey = `rp_${mapTreeId++}`;
+    if (_signReg.test(text)) {
+        code += `var ${variable.strValsName} = {}`
+        let mapTree = []
+        let mapTreeId = 0
+        let runtimeCode = text.replace(/\s+/g, ' ').replace(_signReg, (key, val) => {
+            let reKey = `rp_${mapTreeId++}`
             mapTree.push({
                 key: reKey,
                 val: val
-            });
-            return `" + ${variable.strValsName}['${reKey}'] + "`;
-        });
+            })
+            return `" + ${variable.strValsName}['${reKey}'] + "`
+        })
 
-        runtimeCode = '"' + runtimeCode;
-        if(false === _strEndReg.test(runtimeCode)){
-            runtimeCode += '"';
+        runtimeCode = '"' + runtimeCode
+        if (_strEndReg.test(runtimeCode) === false) {
+            runtimeCode += '"'
         }
 
-        mapTree.forEach((v)=>{
-            code += parseFormatters(v.key, v.val, variable.strValsName);
-        });
+        mapTree.forEach((v) => {
+            code += parseFormatters(v.key, v.val, variable.strValsName)
+        })
 
         code += `
             /* [formatter] ${text.trim()} */
@@ -48,18 +48,16 @@ export default (domAttr)=>{
                 '_textNode', ${variable.pathStaticIName}, {},
                 ${variable.dynamicAttrName}, {}, []
             ));
-        `;
-
-    }
-    else{
+        `
+    } else {
         // code += `
         //     ${variable.treeName}.push('${text}');
         // `;
         code += `
             var ${variable.attrName} = {text: "${text.replace(/"/g, '\\"')}"};
             ${variable.treeName}.push(${variable.utilName}.build('_textNode', ${variable.pathStaticIName}, ${variable.attrName}));
-        `;
+        `
     }
 
-    return code;
-};
+    return code
+}

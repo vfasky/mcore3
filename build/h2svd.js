@@ -1,7 +1,7 @@
 'use strict'
 
-var path = require('path')
-var distPath = path.join(__dirname, '../dist')
+const path = require('path')
+const distPath = path.join(__dirname, '../dist')
 
 module.exports = {
     entry: {
@@ -13,28 +13,27 @@ module.exports = {
         libraryTarget: 'commonjs2'
     },
     devtool: 'source-map',
-    // target: 'node',
+    target: 'node',
     module: {
         loaders: [{
             test: /\.ts$/,
             loader: 'ts-loader'
-        }, {
-            test: /\.es6$/,
-            loader: 'babel-loader',
-            exclude: /node_modules/,
-            query: {
-                presets: ['es2015']
-            }
         }]
+    },
+    ts: {
+        'compilerOptions': {
+            'target': 'es5',
+            'sourceMap': true
+        }
     },
     resolve: {
         modulesDirectories: ['node_modules', 'src'],
-        extensions: ['', 'ts', '.es6', '.js']
+        extensions: ['', '.ts', '.es6', '.js']
     },
     externals: {
-        htmlparser2: 'htmlparser2',
+        'htmlparser2': 'htmlparser2',
         'js-beautify': 'js-beautify',
-        util: 'util',
+        'util': 'util',
         'loader-utils': 'loader-utils'
     }
 }

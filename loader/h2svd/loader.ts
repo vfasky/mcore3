@@ -1,3 +1,4 @@
+/// <reference path="../../definition/loader-utils.d.ts" />
 /**
  *
  * webpack loader
@@ -5,9 +6,9 @@
  **/
 'use strict'
 import h2svd from './index'
-var loaderUtils = require('loader-utils')
+import * as loaderUtils from 'loader-utils'
 
-module.exports = function (html) {
+function loader (html:string):void {
     let callback, query, code, js
     query = loaderUtils.parseQuery(this.query)
     if (this.cacheable) {
@@ -18,3 +19,5 @@ module.exports = function (html) {
     js = `module.exports = ${code}`
     callback(null, js)
 }
+
+export = loader

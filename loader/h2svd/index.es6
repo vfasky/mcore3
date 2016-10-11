@@ -3,32 +3,32 @@
  * 将 html 解释成 virtual-dom 的定义
  * @author vfasky <vfasky@gmail.com>
  **/
-"use strict";
+'use strict'
 
-import htmlparser from 'htmlparser2';
-import {js_beautify as beautify} from 'js-beautify';
-import filter from './filter';
-import paseDomDef from './parseDomDef';
-import {variable} from './config';
+import htmlparser from 'htmlparser2'
+import {js_beautify as beautify} from 'js-beautify'
+import filter from './filter'
+import paseDomDef from './parseDomDef'
+import {variable} from './config'
 
 
-export default (html, options = {})=>{
-    if(!options.moduleName){
-        options.moduleName = 'mcore3';
+export default (html, options = {}) => {
+    if (!options.moduleName) {
+        options.moduleName = 'mcore3'
     }
-    let domTree = filter(htmlparser.parseDOM(html,{
+    let domTree = filter(htmlparser.parseDOM(html, {
         decodeEntities: true
-    }));
+    }))
 
-    let forCode = '';
+    let forCode = ''
 
-    domTree.forEach((domAttr, k)=>{
+    domTree.forEach((domAttr, k) => {
         forCode += `
             (${paseDomDef(domAttr)})(${variable.scopeName}, ${variable.treeName}, '${k}');
-        `;
-    });
+        `
+    })
 
-    let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){
+    let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){ //index.es6
             var ${variable.utilName} = {
                 clone: ${variable.mcoreName}.util.clone,
                 build: function(tagName, key, attr, dynamicAttr, events, children){
@@ -45,11 +45,11 @@ export default (html, options = {})=>{
             ${forCode}
             return ${variable.treeName};
         };
-    `;
+    `
 
-    code = beautify(code,{
+    code = beautify(code, {
         indent_size: 4
-    });
-    //console.log(code);
-    return code;
-};
+    })
+    // console.log(code);
+    return code
+}

@@ -3,46 +3,44 @@
  * 过滤函数
  * @author vfasky <vfasky@gmail.com>
  **/
-"use strict";
+'use strict'
 
-import {get$, isNumber} from '../util';
-const $ = get$();
+import {isNumber} from '../util'
 
-let formatters = {};
+let formatters = {}
 
-formatters.toNumber = (x)=>{
-    if(isNumber(x)){
-        return Number(x);
+formatters.toNumber = (x) => {
+    if (isNumber(x)) {
+        return Number(x)
     }
-    return 0;
-};
+    return 0
+}
 
-formatters.toFixed = (x, len = 1)=>{
-    return formatters.toNumber(x).toFixed(len);
-};
+formatters.toFixed = (x, len = 1) => {
+    return formatters.toNumber(x).toFixed(len)
+}
 
-formatters.in = (x, ...arr)=>{
-    return arr.indexOf(x) !== -1;
-};
+formatters.in = (x, ...arr) => {
+    return arr.indexOf(x) !== -1
+}
 
-
-formatters.objToStyle = (value)=>{
+formatters.objToStyle = (value) => {
     let autoPx = [
         'width', 'height', 'left', 'top', 'right', 'bottom',
         'margin-top', 'margin-left', 'margin-right', 'margin-bottom',
-        'padding-top', 'padding-left', 'padding-right', 'padding-bottom',
-    ];
-    let css = [];
+        'padding-top', 'padding-left', 'padding-right', 'padding-bottom'
+    ]
+    let css = []
 
-    Object.keys(value).forEach((key)=>{
-        let val = value[key];
-        if(autoPx.indexOf(key) !== -1 && isNumber(val)){
-            val = val + 'px';
+    Object.keys(value).forEach((key) => {
+        let val = value[key]
+        if (autoPx.indexOf(key) !== -1 && isNumber(val)) {
+            val = val + 'px'
         }
-        css.push(`${key}: ${val}`);
-    });
+        css.push(`${key}: ${val}`)
+    })
 
-    return css.join(';');
-};
+    return css.join(';')
+}
 
-export default formatters;
+export default formatters
