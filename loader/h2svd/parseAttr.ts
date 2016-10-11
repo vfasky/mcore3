@@ -5,9 +5,9 @@
  **/
 'use strict'
 
-import {parseFormatters} from './parseFormatters'
-import {variable} from './config'
-import {htmlParserDom} from './interface'
+import { parseFormatters } from './parseFormatters'
+import { variable } from './config'
+import { htmlParserDom } from './interface'
 
 const FUN_REG = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/
 const VAR_REG = /(^[a-zA-Z0-9_-]+)$/
@@ -18,7 +18,7 @@ const VAR_REG = /(^[a-zA-Z0-9_-]+)$/
  * @param dynamicVal runtime script
  * @param dynamicAttrName 动态属性变量名称
  */
-function parseDynamicAttr (name:string, dynamicVal:string, dynamicAttrName:string):string {
+function parseDynamicAttr(name: string, dynamicVal: string, dynamicAttrName: string): string {
     name = name.replace('mc-', '')
     if (!dynamicVal) {
         dynamicVal = "''"
@@ -42,7 +42,7 @@ function parseDynamicAttr (name:string, dynamicVal:string, dynamicAttrName:strin
     }
 }
 
-export default function parseAttr (domAttr:htmlParserDom):string {
+export default function parseAttr(domAttr: htmlParserDom): string {
     let attrKeys = Object.keys(domAttr.attribs)
 
     let igKeys = ['mc-for', 'mc-if', 'mc-unless']
@@ -59,8 +59,8 @@ export default function parseAttr (domAttr:htmlParserDom):string {
         // 解释事件
         if (v.indexOf('mc-on-') === 0) {
             let eventFunCode = String(domAttr.attribs[v])
-            let funName:string
-            let args:string[]
+            let funName: string
+            let args: string[]
             if (FUN_REG.test(eventFunCode)) {
                 funName = eventFunCode.substr(0, eventFunCode.indexOf('('))
                 args = eventFunCode.substr(eventFunCode.indexOf('(') + 1).substr(0, args.length - 1).split(',')

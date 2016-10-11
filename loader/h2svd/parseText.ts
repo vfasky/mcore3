@@ -5,19 +5,19 @@
  **/
 'use strict'
 
-import {parseFormatters} from './parseFormatters'
-import {variable} from './config'
-import {htmlParserDom} from './interface'
+import { parseFormatters } from './parseFormatters'
+import { variable } from './config'
+import { htmlParserDom } from './interface'
 
 const SIGN_REG = /\{([^}]+)\}/g
 const STREND_REG = /[^]+""$/
-
+ 
 interface mapTreeConfig {
     key: string;
     val: string;
 }
 
-export default function parseText (domAttr:htmlParserDom):string {
+export default function parseText(domAttr: htmlParserDom): string {
     domAttr.data = domAttr.data.replace(/\n/g, ' ')
     let text = domAttr.data
     let code = `
@@ -27,7 +27,7 @@ export default function parseText (domAttr:htmlParserDom):string {
 
     if (SIGN_REG.test(text)) {
         code += `var ${variable.strValsName} = {}`
-        let mapTree:mapTreeConfig[] = []
+        let mapTree: mapTreeConfig[] = []
         let mapTreeId = 0
         let runtimeCode = text.replace(/\s+/g, ' ').replace(SIGN_REG, (key, val) => {
             let reKey = `rp_${mapTreeId++}`

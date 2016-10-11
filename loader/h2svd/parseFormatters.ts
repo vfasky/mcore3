@@ -5,7 +5,7 @@
  **/
 'use strict'
 
-import {variable} from './config'
+import { variable } from './config'
 
 const FORMATTERS_ARGS_REG = /[^\s']+|'([^']|'[^\s])*'|"([^"]|"[^\s])*"/g
 
@@ -15,7 +15,7 @@ const FORMATTERS_ARGS_REG = /[^\s']+|'([^']|'[^\s])*'|"([^"]|"[^\s])*"/g
  * @param dynamicVal runtime script
  * @param dynamicAttrName 动态属性变量名称
  */
-export function parseFormatters (name:string, dynamicVal:string, dynamicAttrName:string):string {
+export function parseFormatters(name: string, dynamicVal: string, dynamicAttrName: string): string {
     let funcs = dynamicVal.split(' | ')
     let startVal = funcs.shift()
 

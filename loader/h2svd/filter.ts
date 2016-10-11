@@ -5,12 +5,12 @@
  **/
 'use strict'
 
-import {htmlParserDom} from './interface'
+import { htmlParserDom } from './interface'
 
-export default function(domTree:htmlParserDom[] = []):any[] {
+export default function (domTree: htmlParserDom[] = []): any[] {
     return domTree.filter((dom) => {
         if (dom.type === 'comment') return false
-        if (dom.type === 'text' && dom.data.trim().length === 0 ) return false
+        if (dom.type === 'text' && dom.data.trim().length === 0) return false
         return true
     })
 }

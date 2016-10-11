@@ -4,9 +4,9 @@
  * @author vfasky <vfasky@gmail.com>
  **/
 'use strict'
-import {htmlParserDom} from './interface'
+import { htmlParserDom } from './interface'
 
-export function begin (domAttr:htmlParserDom):string {
+export function begin(domAttr: htmlParserDom): string {
     if (!domAttr.attribs['mc-if'] && !domAttr.attribs['mc-unless']) {
         return ''
     }
@@ -23,7 +23,7 @@ export function begin (domAttr:htmlParserDom):string {
     }
 }
 
-export function end (domAttr:htmlParserDom):string {
+export function end(domAttr: htmlParserDom): string {
     if (!domAttr.attribs['mc-if'] && !domAttr.attribs['mc-unless']) {
         return ''
     } else {

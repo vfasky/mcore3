@@ -5,13 +5,13 @@
  **/
 'use strict'
 
-import {htmlParserDom} from './interface'
+import { htmlParserDom } from './interface'
 import build from './build'
 import parseAttr from './parseAttr'
-import {begin as ifBegin, end as ifEnd} from './parseIf'
-import {variable} from './config'
+import { begin as ifBegin, end as ifEnd } from './parseIf'
+import { variable } from './config'
 
-function buildArray (domAttr:htmlParserDom, iName:string, vName:string):string {
+function buildArray(domAttr: htmlParserDom, iName: string, vName: string): string {
     let code = `
         // buildArray
         ${variable.forArrayName}.forEach(function(${vName}, ${iName}){
@@ -25,7 +25,7 @@ function buildArray (domAttr:htmlParserDom, iName:string, vName:string):string {
     return code
 }
 
-function buildObject (domAttr:htmlParserDom, kName:string, vName:string, oName:string):string {
+function buildObject(domAttr: htmlParserDom, kName: string, vName: string, oName: string): string {
     let code = `
         // buildObject
         ${variable.forObjKeysName}.forEach(function(${kName}, ${variable.forIName}){
@@ -42,7 +42,7 @@ function buildObject (domAttr:htmlParserDom, kName:string, vName:string, oName:s
     return code
 }
 
-export default function (domAttr:htmlParserDom):string {
+export default function (domAttr: htmlParserDom): string {
     let code = `
         // parseFor
     `

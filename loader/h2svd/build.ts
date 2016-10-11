@@ -5,13 +5,13 @@
  **/
 'use strict'
 
-import {htmlParserDom} from './interface'
+import { htmlParserDom } from './interface'
 import paseDomDef from './parseDomDef'
 import filter from './filter'
-import {variable} from './config'
+import { variable } from './config'
 
 
-export default function (domAttr:htmlParserDom, key:string):string {
+export default function (domAttr: htmlParserDom, key: string): string {
     let forCode = `
         var ${variable.pathSubIName} = String(${key})
     `

@@ -7,14 +7,14 @@
 'use strict'
 
 import * as htmlparser from 'htmlparser2'
-import {js as beautify} from 'js-beautify'
+import { js as beautify } from 'js-beautify'
 import filter from './filter'
 
 import paseDomDef from './parseDomDef'
-import {variable} from './config'
+import { variable } from './config'
 
 
-export default function (html:string, options = {}):string{
+export default function (html: string, options = {}): string {
     let domTree = filter(htmlparser.parseDOM(html, {
         decodeEntities: true
     }))
