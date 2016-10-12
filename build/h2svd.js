@@ -1,7 +1,7 @@
 'use strict'
 
-var path = require('path')
-var distPath = path.join(__dirname, '../dist')
+const path = require('path')
+const distPath = path.join(__dirname, '../dist')
 
 module.exports = {
     entry: {
