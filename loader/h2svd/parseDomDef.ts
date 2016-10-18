@@ -19,7 +19,8 @@ export default function (domAttr: htmlParserDom) {
     // if(domAttr.type === 'text'){
     //     return parseText(domAttr);
     // }
-    let code = `function(${variable.scopeName}, ${variable.treeName}, ${variable.pathName}){ // parseDomDef.es6
+    let code = `function (${variable.scopeName}, ${variable.treeName}, ${variable.pathName}) { 
+        // parseDomDef
         ${domAttr.type === 'text' ? parseText(domAttr) : parseFor(domAttr)}
     }`
 

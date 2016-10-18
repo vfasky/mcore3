@@ -13,7 +13,7 @@ import { variable } from './config'
 
 export default function (domAttr: htmlParserDom, key: string): string {
     let forCode = `
-        var ${variable.pathSubIName} = String(${key})
+        var ${variable.pathSubIName} = String(${key});
     `
 
     if (Array.isArray(domAttr.children)) {
@@ -21,7 +21,7 @@ export default function (domAttr: htmlParserDom, key: string): string {
 
         childrens.forEach((attr, k) => {
             forCode += `
-                (${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${variable.pathSubIName})
+                (${paseDomDef(attr)})(${variable.scopeName}, ${variable.childrenName}, ${variable.pathSubIName});
             `
         })
     }

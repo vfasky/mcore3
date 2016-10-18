@@ -27,6 +27,8 @@
   },
   "homepage": "https://github.com/vfasky/mcore3#readme",
   "devDependencies": {
+    "@types/eventemitter3": "^1.1.29",
+    "@types/jquery": "^2.0.33",
     "array.from": "^1.0.2",
     "array.observe": "0.0.1",
     "babel-cli": "^6.10.1",

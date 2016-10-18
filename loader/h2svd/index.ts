@@ -27,7 +27,7 @@ export default function (html: string, options = {}): string {
         `
     })
 
-    let code = `function(${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}){ // index
+    let code = `function (${variable.scopeName}, ${variable.viewName}, ${variable.mcoreName}) { // index
             var ${variable.utilName} = {
                 clone: ${variable.mcoreName}.util.clone,
                 build: function(tagName, key, attr, dynamicAttr, events, children){
@@ -38,12 +38,14 @@ export default function (html: string, options = {}): string {
                 },
                 callFormatter: function(formatterName){
                     return ${variable.mcoreName}.util.callFormatter(formatterName, ${variable.mcoreName})
-                },
-            };
-            var ${variable.treeName} = []
+                }
+            }
+            var ${variable.treeName} = [];
+            
             ${forCode}
+
             return ${variable.treeName}
-        };
+        }
     `
 
     code = beautify(code, {

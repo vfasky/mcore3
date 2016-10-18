@@ -59,11 +59,12 @@ export default function parseAttr(domAttr: htmlParserDom): string {
         // 解释事件
         if (v.indexOf('mc-on-') === 0) {
             let eventFunCode = String(domAttr.attribs[v])
-            let funName: string
-            let args: string[]
+            let funName: string = ''
+            let args: string[] = []
             if (FUN_REG.test(eventFunCode)) {
                 funName = eventFunCode.substr(0, eventFunCode.indexOf('('))
-                args = eventFunCode.substr(eventFunCode.indexOf('(') + 1).substr(0, args.length - 1).split(',')
+                let strArgs = eventFunCode.substr(eventFunCode.indexOf('(') + 1)
+                args = strArgs.substr(0, strArgs.length - 1).split(',')
             } else {
                 funName = eventFunCode
             }

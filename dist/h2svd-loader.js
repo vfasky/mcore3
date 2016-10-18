@@ -93,7 +93,7 @@ module.exports =
 	    domTree.forEach(function (domAttr, k) {
 	        forCode += "\n            (" + parseDomDef_1.default(domAttr) + ")(" + config_1.variable.scopeName + ", " + config_1.variable.treeName + ", '" + k + "');\n        ";
 	    });
-	    var code = "function(" + config_1.variable.scopeName + ", " + config_1.variable.viewName + ", " + config_1.variable.mcoreName + "){ // index\n            var " + config_1.variable.utilName + " = {\n                clone: " + config_1.variable.mcoreName + ".util.clone,\n                build: function(tagName, key, attr, dynamicAttr, events, children){\n                    return new " + config_1.variable.mcoreName + ".Element(tagName, key, attr, dynamicAttr, children, events, " + config_1.variable.viewName + ")\n                },\n                parseDynamicVal: function(dynamicCode, dynamicCodeStr){\n                    return " + config_1.variable.mcoreName + ".util.parseDynamicVal(dynamicCode, dynamicCodeStr, " + config_1.variable.viewName + ")\n                },\n                callFormatter: function(formatterName){\n                    return " + config_1.variable.mcoreName + ".util.callFormatter(formatterName, " + config_1.variable.mcoreName + ")\n                },\n            };\n            var " + config_1.variable.treeName + " = []\n            " + forCode + "\n            return " + config_1.variable.treeName + "\n        };\n    ";
+	    var code = "function (" + config_1.variable.scopeName + ", " + config_1.variable.viewName + ", " + config_1.variable.mcoreName + ") { // index\n            var " + config_1.variable.utilName + " = {\n                clone: " + config_1.variable.mcoreName + ".util.clone,\n                build: function(tagName, key, attr, dynamicAttr, events, children){\n                    return new " + config_1.variable.mcoreName + ".Element(tagName, key, attr, dynamicAttr, children, events, " + config_1.variable.viewName + ")\n                },\n                parseDynamicVal: function(dynamicCode, dynamicCodeStr){\n                    return " + config_1.variable.mcoreName + ".util.parseDynamicVal(dynamicCode, dynamicCodeStr, " + config_1.variable.viewName + ")\n                },\n                callFormatter: function(formatterName){\n                    return " + config_1.variable.mcoreName + ".util.callFormatter(formatterName, " + config_1.variable.mcoreName + ")\n                }\n            }\n            var " + config_1.variable.treeName + " = [];\n            \n            " + forCode + "\n\n            return " + config_1.variable.treeName + "\n        }\n    ";
 	    code = js_beautify_1.js(code, {
 	        indent_size: 4
 	    });
@@ -161,7 +161,7 @@ module.exports =
 	    // if(domAttr.type === 'text'){
 	    //     return parseText(domAttr);
 	    // }
-	    var code = "function(" + config_1.variable.scopeName + ", " + config_1.variable.treeName + ", " + config_1.variable.pathName + "){ // parseDomDef.es6\n        " + (domAttr.type === 'text' ? parseText_1.default(domAttr) : parseFor_1.default(domAttr)) + "\n    }";
+	    var code = "function (" + config_1.variable.scopeName + ", " + config_1.variable.treeName + ", " + config_1.variable.pathName + ") { \n        // parseDomDef\n        " + (domAttr.type === 'text' ? parseText_1.default(domAttr) : parseFor_1.default(domAttr)) + "\n    }";
 	    return code;
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -233,11 +233,11 @@ module.exports =
 	var filter_1 = __webpack_require__(4);
 	var config_1 = __webpack_require__(8);
 	function default_1(domAttr, key) {
-	    var forCode = "\n        var " + config_1.variable.pathSubIName + " = String(" + key + ")\n    ";
+	    var forCode = "\n        var " + config_1.variable.pathSubIName + " = String(" + key + ");\n    ";
 	    if (Array.isArray(domAttr.children)) {
 	        var childrens = filter_1.default(domAttr.children);
 	        childrens.forEach(function (attr, k) {
-	            forCode += "\n                (" + parseDomDef_1.default(attr) + ")(" + config_1.variable.scopeName + ", " + config_1.variable.childrenName + ", " + config_1.variable.pathSubIName + ")\n            ";
+	            forCode += "\n                (" + parseDomDef_1.default(attr) + ")(" + config_1.variable.scopeName + ", " + config_1.variable.childrenName + ", " + config_1.variable.pathSubIName + ");\n            ";
 	        });
 	    }
 	    var code = "\n        // build\n        " + config_1.variable.childrenName + " = []\n        " + forCode + "\n        " + config_1.variable.treeName + ".push(\n            " + config_1.variable.utilName + ".build(\n                '" + domAttr.name + "', " + config_1.variable.pathSubIName + ", " + config_1.variable.attrName + ",\n                " + config_1.variable.dynamicAttrName + ", " + config_1.variable.eventName + ", " + config_1.variable.childrenName + "\n            )\n        )\n    ";
@@ -329,11 +329,12 @@ module.exports =
 	        // 解释事件
 	        if (v.indexOf('mc-on-') === 0) {
 	            var eventFunCode = String(domAttr.attribs[v]);
-	            var funName = void 0;
-	            var args = void 0;
+	            var funName = '';
+	            var args = [];
 	            if (FUN_REG.test(eventFunCode)) {
 	                funName = eventFunCode.substr(0, eventFunCode.indexOf('('));
-	                args = eventFunCode.substr(eventFunCode.indexOf('(') + 1).substr(0, args.length - 1).split(',');
+	                var strArgs = eventFunCode.substr(eventFunCode.indexOf('(') + 1);
+	                args = strArgs.substr(0, strArgs.length - 1).split(',');
 	            }
 	            else {
 	                funName = eventFunCode;
@@ -444,7 +445,7 @@ module.exports =
 	        args[0] = 'x';
 	        formatterCode += "\n            x = " + config_1.variable.utilName + ".callFormatter('" + formatter + "')(" + args.join(',') + ");\n        ";
 	    });
-	    var code = " // parseFormatters\n        var " + config_1.variable.tmpAttrName + ";\n        try{\n            " + config_1.variable.tmpAttrName + " = " + startVal + "\n        }catch(err){}\n\n        " + dynamicAttrName + "['" + name + "'] = (function(x){\n            " + formatterCode + "\n            return x == undefined ? '' : x\n        })(" + config_1.variable.tmpAttrName + ");\n    ";
+	    var code = " // parseFormatters\n        var " + config_1.variable.tmpAttrName + ";\n        try{\n            " + config_1.variable.tmpAttrName + " = " + startVal + "\n        } catch (err) {\n            console.error(err)\n        }\n\n        " + dynamicAttrName + "['" + name + "'] = (function(x){\n            " + formatterCode + "\n            return x == undefined ? '' : x\n        })(" + config_1.variable.tmpAttrName + ");\n    ";
 	    return code;
 	}
 	exports.parseFormatters = parseFormatters;
