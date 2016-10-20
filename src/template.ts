@@ -10,6 +10,7 @@ import EventEmitter from './eventEmitter'
 import binders from './template/binders'
 import formatters from './template/formatters'
 import * as util from './util'
+import Element from './element'
 
 const getComponents = util.getComponents
 
@@ -20,7 +21,7 @@ export default class Template extends EventEmitter {
     /**
      * 绑定的自定义组件
      */
-    static components: any = {}
+    static components = {}
 
     /**
      * binders
@@ -59,15 +60,11 @@ export default class Template extends EventEmitter {
     /**
      * mcore element
      */
-    element: any
+    element: Element
+
 
     /**
-     * 子元素的自定义组件列表
-     */
-    childrenComponent: any[]
-
-    /**
-     * 对应有 dom 引用
+     * 真实 DOM
      */
     refs: HTMLInputElement
 
@@ -75,7 +72,7 @@ export default class Template extends EventEmitter {
         super()
         this._isWatchEvent = false
         this.element = element
-        this.childrenComponent = []
+        // this.childrenComponent = []
     }
 
     destroy(notRemove = false) {
@@ -98,7 +95,7 @@ export default class Template extends EventEmitter {
      * @return {Element}
      */
     render() {
-        let node
+        let node: any
         if (this.element.tagName == '_textnode') {
             if (this.element.dynamicProps.hasOwnProperty('text')) {
                 node = document.createTextNode(this.element.dynamicProps.text)
@@ -113,10 +110,9 @@ export default class Template extends EventEmitter {
             return node
         }
         node = document.createElement(this.element.tagName)
-
         node._key = this.element.key
-        this.refs = node
         node._element = this.element
+        this.refs = node
 
         // 自定义组件初始化，子元素由 自定义组件 自己管理
         if (Template.components.hasOwnProperty(this.element.tagName)) {
@@ -128,29 +124,19 @@ export default class Template extends EventEmitter {
             Object.keys(this.element.dynamicProps).forEach((attr) => {
                 this.setAttr(attr.toLowerCase(), this.element.dynamicProps[attr], true)
             })
-            this.element._component = new Template.components[this.element.tagName](node, this.element)
 
+            this.element._component = new Template.components[this.element.tagName](node, this.element)
             this.element._noDiffChild = true
             this.element.children = []
             this.element.count = 0
-            node._component = this.element._component
+
+            // node._component = this.element._component
 
         } else { // 非自定义组件，渲染子元素
             this.element.children.forEach((child) => {
                 if (child.render) {
                     let childNode = child.render()
                     if (childNode) {
-                        // 收集自定义组件
-                        if (child._component) {
-                            this.childrenComponent.push(child._component)
-                        }
-                        // 收集子元素的所有自定义组件
-                        if (child.childrenComponent && child.childrenComponent.length) {
-                            child.childrenComponent.forEach((c) => {
-                                this.childrenComponent.push(c)
-                            })
-                        }
-
                         this.refs.appendChild(childNode)
                     }
                     else {
@@ -172,7 +158,7 @@ export default class Template extends EventEmitter {
             })
         }
 
-        return node
+        return this.refs
     }
 
     /**
@@ -182,7 +168,6 @@ export default class Template extends EventEmitter {
         if (isFunction(binder)) {
             this.element._binder = true
             binder(this.refs, value, attrValue)
-            return
         }
         if (status === 'init') {
             if (isFunction(binder.init)) {
@@ -267,7 +252,7 @@ export default class Template extends EventEmitter {
             this.refs.value = value
             return
         }
-        if (isNumber(value) || isString(value)) {
+        if (isNumber(value) || isString(value) || value === true) {
             this.refs.setAttribute(attr, value)
         }
     }

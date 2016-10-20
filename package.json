@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/eventemitter3": "^1.1.29",
     "@types/jquery": "^2.0.33",
+    "@types/path-to-regexp": "^1.0.29",
     "array.from": "^1.0.2",
     "array.observe": "0.0.1",
     "babel-cli": "^6.10.1",

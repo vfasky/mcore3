@@ -262,6 +262,18 @@ export function callFormatter(formatterName: string, mcore): any {
 }
 
 /**
+ * NodeList to Array
+ */
+export function nodeListToArray(nodeList: NodeList) {
+    let list = []
+    for(let i = 0, len = nodeList.length; i < len; i++) {
+        list.push(nodeList[i])
+    }
+    return list
+}
+
+
+/**
  * 放到下一帧执行
  */
 export class NextTick {

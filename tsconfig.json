@@ -1,13 +1,16 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
-        "sourceMap": true
+        "sourceMap": true,
+        "typeRoots" : [ "./definition", "./node_modules/@types"]
     },
     "exclude": [
         "node_modules"
     ],
     "include": [
-        "./loader/**/*"
+        "./loader/**/*.ts",
+        "./src/**/*.ts"
     ]
 }
