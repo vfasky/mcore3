@@ -187,7 +187,7 @@ module.exports =
 	    return code;
 	}
 	function buildObject(domAttr, kName, vName, oName) {
-	    var code = "\n        // buildObject\n        " + config_1.variable.forObjKeysName + ".forEach(function(" + kName + ", " + config_1.variable.forIName + "){\n            var " + vName + " = " + oName + "[" + kName + "]\n            " + parseIf_1.begin(domAttr) + "\n                var " + config_1.variable.childrenName + "\n                // parseAttr\n                " + parseAttr_1.default(domAttr) + "\n               \n                " + build_1.default(domAttr, config_1.variable.pathName + ' + \'.\' + ' + config_1.variable.forIName) + "\n            " + parseIf_1.end(domAttr) + "\n        });\n    ";
+	    var code = "\n        // buildObject\n        " + config_1.variable.forObjKeysName + ".forEach(function(" + kName + "){\n            var " + vName + " = " + oName + "[" + kName + "]\n            " + parseIf_1.begin(domAttr) + "\n                var " + config_1.variable.childrenName + "\n                " + parseAttr_1.default(domAttr) + "\n                " + build_1.default(domAttr, config_1.variable.pathName + ' + \'.\' + (' + config_1.variable.treeName + '.length)') + "\n            " + parseIf_1.end(domAttr) + "\n        });\n    ";
 	    return code;
 	}
 	function default_1(domAttr) {

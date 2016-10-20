@@ -28,14 +28,12 @@ function buildArray(domAttr: htmlParserDom, iName: string, vName: string): strin
 function buildObject(domAttr: htmlParserDom, kName: string, vName: string, oName: string): string {
     let code = `
         // buildObject
-        ${variable.forObjKeysName}.forEach(function(${kName}, ${variable.forIName}){
+        ${variable.forObjKeysName}.forEach(function(${kName}){
             var ${vName} = ${oName}[${kName}]
             ${ifBegin(domAttr)}
                 var ${variable.childrenName}
-                // parseAttr
                 ${parseAttr(domAttr)}
-               
-                ${build(domAttr, variable.pathName + ' + \'.\' + ' + variable.forIName)}
+                ${build(domAttr, variable.pathName + ' + \'.\' + (' + variable.treeName + '.length)')}
             ${ifEnd(domAttr)}
         });
     `
