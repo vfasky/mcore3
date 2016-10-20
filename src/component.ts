@@ -83,7 +83,7 @@ export default class Component extends EventEmitter {
     isIOS = util.isIOS()
 
 
-    constructor(parentNode: HTMLElement, parentElement?: Element, args = {}) {
+    constructor(parentNode: HTMLElement, parentElement: any = {} , args = {}) {
         super()
         Object.keys(args).forEach((key) => {
             this[key] = args[key]
@@ -169,7 +169,7 @@ export default class Component extends EventEmitter {
                 return
             }
             if (!Array.isArray(args)) {
-                if (args && args.length !== undefined) {
+                if (args && (<any>args).length !== undefined) {
                     args = Array.from(args)
                 }
                 else {
@@ -186,9 +186,6 @@ export default class Component extends EventEmitter {
 
     /**
      * 放入渲染队列
-     * @method renderQueue
-     * @param  {Function | Boolean}    doneOrAsync
-     * @return {Void}
      */
     renderQueue(doneOrAsync = null) {
         // 加入成功回调队列
@@ -214,7 +211,7 @@ export default class Component extends EventEmitter {
      * @method _render
      * @return {[type]} [description]
      */
-    _render() {
+    private _render() {
         if (!this.virtualDomDefine) {
             return
         }
@@ -234,9 +231,10 @@ export default class Component extends EventEmitter {
             this.refs = this.virtualDom.render()
             this.$refs = $(this.refs)
             this.mount()
-        }
-        else {
+        } else {
             let patches = diff(this.virtualDom, virtualDom)
+            // console.log(patches);
+            
             // 更新dom
             patch(this.refs, patches)
             this.virtualDom = virtualDom
@@ -263,17 +261,22 @@ export default class Component extends EventEmitter {
         return this.refs
     }
 
-    callEvent(event, eventName) {
+    callEvent(event, eventName: string) {
+        
         const $ = util.get$()
         var res = null
         let target = event.target
         let eventData = this.events[eventName]
+        
         if (Array.isArray(eventData)) {
             for (let i = 0, len = eventData.length; i < len; i++) {
                 let ctx = eventData[i]
                 let ctxTarget = ctx.target()
+                // console.log(ctxTarget, target)
+                
                 if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
                     let callback = this[ctx.funName]
+                    
                     if (isFunction(callback)) {
                         let args = [event, ctxTarget]
                         args = args.concat(ctx.args)
@@ -326,9 +329,9 @@ export default class Component extends EventEmitter {
             return
         }
         const $ = util.get$()
-        if (this.events) {
-            this.oldEvents = this.events
-        }
+        // if (this.events) {
+        //     this.oldEvents = this.events
+        // }
         this.events = getEvents(this.virtualDom)
         let curEvents = Object.keys(this.events)
         // console.log(curEvents, this.events);

@@ -15,18 +15,19 @@ module.exports = {
     devtool: 'source-map',
     module: {
         loaders: [{
-            test: /\.es6$/,
-            loader: 'babel-loader',
-            exclude: /node_modules/,
-            query: {
-                plugins: ['transform-runtime'],
-                presets: ['es2015']
-            }
+            test: /\.ts$/,
+            loader: 'ts-loader'
         }]
+    },
+    ts: {
+        'compilerOptions': {
+            'target': 'es5',
+            'sourceMap': true
+        }
     },
     resolve: {
         modulesDirectories: ['node_modules', 'src'],
-        extensions: ['', '.es6', '.js'],
+        extensions: ['', '.ts', '.js'],
         jquery: 'jQuery'
     },
     externals: {

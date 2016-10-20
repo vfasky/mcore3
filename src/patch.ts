@@ -74,6 +74,7 @@ function applyPatches(node, currentPatches) {
                 if (node._element) {
                     let propkeys = Object.keys(currentPatch.props)
                     for (let attr of propkeys) {
+                        // console.log(attr, currentPatch.props[attr])
                         let value = currentPatch.props[attr]
                         let status = value !== undefined ? 'update' : 'remove'
                         if (node._element.template) {

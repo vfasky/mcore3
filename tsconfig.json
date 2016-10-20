@@ -10,7 +10,7 @@
         "node_modules"
     ],
     "include": [
-        "./loader/**/*.ts",
-        "./src/**/*.ts"
+        // "./loader/**/*.ts",
+        // "./src/**/*.ts"
     ]
 }

@@ -5,6 +5,7 @@
  **/
 'use strict'
 import Template from './template'
+import Component from './component'
 
 /**
  * mcore element
@@ -64,13 +65,13 @@ export default class Element {
     template: Template
 
 
-
     /**
      * 真实 DOM
      */
-    get refs() {
-        return this.template.refs
-    }
+    refs: HTMLElement
+    // get refs() {
+    //     return this.template ? this.template.refs : null
+    // }
 
     constructor(tagName: string, key: string, props = {}, dynamicProps = {}, children = [], events = {}, view: any = null) {
         this.tagName = tagName.trim().toLowerCase()
@@ -106,14 +107,15 @@ export default class Element {
         this._component = element._component
         this._noDiffChild = element._noDiffChild
         this._binder = element._binder
+        this.refs = element.refs
 
         this.view = element.view
-        this.children = element.children
-        this.count = element.count
+        // this.children = element.children
+        // this.count = element.count
         this.template = element.template
         this.template.element = this
         
-        // element = null
+        element = null
 
         // 设置动态属性
         Object.keys(this.dynamicProps).forEach((attr) => {
@@ -123,7 +125,8 @@ export default class Element {
 
     render() {
         this.template = new Template(this)
-        return this.template.render()
+        this.refs = this.template.render()
+        return this.refs
     }
 
     destroy(notRemove = false) {

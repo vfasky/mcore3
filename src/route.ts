@@ -31,13 +31,13 @@ export function pathToObject(path: string) {
         if (v.indexOf('=') === -1) {
             return
         }
-        v = v.split('=')
-        if (v.length !== 2) {
+        let vArr = v.split('=')
+        if (vArr.length !== 2) {
             return
         }
 
-        let key = v[0].trim()
-        let value = decodeValue(v[1])
+        let key = vArr[0].trim()
+        let value = decodeValue(vArr[1])
         data[key] = value
     })
 

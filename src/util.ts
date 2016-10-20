@@ -277,8 +277,12 @@ export function nodeListToArray(nodeList: NodeList) {
  * 放到下一帧执行
  */
 export class NextTick {
-    static requestAnimationFrame = typeof requestAnimationFrame === 'function' ? requestAnimationFrame : setTimeout
-    static cancelAnimationFrame = typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame : clearTimeout
+    static requestAnimationFrame() {
+        return typeof requestAnimationFrame === 'function' ? requestAnimationFrame : setTimeout
+    }
+    static cancelAnimationFrame() {
+        return typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame : clearTimeout
+    }
     
     /**
      * 放到下一帧执行
@@ -286,7 +290,7 @@ export class NextTick {
      * @return 任务id
      */
     static next(fun: any): number {
-        return NextTick.requestAnimationFrame(() => {
+        return NextTick.requestAnimationFrame()(() => {
             fun()
         })
     }
@@ -296,6 +300,6 @@ export class NextTick {
      * @param id 任务id
      */
     static clear(id: number) {
-        return NextTick.cancelAnimationFrame(id)
+        return NextTick.cancelAnimationFrame()(id)
     }
 }

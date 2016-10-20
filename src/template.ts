@@ -230,8 +230,9 @@ export default class Template extends EventEmitter {
                     }
                 }
             }
-            if (status != 'init') {
+            if (status != 'init' && this.element.dynamicProps[attr] !== value) {
                 this.update(attr, value, status)
+                return
             }
         }
         if (attr === 'class') {

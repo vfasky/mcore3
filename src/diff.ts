@@ -16,6 +16,7 @@ import { nodeListToArray } from './util'
  */
 function dfsWalk(oldNode: Element, newNode: Element, index: number, patches) {
     let currentPatch = []
+    
     // node is removed
     if (newNode === null) {
 
@@ -37,6 +38,7 @@ function dfsWalk(oldNode: Element, newNode: Element, index: number, patches) {
         diffAndPatchStaticProps(oldNode, newNode)
 
         let propsPatches = diffProps(oldNode, newNode)
+        // console.log(propsPatches)
         if (propsPatches) {
             currentPatch.push({
                 type: patch.PROPS,
@@ -94,10 +96,6 @@ function diffChildren(oldChildren: Element[], newChildren: Element[], index: num
 
 /**
  * 检查并更新静态属性
- * @method diffStaticProps
- * @param  {Element}        oldNode
- * @param  {Element}        newNode
- * @return {Object | Null}        [description]
  */
 function diffAndPatchStaticProps(oldNode, newNode) {
     // if(oldNode._noDiffChild || oldNode._component){
@@ -156,11 +154,12 @@ function diffAndPatchStaticProps(oldNode, newNode) {
  * @param  {Element}  newNode
  * @return {Object | Null}  [description]
  */
-function diffProps(oldNode, newNode) {
+function diffProps(oldNode: Element, newNode: Element) {
     let count = 0
     let oldProps = oldNode.dynamicProps
     let newProps = newNode.dynamicProps
     let propsPatches = {}
+    // console.log(newProps);
 
     // 判断旧值变更或删除
     Object.keys(oldProps).forEach((attr) => {
@@ -184,9 +183,11 @@ function diffProps(oldNode, newNode) {
     return propsPatches
 }
 
-export default function diff(oldTree, newTree) {
+export default function diff(oldTree: Element, newTree: Element) {
     let index = 0
     let patches = {}
+    
+    // console.log(oldTree, newTree);
     dfsWalk(oldTree, newTree, index, patches)
     return patches
 }

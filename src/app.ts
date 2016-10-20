@@ -8,6 +8,7 @@
 import { Route } from './route'
 import EventEmitter from './eventEmitter'
 import { get$ } from './util'
+import View from './view'
 
 interface ChangeViewEventConfig {
     before: any,
@@ -15,8 +16,12 @@ interface ChangeViewEventConfig {
 }
 
 interface EnvConfig {
-    route: Route,
-    context: any
+    route: any,
+    context: any,
+    view?: View,
+    args: any,
+    viewName: string,
+    app: App
 }
 
 export default class App extends EventEmitter {
@@ -92,7 +97,7 @@ export default class App extends EventEmitter {
         return this
     }
 
-    _runView(done, err) {
+    private _runView(done, err?) {
         this.curView.instantiate.route = this.env.route
         this.curView.instantiate.context = this.env.context
         this.curView.instantiate.run.apply(this.curView.instantiate, this.env.args)
@@ -122,11 +127,11 @@ export default class App extends EventEmitter {
         this.stack(0, null, done)
     }
 
-    _initView(View, viewName) {
+    private _initView(ViewClass: any, viewName: string) {
         let $el = get$()('<div />')
         $el.attr('class', this.options.viewClass)
 
-        let instantiate = new View($el, this)
+        let instantiate = new ViewClass($el, this)
 
         this.curView = {
             name: viewName,
@@ -144,7 +149,7 @@ export default class App extends EventEmitter {
     }
 
     // 启动view
-    runView(View, route, args) {
+    runView(View: any, route: any, args) {
         let viewName = View.viewName
         if (!viewName) {
             throw new Error('View not viewName')
