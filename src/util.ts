@@ -122,6 +122,10 @@ export function clone(x): any {
     return x
 }
 
+export function extend(x) {
+    return clone(x)
+}
+
 interface EventConfig {
     funName: string;
     args: any[];

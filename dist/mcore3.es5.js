@@ -1896,6 +1896,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return x;
 	}
 	exports.clone = clone;
+	function extend(x) {
+	    return clone(x);
+	}
+	exports.extend = extend;
 	/**
 	 * 取 mcore element 的所有事件 （含子树）
 	 * @param element mcore Element
@@ -3450,6 +3454,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var node = oldNode.refs;
 	    var propsPatches = {};
 	    if (!node) {
+	        console.log(oldNode._element);
 	        throw new Error('node not inexistence');
 	    }
 	    // 判断旧值变更或删除

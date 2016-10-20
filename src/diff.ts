@@ -107,6 +107,7 @@ function diffAndPatchStaticProps(oldNode, newNode) {
     let propsPatches = {}
 
     if (!node) {
+        console.log(oldNode._element)
         throw new Error('node not inexistence')
     }
 
