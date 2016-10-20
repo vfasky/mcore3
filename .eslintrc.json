@@ -9,6 +9,8 @@
     "extends": "standard",
     "installedESLint": true,
     "rules": {
+        "arrow-parens": 0,
+        "generator-star-spacing": 0,
         "indent": ["error", 4, {"VariableDeclarator": 4, "SwitchCase": 1}]
     },
     "plugins": [

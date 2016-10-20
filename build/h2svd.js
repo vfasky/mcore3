@@ -5,7 +5,7 @@ const distPath = path.join(__dirname, '../dist')
 
 module.exports = {
     entry: {
-        'h2svd-loader': path.join(__dirname, '../loader/h2svd/loader.es6')
+        'h2svd-loader': path.join(__dirname, '../loader/h2svd/loader.ts')
     },
     output: {
         path: distPath,
@@ -13,25 +13,27 @@ module.exports = {
         libraryTarget: 'commonjs2'
     },
     devtool: 'source-map',
-    // target: 'node',
+    target: 'node',
     module: {
         loaders: [{
-            test: /\.es6$/,
-            loader: 'babel-loader',
-            exclude: /node_modules/,
-            query: {
-                presets: ['es2015']
-            }
+            test: /\.ts$/,
+            loader: 'ts-loader'
         }]
+    },
+    ts: {
+        'compilerOptions': {
+            'target': 'es5',
+            'sourceMap': true
+        }
     },
     resolve: {
         modulesDirectories: ['node_modules', 'src'],
-        extensions: ['', '.es6', '.js']
+        extensions: ['', '.ts', '.es6', '.js']
     },
     externals: {
-        htmlparser2: 'htmlparser2',
+        'htmlparser2': 'htmlparser2',
         'js-beautify': 'js-beautify',
-        util: 'util',
+        'util': 'util',
         'loader-utils': 'loader-utils'
     }
 }

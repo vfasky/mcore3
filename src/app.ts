@@ -5,12 +5,38 @@
  **/
 'use strict'
 
-import {Route} from './route'
+import { Route } from './route'
 import EventEmitter from './eventEmitter'
-import {get$} from './util'
+import { get$ } from './util'
+import View from './view'
+
+interface ChangeViewEventConfig {
+    before: any,
+    after: any
+}
+
+interface EnvConfig {
+    route: any,
+    context: any,
+    view?: View,
+    args: any,
+    viewName: string,
+    app: App
+}
 
 export default class App extends EventEmitter {
-    constructor ($el, options = {}) {
+    private _middlewares: any[]
+    private _viewUrlMap: any
+
+    private _changeViewEvent: ChangeViewEventConfig
+
+    $el: any
+    options: any
+    router: Route
+    curView: any
+    env: EnvConfig
+
+    constructor($el, options = {}) {
         let $ = get$()
         super()
         this.$el = $el
@@ -33,17 +59,17 @@ export default class App extends EventEmitter {
         // 过场动画
         this._changeViewEvent = {
             // 移除 view 之前
-            before: function (oldView, done, app) {
+            before: function (oldView, done, app: App) {
                 done()
             },
             // 插入新 view 之后
-            after: function (newView, done, app) {
+            after: function (newView, done, app: App) {
                 done()
             }
         }
     }
 
-    route (path, View) {
+    route(path: string, View) {
         // 兼容 esModule
         if (View.default) {
             View = View.default
@@ -66,12 +92,12 @@ export default class App extends EventEmitter {
     }
 
     // 添加中间件
-    use (middleware) {
+    use(middleware) {
         this._middlewares.push(middleware)
         return this
     }
 
-    _runView (done, err) {
+    private _runView(done, err?) {
         this.curView.instantiate.route = this.env.route
         this.curView.instantiate.context = this.env.context
         this.curView.instantiate.run.apply(this.curView.instantiate, this.env.args)
@@ -80,7 +106,7 @@ export default class App extends EventEmitter {
         done(err, this.curView.instantiate)
     }
 
-    stack (ix = 0, err = null, done = () => {}) {
+    stack(ix = 0, err = null, done = () => { }) {
         if (ix >= this._middlewares.length) {
             return this._runView(done, err)
         }
@@ -94,18 +120,18 @@ export default class App extends EventEmitter {
     }
 
     // 调用中间件
-    runMiddlewares (done) {
+    runMiddlewares(done) {
         if (this._middlewares.length === 0) {
             return this._runView(done)
         }
         this.stack(0, null, done)
     }
 
-    _initView (View, viewName) {
+    private _initView(ViewClass: any, viewName: string) {
         let $el = get$()('<div />')
         $el.attr('class', this.options.viewClass)
 
-        let instantiate = new View($el, this)
+        let instantiate = new ViewClass($el, this)
 
         this.curView = {
             name: viewName,
@@ -123,7 +149,7 @@ export default class App extends EventEmitter {
     }
 
     // 启动view
-    runView (View, route, args) {
+    runView(View: any, route: any, args) {
         let viewName = View.viewName
         if (!viewName) {
             throw new Error('View not viewName')
@@ -162,7 +188,7 @@ export default class App extends EventEmitter {
         }
     }
 
-    run () {
+    run() {
         this.router.run()
     }
 }

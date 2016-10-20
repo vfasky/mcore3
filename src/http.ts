@@ -1,3 +1,4 @@
+/// <reference path="../node_modules/typescript/lib/lib.es6.d.ts" />
 /**
  *
  * http
@@ -5,11 +6,11 @@
  **/
 'use strict'
 
-import {get$} from './util'
+import { get$ } from './util'
 
 // 兼容mcore2
-if (typeof Promise.prototype.done == 'undefined') {
-    Promise.prototype.done = function (onFulfilled, onRejected) {
+if (typeof (<any>Promise.prototype).done == 'undefined') {
+    (<any>Promise.prototype).done = function (onFulfilled, onRejected) {
         return this.then(onFulfilled, onRejected).catch(function (error) {
             setTimeout(function () {
                 throw error
@@ -18,16 +19,16 @@ if (typeof Promise.prototype.done == 'undefined') {
     }
 }
 
-if (typeof Promise.prototype.fail == 'undefined') {
-    Promise.prototype.fail = function (onResolveOrReject) {
-        return this.then(function () {}, onResolveOrReject).catch(function (error) {
+if (typeof (<any>Promise.prototype).fail == 'undefined') {
+    (<any>Promise.prototype).fail = function (onResolveOrReject) {
+        return this.then(function () { }, onResolveOrReject).catch(function (error) {
             throw error
         })
     }
 }
 
-if (typeof Promise.prototype.always == 'undefined') {
-    Promise.prototype.always = function (onResolveOrReject) {
+if (typeof (<any>Promise.prototype).always == 'undefined') {
+    (<any>Promise.prototype).always = function (onResolveOrReject) {
         return this.then(onResolveOrReject, function (reason) {
             onResolveOrReject(reason)
             throw reason
@@ -35,7 +36,7 @@ if (typeof Promise.prototype.always == 'undefined') {
     }
 }
 
-let _networkErrCallback = (xhr, status, hideError) => {
+let _networkErrCallback = (xhr, status, hideError: boolean = false) => {
     let msg = 'Network Error'
     let $ = get$()
 
@@ -47,7 +48,7 @@ let _networkErrCallback = (xhr, status, hideError) => {
                 msg = res.error
             }
         }
-        catch (error) {}
+        catch (error) { }
 
     let httpCode = xhr.statusCode().status
 
@@ -66,7 +67,7 @@ let _networkErrCallback = (xhr, status, hideError) => {
 }
 
 // 默认： 业务层面的出错处理
-let _errCallback = (res = {}, hideError = false) => {
+let _errCallback = (res: any = {}, hideError = false, xhr?) => {
     let msg = res.error || res.msg || 'An unknown error occurred'
     // 是否需要隐藏
     if (!hideError) {
@@ -78,8 +79,8 @@ let _errCallback = (res = {}, hideError = false) => {
     }
 }
 
-let http = {
-    onBeforeSend: (xhr) => {},
+let http: any = {
+    onBeforeSend: (xhr) => { },
     sendDataFormat: (data) => {
         return data
     },
@@ -103,16 +104,16 @@ let http = {
     // 判断请求是否成功
     isSuccess: (res) => Number(res.code) === 1,
     // 注册请求完成事件（无论成功与否）
-    onComplete: (xhr) => {}
+    onComplete: (xhr) => { }
 }
 
 export default http
 
-function ajax (type, url, data, hideError = false, timeout = 10000) {
+function ajax(type: string, url: string, data, hideError = false, timeout = 10000) {
     let $ = get$()
     data = http.sendDataFormat(data)
 
-    let options = {
+    let options: any = {
         cache: false,
         data: data,
         dataType: 'json',
@@ -121,7 +122,7 @@ function ajax (type, url, data, hideError = false, timeout = 10000) {
         headers: http.buildHeaders()
     }
 
-    if (window.FormData && data instanceof window.FormData) {
+    if (typeof window !== 'undefined' && (<any>window).FormData && data instanceof (<any>window).FormData) {
         options.processData = false
         options.contentType = false
     }
@@ -131,11 +132,11 @@ function ajax (type, url, data, hideError = false, timeout = 10000) {
         options.dataType = 'jsonp'
     }
 
-    let xhr = $.ajax(url, options)
+    let xhr: any = $.ajax(url, options)
     xhr.sendData = options.data
     http.onBeforeSend(xhr)
 
-    let promise = new Promise(function (resolve, reject) {
+    let promise: any = new Promise(function (resolve, reject) {
         xhr.then((res) => {
             if (http.isSuccess(res, xhr)) {
                 return resolve(http.responseFormat(res))
@@ -144,7 +145,7 @@ function ajax (type, url, data, hideError = false, timeout = 10000) {
                 return _errCallback(res, hideError, xhr)
             }
         }).fail((xhr, status) => {
-            reject(xhr, status)
+            reject(xhr)
             if (!xhr.statusCode().status) {
                 _networkErrCallback(xhr, status, hideError)
             }
@@ -153,7 +154,7 @@ function ajax (type, url, data, hideError = false, timeout = 10000) {
                 try {
                     res = $.parseJSON(xhr.responseText)
                 }
-                catch (error) {}
+                catch (error) { }
                 _errCallback(res, hideError)
             }
         }).always(() => {

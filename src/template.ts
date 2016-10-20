@@ -5,28 +5,77 @@
  **/
 'use strict'
 
-import {isNumber, isString, isFunction} from './util'
+import { isNumber, isString, isFunction } from './util'
 import EventEmitter from './eventEmitter'
 import binders from './template/binders'
 import formatters from './template/formatters'
 import * as util from './util'
+import Element from './element'
+
 const getComponents = util.getComponents
 
 /**
  * 模板引擎
  */
 export default class Template extends EventEmitter {
-    constructor (element) {
-        super()
-        // 标记是否监听事件
-        this._isWatchEvent = false
+    /**
+     * 绑定的自定义组件
+     */
+    static components = {}
 
-        this.element = element
-        // 子元素的自定义组件
-        this.childrenComponent = []
+    /**
+     * binders
+     */
+    static binders = binders
+
+    /**
+     * 过滤函数
+     */
+    static formatters = formatters
+
+    /**
+     * 通过 function name 取 function
+     */
+    static strToFun = function (el, value: string) {
+        if (!el._element || !el._element.view || !el._element.view[value]) {
+            return () => { }
+        }
+        return function () {
+            return el._element.view[value].apply(el._element.view, arguments)
+        }
     }
 
-    destroy (notRemove) {
+    /**
+     * 取模板对应的 view
+     */
+    static getEnv = function (el) {
+        return el._element.view
+    }
+
+    /**
+     * 标记是否监听事件
+     */
+    private _isWatchEvent: boolean
+
+    /**
+     * mcore element
+     */
+    element: Element
+
+
+    /**
+     * 真实 DOM
+     */
+    refs: HTMLInputElement
+
+    constructor(element) {
+        super()
+        this._isWatchEvent = false
+        this.element = element
+        // this.childrenComponent = []
+    }
+
+    destroy(notRemove = false) {
         getComponents(this.element).forEach((component) => {
             component.destroy()
         })
@@ -45,8 +94,8 @@ export default class Template extends EventEmitter {
      * @method render
      * @return {Element}
      */
-    render (oldNode) {
-        let node
+    render() {
+        let node: any
         if (this.element.tagName == '_textnode') {
             if (this.element.dynamicProps.hasOwnProperty('text')) {
                 node = document.createTextNode(this.element.dynamicProps.text)
@@ -61,10 +110,9 @@ export default class Template extends EventEmitter {
             return node
         }
         node = document.createElement(this.element.tagName)
-
         node._key = this.element.key
-        this.refs = node
         node._element = this.element
+        this.refs = node
 
         // 自定义组件初始化，子元素由 自定义组件 自己管理
         if (Template.components.hasOwnProperty(this.element.tagName)) {
@@ -76,34 +124,19 @@ export default class Template extends EventEmitter {
             Object.keys(this.element.dynamicProps).forEach((attr) => {
                 this.setAttr(attr.toLowerCase(), this.element.dynamicProps[attr], true)
             })
-            this.element._component = new Template.components[this.element.tagName](node, this.element)
 
+            this.element._component = new Template.components[this.element.tagName](node, this.element)
             this.element._noDiffChild = true
             this.element.children = []
             this.element.count = 0
-            node._component = this.element._component
-            // 兼容mcore2 要开启
-            // Object.keys(this.element.dynamicProps).forEach((attr)=>{
-            //     this.element._component.update(attr.toLowerCase(), this.element.dynamicProps[attr]);
-            // });
-        }
-        // 非自定义组件，渲染子元素
-        else {
+
+            // node._component = this.element._component
+
+        } else { // 非自定义组件，渲染子元素
             this.element.children.forEach((child) => {
                 if (child.render) {
                     let childNode = child.render()
                     if (childNode) {
-                        // 收集自定义组件
-                        if (child._component) {
-                            this.childrenComponent.push(child._component)
-                        }
-                        // 收集子元素的所有自定义组件
-                        if (child.childrenComponent && child.childrenComponent.length) {
-                            child.childrenComponent.forEach((c) => {
-                                this.childrenComponent.push(c)
-                            })
-                        }
-
                         this.refs.appendChild(childNode)
                     }
                     else {
@@ -125,23 +158,16 @@ export default class Template extends EventEmitter {
             })
         }
 
-        return node
+        return this.refs
     }
 
     /**
      * 调用自定义属性
-     * @method callBinder
-     * @param  {Function | Object}   binder
-     * @param  {String}   status
-     * @param  {Mixed}   value
-     * @param  {Mixed}   attrValue
-     * @return {Void}
      */
-    callBinder (binder, status, value, attrValue) {
+    callBinder(binder: any, status: string, value: any, attrValue: any = null) {
         if (isFunction(binder)) {
             this.element._binder = true
             binder(this.refs, value, attrValue)
-            return
         }
         if (status === 'init') {
             if (isFunction(binder.init)) {
@@ -166,7 +192,7 @@ export default class Template extends EventEmitter {
     /**
      * 通知更新的值
      */
-    update (attr, value, status) {
+    update(attr: string, value, status) {
         if (this.element._component) {
             this.element._component.update(attr, value, status)
         }
@@ -176,13 +202,8 @@ export default class Template extends EventEmitter {
 
     /**
      * 设置 node 属性
-     * @method setAttr
-     * @param  {String}  attr
-     * @param  {Mixed}  value
-     * @param  {Boolean} isDynamic = false
-     * @param  {String}  status    = 'init'
      */
-    setAttr (attr, value, isDynamic = false, status = 'init') {
+    setAttr(attr: string, value: any, isDynamic = false, status = 'init') {
         // 处理动态属性
         if (isDynamic) {
             if (this.element.dynamicProps.hasOwnProperty(attr) === false) {
@@ -209,8 +230,9 @@ export default class Template extends EventEmitter {
                     }
                 }
             }
-            if (status != 'init') {
+            if (status != 'init' && this.element.dynamicProps[attr] !== value) {
                 this.update(attr, value, status)
+                return
             }
         }
         if (attr === 'class') {
@@ -231,38 +253,8 @@ export default class Template extends EventEmitter {
             this.refs.value = value
             return
         }
-        if (isNumber(value) || isString(value)) {
+        if (isNumber(value) || isString(value) || value === true) {
             this.refs.setAttribute(attr, value)
         }
     }
-}
-
-/**
- * 自定义组件
- * @type {Object}
- */
-Template.components = {}
-/**
- * 自定义属性
- * @type {Object}
- */
-Template.binders = binders
-
-/**
- * 过滤函数
- * @type {Object}
- */
-Template.formatters = formatters
-
-// 兼容mcore2
-Template.strToFun = (el, value) => {
-    if (!el._element || !el._element.view || !el._element.view[value]) {
-        return () => {}
-    }
-    return function () {
-        return el._element.view[value].apply(el._element.view, arguments)
-    }
-}
-Template.getEnv = (el) => {
-    return el._element.view
 }

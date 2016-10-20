@@ -1,15 +1,21 @@
 /**
  *
- * 解释过滤函数
+ * 解释过滤函数及动态变量
  * @author vfasky <vfasky@gmail.com>
  **/
 'use strict'
 
-import {variable} from './config'
+import { variable } from './config'
 
-let _formattersArgsReg = /[^\s']+|'([^']|'[^\s])*'|"([^"]|"[^\s])*"/g
+const FORMATTERS_ARGS_REG = /[^\s']+|'([^']|'[^\s])*'|"([^"]|"[^\s])*"/g
 
-export default (name, dynamicVal, dynamicAttrName) => {
+/**
+ * 解释过滤函数及动态变量
+ * @param name 属性名
+ * @param dynamicVal runtime script
+ * @param dynamicAttrName 动态属性变量名称
+ */
+export function parseFormatters(name: string, dynamicVal: string, dynamicAttrName: string): string {
     let funcs = dynamicVal.split(' | ')
     let startVal = funcs.shift()
 
@@ -20,13 +26,14 @@ export default (name, dynamicVal, dynamicAttrName) => {
         fun = String(fun)
 
         if (fun.indexOf('(') === -1) {
-            fun.replace(_formattersArgsReg, (v) => {
+            fun.replace(FORMATTERS_ARGS_REG, (v) => {
                 if (v === ']' && args.length > 2) {
                     let _attr = args.pop()
                     args[args.length - 1] = args[args.length - 1] + _attr + v
                 } else {
                     args.push(v)
                 }
+                return ''
             })
         } else {
             fun.split(' ').forEach((v) => {
@@ -85,15 +92,17 @@ export default (name, dynamicVal, dynamicAttrName) => {
         `
     })
 
-    let code = ` // parseFormatters.es6
+    let code = ` // parseFormatters
         var ${variable.tmpAttrName};
         try{
-            ${variable.tmpAttrName} = ${startVal};
-        }catch(err){}
+            ${variable.tmpAttrName} = ${startVal}
+        } catch (err) {
+            console.error(err)
+        }
 
         ${dynamicAttrName}['${name}'] = (function(x){
             ${formatterCode}
-            return x === undefined ? '' : x;
+            return x == undefined ? '' : x
         })(${variable.tmpAttrName});
     `
 

@@ -5,32 +5,33 @@
  **/
 'use strict'
 
+import { htmlParserDom } from './interface'
 import build from './build'
 import parseAttr from './parseAttr'
-import {begin as ifBegin, end as ifEnd} from './parseIf'
-import {variable} from './config'
+import { begin as ifBegin, end as ifEnd } from './parseIf'
+import { variable } from './config'
 
-let buildArray = (domAttr, iName, vName) => {
+function buildArray(domAttr: htmlParserDom, iName: string, vName: string): string {
     let code = `
         // buildArray
         ${variable.forArrayName}.forEach(function(${vName}, ${iName}){
             ${ifBegin(domAttr)}
-                var ${variable.childrenName};
+                var ${variable.childrenName}
                 ${parseAttr(domAttr)}
                 ${build(domAttr, variable.pathName + ' + \'.\' + (' + variable.treeName + '.length)')}
             ${ifEnd(domAttr)}
-        });
+        })
     `
     return code
 }
 
-let buildObject = (domAttr, kName, vName, oName) => {
+function buildObject(domAttr: htmlParserDom, kName: string, vName: string, oName: string): string {
     let code = `
         // buildObject
         ${variable.forObjKeysName}.forEach(function(${kName}, ${variable.forIName}){
-            var ${vName} = ${oName}[${kName}];
+            var ${vName} = ${oName}[${kName}]
             ${ifBegin(domAttr)}
-                var ${variable.childrenName};
+                var ${variable.childrenName}
                 // parseAttr
                 ${parseAttr(domAttr)}
                
@@ -41,14 +42,16 @@ let buildObject = (domAttr, kName, vName, oName) => {
     return code
 }
 
-export default (domAttr) => {
-    let code = ''
+export default function (domAttr: htmlParserDom): string {
+    let code = `
+        // parseFor
+    `
 
     if (!domAttr.attribs['mc-for']) {
         code = `
             // ![mc-for]
-            var ${variable.forArrayName} = [0];
-            ${buildArray(domAttr, variable.forIName, variable.forVName, variable.pathStaticIName)}
+            var ${variable.forArrayName} = [0]
+            ${buildArray(domAttr, variable.forIName, variable.forVName)}
 
         `
     } else {
@@ -59,9 +62,9 @@ export default (domAttr) => {
             let vName = forCode.split(' ')[0].replace(',', '')
             code += `
                 /* [for-in] ${domAttr.attribs['mc-for']} */
-                var ${variable.forArrayName} = ${forCode.split(' in ').pop()};
+                var ${variable.forArrayName} = ${forCode.split(' in ').pop()}
                 if(false == Array.isArray(${variable.forArrayName})){
-                    ${variable.forArrayName} = [];
+                    ${variable.forArrayName} = []
                 }
                 ${buildArray(domAttr, iName, vName)}
             `
@@ -75,7 +78,7 @@ export default (domAttr) => {
             }
             code += `
                 /* [for-of] ${domAttr.attribs['mc-for']} */
-                var ${variable.forObjKeysName} = Object.keys(${oName} || {});
+                var ${variable.forObjKeysName} = Object.keys(${oName} || {})
                 ${buildObject(domAttr, kName, vName, oName)}
             `
         }

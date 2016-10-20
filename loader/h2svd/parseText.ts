@@ -5,24 +5,31 @@
  **/
 'use strict'
 
-import parseFormatters from './parseFormatters'
-import {variable} from './config'
+import { parseFormatters } from './parseFormatters'
+import { variable } from './config'
+import { htmlParserDom } from './interface'
 
-let _signReg = /\{([^}]+)\}/g
-let _strEndReg = /[^]+""$/
+const SIGN_REG = /\{([^}]+)\}/g
+const STREND_REG = /[^]+""$/
+ 
+interface mapTreeConfig {
+    key: string;
+    val: string;
+}
 
-export default (domAttr) => {
+export default function parseText(domAttr: htmlParserDom): string {
     domAttr.data = domAttr.data.replace(/\n/g, ' ')
     let text = domAttr.data
     let code = `
-        var ${variable.pathStaticIName} = ${variable.pathName} + '.' + ${variable.treeName}.length;
+        // parseText
+        var ${variable.pathStaticIName} = ${variable.pathName} + '.' + ${variable.treeName}.length
     `
 
-    if (_signReg.test(text)) {
+    if (SIGN_REG.test(text)) {
         code += `var ${variable.strValsName} = {}`
-        let mapTree = []
+        let mapTree: mapTreeConfig[] = []
         let mapTreeId = 0
-        let runtimeCode = text.replace(/\s+/g, ' ').replace(_signReg, (key, val) => {
+        let runtimeCode = text.replace(/\s+/g, ' ').replace(SIGN_REG, (key, val) => {
             let reKey = `rp_${mapTreeId++}`
             mapTree.push({
                 key: reKey,
@@ -32,7 +39,7 @@ export default (domAttr) => {
         })
 
         runtimeCode = '"' + runtimeCode
-        if (_strEndReg.test(runtimeCode) === false) {
+        if (STREND_REG.test(runtimeCode) === false) {
             runtimeCode += '"'
         }
 
@@ -50,12 +57,9 @@ export default (domAttr) => {
             ));
         `
     } else {
-        // code += `
-        //     ${variable.treeName}.push('${text}');
-        // `;
         code += `
-            var ${variable.attrName} = {text: "${text.replace(/"/g, '\\"')}"};
-            ${variable.treeName}.push(${variable.utilName}.build('_textNode', ${variable.pathStaticIName}, ${variable.attrName}));
+            var ${variable.attrName} = {text: "${text.replace(/"/g, '\\"')}"}
+            ${variable.treeName}.push(${variable.utilName}.build('_textNode', ${variable.pathStaticIName}, ${variable.attrName}))
         `
     }
 

@@ -1,3 +1,4 @@
+/// <reference path="../node_modules/typescript/lib/lib.es6.d.ts" />
 /**
  *
  * 组件
@@ -10,11 +11,11 @@ import * as util from './util'
 import Template from './template'
 import Element from './element'
 import diff from './diff'
-import patch from './patch'
+import { patch } from './patch'
 import Watch from './watch'
 
 const isFunction = util.isFunction
-const nextTick = util.nextTick
+const nextTick = util.NextTick
 const getEvents = util.getEvents
 const getComponents = util.getComponents
 
@@ -45,7 +46,44 @@ let _id = 0
 const notProxyEvents = ['focus', 'blur']
 
 export default class Component extends EventEmitter {
-    constructor (parentNode, parentElement = {}, args = {}) {
+    // 渲染完成，回调队列
+    private _queueCallbacks: any[] = []
+
+    // 正在排队的渲染队列id
+    private _queueId: number | null = null
+
+    // 存放注册事件
+    private _regEvents: any[] = []
+
+    // 是否在观察 scope
+    private _initWatchScope: boolean = false
+
+    id: number
+
+    watchScope: Watch
+    parentNode: HTMLElement
+    el: HTMLElement
+    refs: HTMLElement
+    parentElement: Element
+    virtualDom: Element
+    scope: any
+    virtualDomDefine: any
+    events: any
+
+    $win: any
+    $body: any
+    $refs: any
+
+    util = util
+    nextTick = nextTick
+
+    // 是否在微信中打开
+    isWeixinBrowser = util.isWeixinBrowser()
+    // 是否在ios中打开
+    isIOS = util.isIOS()
+
+
+    constructor(parentNode: HTMLElement, parentElement: any = {} , args = {}) {
         super()
         Object.keys(args).forEach((key) => {
             this[key] = args[key]
@@ -54,18 +92,12 @@ export default class Component extends EventEmitter {
         // 兼容mcore2
         this.el = parentNode
         this.parentElement = parentElement
-        // 渲染完成，回调队列
-        this._queueCallbacks = []
-        // 正在排队的渲染队列id
-        this._queueId = null
-        // 存放注册事件
-        this._regEvents = []
 
         this._initWatchScope = false
 
         this.id = _id++
 
-        this.virtualDom = null
+        // this.virtualDom = null
 
         // 存放 window 及 body 引用
         if ($_win === null || $_body === null) {
@@ -75,12 +107,6 @@ export default class Component extends EventEmitter {
         this.$win = $_win
         this.$body = $_body
 
-        this.util = util
-        this.nextTick = util.nextTick
-        // 是否在微信中打开
-        this.isWeixinBrowser = util.isWeixinBrowser()
-        // 是否在ios中打开
-        this.isIOS = util.isIOS()
 
         // 模板 scope
         this.scope = parentElement.props || {}
@@ -92,23 +118,22 @@ export default class Component extends EventEmitter {
         this.init()
         this.watch()
     }
-    beforeInit () {}
-    init () {}
-    watch () {}
+    beforeInit() { }
+    init() { }
+    watch() { }
 
-    mount (parentEl = this.parentNode) {
+    mount(parentEl = this.parentNode) {
         if (this.refs && parentEl.appendChild && !(util.get$().contains(parentEl, this.refs))) {
             parentEl.appendChild(this.refs)
             this.emit('mount', this.refs)
         }
     }
 
-    destroy (notRemove) {
+    destroy(notRemove: boolean = false) {
         if (this._initWatchScope) {
             this.watchScope.unwatch()
         }
 
-        // console.log(getComponents(this.virtualDom));
         getComponents(this.virtualDom).forEach((component) => {
             component.destroy()
         })
@@ -127,21 +152,15 @@ export default class Component extends EventEmitter {
 
     /**
      * 取调用自定组件的上级view
-     * @method parent
-     * @return {View}
      */
-    parentView () {
+    parentView() {
         return this.parentElement.view
     }
 
     /**
      * 触发组件的自定义事件
-     * @method emitEvent
-     * @param  {String}  eventName
-     * @param  {Array}  args
-     * @return {Void}
      */
-    emitEvent (eventName, args) {
+    emitEvent(eventName: string, args: any[]) {
         let parentView = this.parentView()
         if (parentView && this.parentElement.events.hasOwnProperty(eventName)) {
             let eventCtx = this.parentElement.events[eventName]
@@ -150,7 +169,7 @@ export default class Component extends EventEmitter {
                 return
             }
             if (!Array.isArray(args)) {
-                if (args && args.length !== undefined) {
+                if (args && (<any>args).length !== undefined) {
                     args = Array.from(args)
                 }
                 else {
@@ -159,10 +178,6 @@ export default class Component extends EventEmitter {
             }
             // 如果模板事件有参数，追加在最后一个参数
             if (Array.isArray(eventCtx.args) && eventCtx.args.length) {
-                // args.push({
-                //     type: 'eventContext',
-                //     args: eventCtx.args,
-                // });
                 args = args.concat(eventCtx.args)
             }
             callback.apply(parentView, args)
@@ -171,11 +186,8 @@ export default class Component extends EventEmitter {
 
     /**
      * 放入渲染队列
-     * @method renderQueue
-     * @param  {Function | Boolean}    doneOrAsync
-     * @return {Void}
      */
-    renderQueue (doneOrAsync) {
+    renderQueue(doneOrAsync = null) {
         // 加入成功回调队列
         if (isFunction(doneOrAsync)) {
             this._queueCallbacks.push(doneOrAsync)
@@ -188,7 +200,7 @@ export default class Component extends EventEmitter {
             return this._render()
         }
         else {
-            this._queueId = nextTick(() => {
+            this._queueId = nextTick.next(() => {
                 this._render()
             })
         }
@@ -199,7 +211,7 @@ export default class Component extends EventEmitter {
      * @method _render
      * @return {[type]} [description]
      */
-    _render () {
+    private _render() {
         if (!this.virtualDomDefine) {
             return
         }
@@ -219,17 +231,12 @@ export default class Component extends EventEmitter {
             this.refs = this.virtualDom.render()
             this.$refs = $(this.refs)
             this.mount()
-        }
-        else {
+        } else {
             let patches = diff(this.virtualDom, virtualDom)
-            // 先移除事件绑定
-            // if(this.$refs){
-            //     this.$refs.off();
-            // }
+            // console.log(patches);
+            
             // 更新dom
             patch(this.refs, patches)
-            // console.log(this.refs);
-            // this.$refs = $(this.refs);
             this.virtualDom = virtualDom
         }
         // 绑定事件
@@ -246,7 +253,7 @@ export default class Component extends EventEmitter {
         if (!this._initWatchScope) {
             this._initWatchScope = true
             // 观察scope, 如果改动，渲染模板
-            this.watchScope = new Watch(this.scope, (path) => {
+            this.watchScope = new Watch(this.scope, () => {
                 this.renderQueue()
             })
         }
@@ -254,24 +261,25 @@ export default class Component extends EventEmitter {
         return this.refs
     }
 
-    callEvent (event, eventName) {
+    callEvent(event, eventName: string) {
+        
         const $ = util.get$()
         var res = null
         let target = event.target
         let eventData = this.events[eventName]
+        
         if (Array.isArray(eventData)) {
-            // console.log(eventData, eventName);
             for (let i = 0, len = eventData.length; i < len; i++) {
                 let ctx = eventData[i]
                 let ctxTarget = ctx.target()
-                // console.log(ctxTarget, target);
+                // console.log(ctxTarget, target)
+                
                 if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
                     let callback = this[ctx.funName]
-                    // console.log(callback, ctx.args);
+                    
                     if (isFunction(callback)) {
                         let args = [event, ctxTarget]
                         args = args.concat(ctx.args)
-                        // console.log(ctx.element);
                         res = callback.apply(this, args)
                         if (res === false) {
                             break
@@ -283,7 +291,7 @@ export default class Component extends EventEmitter {
         return res
     }
 
-    regEvent (eventName) {
+    regEvent(eventName) {
         const $ = util.get$()
         if (this._regEvents.indexOf(eventName) === -1) {
             this._regEvents.push(eventName)
@@ -308,7 +316,7 @@ export default class Component extends EventEmitter {
         }
     }
 
-    unRegEvent (eventName) {
+    unRegEvent(eventName) {
         let ix = this._regEvents.indexOf(eventName)
         if (ix !== -1) {
             this.$refs.off(eventName)
@@ -316,14 +324,14 @@ export default class Component extends EventEmitter {
         }
     }
 
-    bindEvents () {
+    bindEvents() {
         if (!this.$refs) {
             return
         }
         const $ = util.get$()
-        if (this.events) {
-            this.oldEvents = this.events
-        }
+        // if (this.events) {
+        //     this.oldEvents = this.events
+        // }
         this.events = getEvents(this.virtualDom)
         let curEvents = Object.keys(this.events)
         // console.log(curEvents, this.events);
@@ -346,7 +354,7 @@ export default class Component extends EventEmitter {
      * @param  {Mixed} value
      * @param  {Function | Boolean} doneOrAsync
      */
-    set (attr, value, doneOrAsync = null, isPromeisCallback = false) {
+    set(attr, value, doneOrAsync = null, isPromeisCallback = false) {
         if (isPromeisCallback || !value || !isFunction(value.then)) {
             let isChange = this.scope[attr] !== value
             if (isChange) {
@@ -376,7 +384,7 @@ export default class Component extends EventEmitter {
      * @param  {Mixed} defaultVal = null
      * @return {Mixed}
      */
-    get (attr, defaultVal = null) {
+    get(attr, defaultVal = null) {
         if (this.scope.hasOwnProperty(attr)) {
             return this.scope[attr]
         }
@@ -390,7 +398,7 @@ export default class Component extends EventEmitter {
      * @param  {Mixed} doneOrAsync = null
      * @return {Void}
      */
-    remove (attr, doneOrAsync = null) {
+    remove(attr, doneOrAsync = null) {
         if (this.scope.hasOwnProperty(attr)) {
             delete this.scope[attr]
             this.emit('removeScope', this.scope, attr)
@@ -407,14 +415,14 @@ export default class Component extends EventEmitter {
      * @param  {String} status
      * @return {Void}
      */
-    update (attr, value, status) {
+    update(attr, value, status) {
         if (status === 'remove') {
             return this.remove(attr)
         }
         this.set(attr, value)
     }
 
-    render (virtualDomDefine, scope = {}, doneOrAsync = null) {
+    render(virtualDomDefine, scope = {}, doneOrAsync = null) {
         this.virtualDomDefine = virtualDomDefine
         let scopeKeys = Object.keys(scope)
         let promiseVals = []

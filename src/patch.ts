@@ -5,6 +5,8 @@
  **/
 'use strict'
 
+import { nodeListToArray } from './util'
+
 // 替换
 const REPLACE = 0
 // 重新排序
@@ -14,7 +16,12 @@ const PROPS = 2
 // 文字
 const TEXT = 3
 
-function dfsWalk (node, walker, patches = {}) {
+interface WalkerConfig {
+    index: number;
+}
+
+
+function dfsWalk(node, walker: WalkerConfig, patches = {}) {
     let currentPatches = patches[walker.index]
     // 计算子节点数量
     let len
@@ -36,7 +43,7 @@ function dfsWalk (node, walker, patches = {}) {
     }
 }
 
-function applyPatches (node, currentPatches) {
+function applyPatches(node, currentPatches) {
     for (let currentPatch of currentPatches) {
         switch (currentPatch.type) {
             // 替换
@@ -50,7 +57,9 @@ function applyPatches (node, currentPatches) {
                 }
                 if (newNode) {
                     let element = node._element
-                    node.parentNode.replaceChild(newNode, node)
+                    if (node.parentNode) {
+                        node.parentNode.replaceChild(newNode, node)
+                    }
                     if (element && element.destroy) {
                         element.destroy()
                     }
@@ -62,14 +71,16 @@ function applyPatches (node, currentPatches) {
                 break
             // 属性变更
             case PROPS:
-                if (node._element && node._element.template) {
+                if (node._element) {
                     let propkeys = Object.keys(currentPatch.props)
                     for (let attr of propkeys) {
+                        // console.log(attr, currentPatch.props[attr])
                         let value = currentPatch.props[attr]
                         let status = value !== undefined ? 'update' : 'remove'
-                        node._element.template.setAttr(attr.toLowerCase(), value, true, status)
+                        if (node._element.template) {
+                            node._element.template.setAttr(attr.toLowerCase(), value, true, status)
+                        }
                         if (node._element._component) {
-                            // console.log(node._element._component.set);
                             node._element._component.set(attr.toLowerCase(), value)
                         }
                     }
@@ -101,33 +112,28 @@ function applyPatches (node, currentPatches) {
     }
 }
 
+
 /**
  * 重新排序
  * @method reorderChildren
- * @param  {Element}      node
- * @param  {array}        moves
- * @return {Void}
+ * @param  node
+ * @param  moves
  */
-function reorderChildren (node, moves) {
-    let staticNodeList = Array.from(node.childNodes)
+function reorderChildren(node, moves: any[]) {
+    let staticNodeList = nodeListToArray(node.childNodes)
     let maps = {}
     staticNodeList.forEach((node) => {
         let key = null
         if (node._element && node._element.key) {
             key = node._element.key
         }
-        // if(key === null && node.nodeType === 1){
-        //     key = node.getAttribute('_key');
-        // }
         if (key) {
             maps[key] = node
         }
     })
-    // console.log(moves);
     moves.forEach((move) => {
         let index = move.index
         if (move.type === 0) {
-            // remove item
             if (staticNodeList[index] == node.childNodes[index]) {
                 let childNode = node.childNodes[index]
                 if (childNode) {
@@ -165,14 +171,18 @@ function reorderChildren (node, moves) {
     })
 }
 
-export default function patch (node, patches) {
-    let walker = {
+function patch (node, patches) {
+    let walker: WalkerConfig = {
         index: 0
     }
+    
     return dfsWalk(node, walker, patches)
 }
 
-patch.REPLACE = REPLACE
-patch.REORDER = REORDER
-patch.PROPS = PROPS
-patch.TEXT = TEXT
+export {
+    patch,
+    REPLACE,
+    REORDER,
+    PROPS,
+    TEXT
+}

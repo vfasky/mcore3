@@ -7,12 +7,13 @@ config.entry.mcore3 = path.join(__dirname, '../src/ie8')
 config.output.filename = '[name].ie8.js'
 
 config.module.loaders[0] = {
-    test: /\.es6$/,
-    loader: 'babel-loader',
-    exclude: /node_modules/,
-    query: {
-        'presets': ['stage-0', 'es2015'],
-        'plugins': ['transform-runtime', 'transform-es3-property-literals', 'transform-es3-member-expression-literals']
+    test: /\.ts$/,
+    loader: 'ts-loader'
+}
+config.module.ts = {
+    'compilerOptions': {
+        'target': 'es3',
+        'sourceMap': true
     }
 }
 

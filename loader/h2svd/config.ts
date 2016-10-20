@@ -1,7 +1,7 @@
 /**
- *
  * 生成变量配置
- * @author vfasky <vfasky@gmail.com>
+ * @author vfasky<vfasky@gmail.com>
+ * 
  **/
 'use strict'
 
@@ -27,6 +27,5 @@ export const variable = {
     pathIName: '__mc__pathI',
     pathSubIName: '__mc__pathSubI',
     pathSubArr: '__mc__pathSubArr',
-    pathStaticIName: '__mc__pathStaticI'
-    // textNodeTotal: '__mc__textNodeTotal',
+    pathStaticIName: '__mc__pathStaticI',
 }

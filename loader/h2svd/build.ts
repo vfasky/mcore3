@@ -5,16 +5,15 @@
  **/
 'use strict'
 
-import paseDomDef from './parseDomDef.es6'
+import { htmlParserDom } from './interface'
+import paseDomDef from './parseDomDef'
 import filter from './filter'
-import {variable} from './config'
+import { variable } from './config'
 
 
-export default (domAttr, key) => {
+export default function (domAttr: htmlParserDom, key: string): string {
     let forCode = `
-
         var ${variable.pathSubIName} = String(${key});
-        var ${variable.textNodeTotal} = 0;
     `
 
     if (Array.isArray(domAttr.children)) {
@@ -28,16 +27,15 @@ export default (domAttr, key) => {
     }
 
     let code = `
-        // build.es6
-        ${variable.childrenName} = [];
-
+        // build
+        ${variable.childrenName} = []
         ${forCode}
         ${variable.treeName}.push(
             ${variable.utilName}.build(
                 '${domAttr.name}', ${variable.pathSubIName}, ${variable.attrName},
                 ${variable.dynamicAttrName}, ${variable.eventName}, ${variable.childrenName}
             )
-        );
+        )
     `
 
     return code

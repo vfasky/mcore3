@@ -5,10 +5,10 @@
  **/
 'use strict'
 
-import pathToRegexp from 'path-to-regexp'
-import {isNumber, each} from './util'
+import * as pathToRegexp from 'path-to-regexp'
+import { isNumber, each } from './util'
 
-export function pathToObject (path) {
+export function pathToObject(path: string) {
     let url = String(path).trim()
     let argStr = ''
     let attr = []
@@ -31,20 +31,20 @@ export function pathToObject (path) {
         if (v.indexOf('=') === -1) {
             return
         }
-        v = v.split('=')
-        if (v.length !== 2) {
+        let vArr = v.split('=')
+        if (vArr.length !== 2) {
             return
         }
 
-        let key = v[0].trim()
-        let value = decodeValue(v[1])
+        let key = vArr[0].trim()
+        let value = decodeValue(vArr[1])
         data[key] = value
     })
 
     return data
 }
 
-function decodeValue (value) {
+function decodeValue(value: any) {
     if (isNumber(value) && String(value).length < 14) {
         value = Number(value)
     }
@@ -57,23 +57,49 @@ function decodeValue (value) {
     return value
 }
 
+interface RuleConfig {
+    path: string,
+    reg: RegExp,
+    keys: any[],
+    fn: any
+}
+
 export class Route {
-    constructor (hashchange = Route.changeByLocationHash, sensitive = false, strict = false) {
+    hashchange: any
+    sensitive: boolean
+    rule: RuleConfig[]
+
+    static changeByLocationHash(emit) {
+        let hashChanged = () => {
+            emit(window.location.hash.substring(1))
+        }
+        if (window.addEventListener) {
+            window.addEventListener('hashchange', hashChanged, false)
+        }
+        else if ((<any>window).attachEven) {
+            (<any>window).attachEven('onhashchange', hashChanged)
+        }
+        else {
+            throw new Error('window not support hashchange event')
+        }
+        hashChanged()
+    }
+
+    constructor(hashchange = Route.changeByLocationHash, sensitive = false) {
         this.hashchange = hashchange
         this.sensitive = sensitive
-        this.strict = strict
         this.rule = []
     }
 
-    run () {
+    run() {
         this.hashchange((url) => {
             this.match(url)
         })
     }
 
-    add (path, fn) {
+    add(path, fn) {
         let keys = []
-        let reg = pathToRegexp(path, keys, this.sensitive, this.strict)
+        let reg = pathToRegexp(path, keys, this.sensitive)
         this.rule.push({
             path: path,
             reg: reg,
@@ -83,11 +109,11 @@ export class Route {
         return this
     }
 
-    toUrl (path, args = {}, options = {}) {
+    toUrl(path, args = {}, options = {}) {
         return pathToRegexp.compile(path)(args, options)
     }
 
-    match (url) {
+    match(url) {
         let path = String(url)
         let fullPath = path
         let argStr = ''
@@ -139,20 +165,4 @@ export class Route {
 
         return this
     }
-}
-
-Route.changeByLocationHash = (emit) => {
-    let hashChanged = () => {
-        emit(window.location.hash.substring(1))
-    }
-    if (window.addEventListener) {
-        window.addEventListener('hashchange', hashChanged, false)
-    }
-    else if (window.attachEven) {
-        window.attachEven('onhashchange', hashChanged)
-    }
-    else {
-        throw new Error('window not support hashchange event')
-    }
-    hashChanged()
 }
