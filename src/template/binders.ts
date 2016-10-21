@@ -7,19 +7,19 @@
 import { get$, getObjAttrByPath, isString } from '../util'
 
 let binder = {
-    /**
-     * 显示 dom
-     */
-    show: function (el: HTMLElement, value) {
-        el.style.display = value ? '' : 'none'
-    },
+    // /**
+    //  * 显示 dom
+    //  */
+    // show: function (el: HTMLElement, value) {
+    //     el.style.display = value ? '' : 'none'
+    // },
 
-    /**
-     * 隐藏
-     */
-    hide: function (el: HTMLElement, value) {
-        el.style.display = value ? 'none' : ''
-    },
+    // /**
+    //  * 隐藏
+    //  */
+    // hide: function (el: HTMLElement, value) {
+    //     el.style.display = value ? 'none' : ''
+    // },
 
     /**
      * 选中

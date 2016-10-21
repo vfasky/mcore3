@@ -26,10 +26,11 @@ function parseDynamicAttr(name: string, dynamicVal: string, dynamicAttrName: str
     if (dynamicVal.indexOf(' | ') !== -1) {
         return parseFormatters(name, dynamicVal, dynamicAttrName)
     }
+
     if (VAR_REG.test(dynamicVal)) {
         return `
             if(typeof (${dynamicVal}) == 'undefined'){
-                ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal('${dynamicVal}', '${dynamicVal}')
+                ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal('${dynamicVal}', '')
             }
             else{
                 ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal(${dynamicVal}, '${dynamicVal}')
@@ -42,10 +43,55 @@ function parseDynamicAttr(name: string, dynamicVal: string, dynamicAttrName: str
     }
 }
 
+/**
+ * 解释 mc-show, mc-hide
+ */
+function parseShowHideAttr(attribs: any): string {
+    if(!attribs.hasOwnProperty('mc-show') && !attribs.hasOwnProperty('mc-hide')) {
+        return ''
+    }
+    let code = `
+        ${variable.dynamicAttrName}['class'] = ${variable.dynamicAttrName}['class'] || ''
+        if (${variable.attrName}.hasOwnProperty('class')) {
+            ${variable.dynamicAttrName}['class'] += ' ' + ${variable.attrName}['class']
+            delete ${variable.attrName}['class']
+        }
+    `
+
+    if (attribs.hasOwnProperty('mc-show')) {
+        code += `
+        if (${attribs['mc-show']}) {
+            if (${variable.dynamicAttrName}['class'].indexOf(' mc-hide ') !== -1 ){
+                ${variable.dynamicAttrName}['class'] = ${variable.dynamicAttrName}['class'].replace(' mc-hide ', ' ')
+            }
+        } else {
+            if (${variable.dynamicAttrName}['class'].indexOf(' mc-hide ') === -1 ){
+                ${variable.dynamicAttrName}['class'] += ' mc-hide ' 
+            }
+        }
+        `
+    }
+    if (attribs.hasOwnProperty('mc-hide')) {
+        code += `
+        if (!(${attribs['mc-hide']})) {
+            if (${variable.dynamicAttrName}['class'].indexOf(' mc-hide ') !== -1 ){
+                ${variable.dynamicAttrName}['class'] = ${variable.dynamicAttrName}['class'].replace(' mc-hide ', ' ')
+            }
+        } else {
+            if (${variable.dynamicAttrName}['class'].indexOf(' mc-hide ') === -1 ){
+                ${variable.dynamicAttrName}['class'] += ' mc-hide ' 
+            }
+        }
+        `
+    }
+
+    return code
+}
+
 export default function parseAttr(domAttr: htmlParserDom): string {
     let attrKeys = Object.keys(domAttr.attribs)
 
-    let igKeys = ['mc-for', 'mc-if', 'mc-unless']
+    let igKeys = ['mc-for', 'mc-if', 'mc-unless', 'mc-show', 'mc-hide']
 
     let code = `
         // parseAttr
@@ -78,6 +124,12 @@ export default function parseAttr(domAttr: htmlParserDom): string {
         }
         // 解释静态属性
         if (v.indexOf('mc-') !== 0) {
+            // code += `
+            //     ${variable.attrName}['${v}'] = '${
+            //         domAttr.attribs[v].replace(/\n/g, ' ').replace(/\r/g, '')
+            //                           .replace(/\t/g, ' ').replace(/'/g, "\\'")
+            //     }'
+            // `
             code += `
                 ${variable.attrName}['${v}'] = '${domAttr.attribs[v]}'
             `
@@ -86,5 +138,5 @@ export default function parseAttr(domAttr: htmlParserDom): string {
         }
     })
 
-    return code
+    return code + parseShowHideAttr(domAttr.attribs)
 }

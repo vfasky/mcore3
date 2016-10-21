@@ -14,6 +14,9 @@ import * as route from './route'
 import View from './view'
 import App from './app'
 import http from './http'
+import { buildCss } from './helper'
+
+buildCss()
 
 export default {
     version: '3',

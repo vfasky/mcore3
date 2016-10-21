@@ -1756,6 +1756,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var view_1 = __webpack_require__(49);
 	var app_1 = __webpack_require__(50);
 	var http_1 = __webpack_require__(51);
+	var helper_1 = __webpack_require__(52);
+	helper_1.buildCss();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = {
 	    version: '3',
@@ -2735,18 +2737,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 	var util_1 = __webpack_require__(30);
 	var binder = {
-	    /**
-	     * 显示 dom
-	     */
-	    show: function (el, value) {
-	        el.style.display = value ? '' : 'none';
-	    },
-	    /**
-	     * 隐藏
-	     */
-	    hide: function (el, value) {
-	        el.style.display = value ? 'none' : '';
-	    },
+	    // /**
+	    //  * 显示 dom
+	    //  */
+	    // show: function (el: HTMLElement, value) {
+	    //     el.style.display = value ? '' : 'none'
+	    // },
+	    // /**
+	    //  * 隐藏
+	    //  */
+	    // hide: function (el: HTMLElement, value) {
+	    //     el.style.display = value ? 'none' : ''
+	    // },
 	    /**
 	     * 选中
 	     */
@@ -5838,6 +5840,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return ajax(method.toUpperCase(), url, data, hideError, timeout);
 	    };
 	});
+
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * 增加一些辅助 mcore 的 方法
+	 * @author vfasky<vfasky@gmail.com>
+	 *
+	 **/
+	'use strict';
+	var util_1 = __webpack_require__(30);
+	function buildCss() {
+	    var $ = util_1.get$();
+	    var css = "\n    <style>\n        .mc-hide {\n            display: none !important;\n        }\n    </style>";
+	    var $target = $('head');
+	    if ($target.length === 0) {
+	        $target = $('html');
+	    }
+	    $target.append(css);
+	}
+	exports.buildCss = buildCss;
 
 
 /***/ }

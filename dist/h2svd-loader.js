@@ -312,15 +312,31 @@ module.exports =
 	        return parseFormatters_1.parseFormatters(name, dynamicVal, dynamicAttrName);
 	    }
 	    if (VAR_REG.test(dynamicVal)) {
-	        return "\n            if(typeof (" + dynamicVal + ") == 'undefined'){\n                " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal('" + dynamicVal + "', '" + dynamicVal + "')\n            }\n            else{\n                " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal(" + dynamicVal + ", '" + dynamicVal + "')\n            }\n        ";
+	        return "\n            if(typeof (" + dynamicVal + ") == 'undefined'){\n                " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal('" + dynamicVal + "', '')\n            }\n            else{\n                " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal(" + dynamicVal + ", '" + dynamicVal + "')\n            }\n        ";
 	    }
 	    else {
 	        return "\n            " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal((" + dynamicVal + "), '" + dynamicVal.replace(/'/g, "\\'") + "')\n        ";
 	    }
 	}
+	/**
+	 * 解释 mc-show, mc-hide
+	 */
+	function parseShowHideAttr(attribs) {
+	    if (!attribs.hasOwnProperty('mc-show') && !attribs.hasOwnProperty('mc-hide')) {
+	        return '';
+	    }
+	    var code = "\n        " + config_1.variable.dynamicAttrName + "['class'] = " + config_1.variable.dynamicAttrName + "['class'] || ''\n        if (" + config_1.variable.attrName + ".hasOwnProperty('class')) {\n            " + config_1.variable.dynamicAttrName + "['class'] += ' ' + " + config_1.variable.attrName + "['class']\n            delete " + config_1.variable.attrName + "['class']\n        }\n    ";
+	    if (attribs.hasOwnProperty('mc-show')) {
+	        code += "\n        if (" + attribs['mc-show'] + ") {\n            if (" + config_1.variable.dynamicAttrName + "['class'].indexOf(' mc-hide ') !== -1 ){\n                " + config_1.variable.dynamicAttrName + "['class'] = " + config_1.variable.dynamicAttrName + "['class'].replace(' mc-hide ', ' ')\n            }\n        } else {\n            if (" + config_1.variable.dynamicAttrName + "['class'].indexOf(' mc-hide ') === -1 ){\n                " + config_1.variable.dynamicAttrName + "['class'] += ' mc-hide ' \n            }\n        }\n        ";
+	    }
+	    if (attribs.hasOwnProperty('mc-hide')) {
+	        code += "\n        if (!(" + attribs['mc-hide'] + ")) {\n            if (" + config_1.variable.dynamicAttrName + "['class'].indexOf(' mc-hide ') !== -1 ){\n                " + config_1.variable.dynamicAttrName + "['class'] = " + config_1.variable.dynamicAttrName + "['class'].replace(' mc-hide ', ' ')\n            }\n        } else {\n            if (" + config_1.variable.dynamicAttrName + "['class'].indexOf(' mc-hide ') === -1 ){\n                " + config_1.variable.dynamicAttrName + "['class'] += ' mc-hide ' \n            }\n        }\n        ";
+	    }
+	    return code;
+	}
 	function parseAttr(domAttr) {
 	    var attrKeys = Object.keys(domAttr.attribs);
-	    var igKeys = ['mc-for', 'mc-if', 'mc-unless'];
+	    var igKeys = ['mc-for', 'mc-if', 'mc-unless', 'mc-show', 'mc-hide'];
 	    var code = "\n        // parseAttr\n        var " + config_1.variable.attrName + " = {}, " + config_1.variable.dynamicAttrName + " = {}, " + config_1.variable.eventName + " = {}\n    ";
 	    attrKeys.forEach(function (v) {
 	        if (igKeys.indexOf(v) !== -1) {
@@ -344,13 +360,19 @@ module.exports =
 	        }
 	        // 解释静态属性
 	        if (v.indexOf('mc-') !== 0) {
+	            // code += `
+	            //     ${variable.attrName}['${v}'] = '${
+	            //         domAttr.attribs[v].replace(/\n/g, ' ').replace(/\r/g, '')
+	            //                           .replace(/\t/g, ' ').replace(/'/g, "\\'")
+	            //     }'
+	            // `
 	            code += "\n                " + config_1.variable.attrName + "['" + v + "'] = '" + domAttr.attribs[v] + "'\n            ";
 	        }
 	        else {
 	            code += parseDynamicAttr(v, domAttr.attribs[v], config_1.variable.dynamicAttrName);
 	        }
 	    });
-	    return code;
+	    return code + parseShowHideAttr(domAttr.attribs);
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = parseAttr;
