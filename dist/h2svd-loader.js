@@ -311,11 +311,12 @@ module.exports =
 	    if (dynamicVal.indexOf(' | ') !== -1) {
 	        return parseFormatters_1.parseFormatters(name, dynamicVal, dynamicAttrName);
 	    }
+	    var dynamicValStr = dynamicVal.indexOf('scope.') == 0 || dynamicVal.indexOf('scope[') == 0 ? '' : dynamicVal;
 	    if (VAR_REG.test(dynamicVal)) {
-	        return "\n            if(typeof (" + dynamicVal + ") == 'undefined'){\n                " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal('" + dynamicVal + "', '')\n            }\n            else{\n                " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal(" + dynamicVal + ", '" + dynamicVal + "')\n            }\n        ";
+	        return "\n            if(typeof (" + dynamicVal + ") == 'undefined'){\n                " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal('" + dynamicVal + "', '')\n            }\n            else{\n                " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal(" + dynamicVal + ", '" + dynamicValStr + "')\n            }\n        ";
 	    }
 	    else {
-	        return "\n            " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal((" + dynamicVal + "), '" + dynamicVal.replace(/'/g, "\\'") + "')\n        ";
+	        return "\n            " + dynamicAttrName + "['" + name + "'] = " + config_1.variable.utilName + ".parseDynamicVal((" + dynamicVal + "), '" + dynamicValStr.replace(/'/g, "\\'") + "')\n        ";
 	    }
 	}
 	/**
@@ -467,7 +468,7 @@ module.exports =
 	        args[0] = 'x';
 	        formatterCode += "\n            x = " + config_1.variable.utilName + ".callFormatter('" + formatter + "')(" + args.join(',') + ");\n        ";
 	    });
-	    var code = " // parseFormatters\n        var " + config_1.variable.tmpAttrName + ";\n        try{\n            " + config_1.variable.tmpAttrName + " = " + startVal + "\n        } catch (err) {\n            console.error(err)\n        }\n\n        " + dynamicAttrName + "['" + name + "'] = (function(x){\n            " + formatterCode + "\n            return x == undefined ? '' : x\n        })(" + config_1.variable.tmpAttrName + ");\n    ";
+	    var code = " // parseFormatters\n        var " + config_1.variable.tmpAttrName + ";\n        try{\n            " + config_1.variable.tmpAttrName + " = " + startVal + "\n        } catch (err) {\n            console.error(err.stack)\n        }\n\n        " + dynamicAttrName + "['" + name + "'] = (function(x){\n            " + formatterCode + "\n            return x == undefined ? '' : x\n        })(" + config_1.variable.tmpAttrName + ");\n    ";
 	    return code;
 	}
 	exports.parseFormatters = parseFormatters;

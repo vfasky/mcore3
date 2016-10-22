@@ -97,7 +97,7 @@ export function parseFormatters(name: string, dynamicVal: string, dynamicAttrNam
         try{
             ${variable.tmpAttrName} = ${startVal}
         } catch (err) {
-            console.error(err)
+            console.error(err.stack)
         }
 
         ${dynamicAttrName}['${name}'] = (function(x){

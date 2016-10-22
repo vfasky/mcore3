@@ -27,18 +27,20 @@ function parseDynamicAttr(name: string, dynamicVal: string, dynamicAttrName: str
         return parseFormatters(name, dynamicVal, dynamicAttrName)
     }
 
+    let dynamicValStr = dynamicVal.indexOf('scope.') == 0 || dynamicVal.indexOf('scope[') == 0 ? '' : dynamicVal
+    
     if (VAR_REG.test(dynamicVal)) {
         return `
             if(typeof (${dynamicVal}) == 'undefined'){
                 ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal('${dynamicVal}', '')
             }
             else{
-                ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal(${dynamicVal}, '${dynamicVal}')
+                ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal(${dynamicVal}, '${dynamicValStr}')
             }
         `
     } else {
         return `
-            ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal((${dynamicVal}), '${dynamicVal.replace(/'/g, "\\'")}')
+            ${dynamicAttrName}['${name}'] = ${variable.utilName}.parseDynamicVal((${dynamicVal}), '${dynamicValStr.replace(/'/g, "\\'")}')
         `
     }
 }
