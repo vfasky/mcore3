@@ -2,7 +2,6 @@
 
 const path = require('path')
 const distPath = path.join(__dirname, '../dist')
-const DeclarationBundlerPlugin = require('declaration-bundler-webpack-plugin')
 
 module.exports = {
     entry: {

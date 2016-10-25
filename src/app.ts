@@ -175,7 +175,7 @@ export default class App extends EventEmitter {
 
             this._changeViewEvent.before(this.curView, () => {
                 this.emit('destroyView', this.curView)
-
+                
                 this.curView.instantiate.destroy()
                 // console.log(this.curView.instantiate.$el);
                 this.curView.instantiate.$el.remove()
