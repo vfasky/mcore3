@@ -1,7 +1,8 @@
 'use strict'
 
-var path = require('path')
-var distPath = path.join(__dirname, '../dist')
+const path = require('path')
+const distPath = path.join(__dirname, '../dist')
+const DeclarationBundlerPlugin = require('declaration-bundler-webpack-plugin')
 
 module.exports = {
     entry: {
@@ -22,7 +23,8 @@ module.exports = {
     ts: {
         'compilerOptions': {
             'target': 'es5',
-            'sourceMap': true
+            'sourceMap': true,
+            'declaration': true
         }
     },
     resolve: {
@@ -37,5 +39,11 @@ module.exports = {
             commonjs: 'jquery',
             amd: 'jquery'
         }
-    }
+    },
+    plugins: [
+        // new DeclarationBundlerPlugin({
+        //     moduleName: 'mcore3',
+        //     out: 'mcore3.d.ts'
+        // })
+    ]
 }

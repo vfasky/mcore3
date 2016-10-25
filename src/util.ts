@@ -142,7 +142,7 @@ interface Events {
  * @param element mcore Element
  * @param events 事件数据
  */
-export function getEvents(element, events: Events = {}): {} {
+export function getEvents(element, events: any = {}): {} {
     if (element.children) {
         element.children.forEach((child) => {
             getEvents(child, events)

@@ -34,7 +34,7 @@ export default class App extends EventEmitter {
     options: any
     router: Route
     curView: any
-    env: EnvConfig
+    env: any //EnvConfig
 
     constructor($el, options = {}) {
         let $ = get$()

@@ -57,7 +57,7 @@ function decodeValue(value: any) {
     return value
 }
 
-interface RuleConfig {
+interface IRuleConfig {
     path: string,
     reg: RegExp,
     keys: any[],
@@ -67,7 +67,7 @@ interface RuleConfig {
 export class Route {
     hashchange: any
     sensitive: boolean
-    rule: RuleConfig[]
+    rule: any[] //IRuleConfig[]
 
     static changeByLocationHash(emit) {
         let hashChanged = () => {

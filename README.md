@@ -12,11 +12,12 @@
 ### Install mcore-cli
 
 ```
+npm i -g yarn
+yarn global add mcore-cli
 mkdir mcore-app
-npm init -y
 cd mcore-app
-npm i mcore-cli
-node ./node_modules/mcore-cli/bin/init
+mcore-cli --init ./
+yarn
 npm run dev
 ```
 
