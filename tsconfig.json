@@ -5,7 +5,8 @@
         "sourceMap": true,
         "declaration":true,
         "removeComments": true,
-        "typeRoots" : [ "./definition", "./node_modules/@types"]
+        "typeRoots" : [ "./definition", "./node_modules/@types"],
+        "outDir":"./tsd"
     },
     "exclude": [
         "node_modules"

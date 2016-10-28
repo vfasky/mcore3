@@ -3,6 +3,7 @@
   "version": "3.1.5",
   "description": "virtual-dom ",
   "main": "dist/mcore3.es5.js",
+  "typings": "dist/tsd/es5.d.ts",
   "scripts": {
     "es5": "webpack --config ./build/es5.js --display-error-details",
     "ie8": "webpack --config ./build/ie8.js --display-error-details",
