@@ -1,6 +1,6 @@
 {
   "name": "mcore3",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "description": "virtual-dom ",
   "main": "dist/mcore3.es5.js",
   "typings": "dist/tsd/es5.d.ts",
