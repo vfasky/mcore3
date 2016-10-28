@@ -6,7 +6,7 @@
         "declaration":true,
         "removeComments": true,
         "typeRoots" : [ "./definition", "./node_modules/@types"],
-        "outDir":"./tsd"
+        "outDir": "tsd"
     },
     "exclude": [
         "node_modules"

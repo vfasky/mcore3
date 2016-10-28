@@ -2,6 +2,7 @@
 
 const path = require('path')
 const distPath = path.join(__dirname, '../dist')
+const TypedocWebpackPlugin = require('typedoc-webpack-plugin')
 
 module.exports = {
     entry: {
@@ -40,9 +41,16 @@ module.exports = {
         }
     },
     plugins: [
-        // new DeclarationBundlerPlugin({
-        //     moduleName: 'mcore3',
-        //     out: 'mcore3.d.ts'
-        // })
+        new TypedocWebpackPlugin({
+            name: 'mcore3',
+            out: '../docs',
+            module: 'commonjs',
+            target: 'es5',
+            exclude: '**/*+(node_modules|h2svd)/**/*.*',
+            excludeExternals: true,
+            includeDeclarations: false,
+            ignoreCompilerErrors: true
+        })
+     
     ]
 }

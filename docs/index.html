@@ -1,0 +1,362 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>mcore3</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script src="assets/js/modernizr.js"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">mcore3</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> mcore3</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h2 id="mcore">mcore</h2>
+				<ul>
+					<li>MVC 框架 [Based on MVC Architecture]</li>
+					<li>模板渲染基于 virtual-dom diff 实现， 只更新需要变更的 DOM [Template rendering is based on Virtual-Dom diff. Only update the DOM that needs to be updated]</li>
+					<li>模板不需要像 react 那样用 JSX； 跟原来一样， 写 html 就行了 [Unlike ReactJS, templates don&#39;t need JSX. We can just write html as usual]</li>
+					<li>模板中的 DIY tag 就是一个 Components， 实现组件化非常方便 [The DIY tag in template is a Components, so it&#39;s easy to achieve modular]</li>
+					<li>每一个 DIY tag 是一个 “独立空间”， 子节点不参于 diff. 所以，你可以很方便的， 在 DIY tag 里，使用 jQuery 的插件 [Each DIY tag is like a independent space, child node doesn&#39;t involve in diff. So, you can easily use jQuery plugin in the DIY tag]</li>
+				</ul>
+				<h2 id="getting-started">Getting started</h2>
+				<h3 id="install-mcore-cli">Install mcore-cli</h3>
+				<pre><code>npm i -<span class="hljs-keyword">g</span> yarn
+yarn <span class="hljs-keyword">global</span> add mcore-<span class="hljs-keyword">cli</span>
+<span class="hljs-keyword">mkdir</span> mcore-<span class="hljs-keyword">app</span>
+<span class="hljs-keyword">cd</span> mcore-<span class="hljs-keyword">app</span>
+mcore-<span class="hljs-keyword">cli</span> --init ./
+yarn
+npm <span class="hljs-keyword">run</span> dev
+</code></pre><h2 id="moving-parts">MOVING PARTS</h2>
+				<ul>
+					<li><a href="#binders">Binders</a></li>
+					<li><a href="#formatters">Formatters</a></li>
+					<li><a href="#components">Components</a></li>
+					<li><a href="#view">View</a></li>
+					<li><a href="#route">Route</a></li>
+					<li><a href="#app">App</a></li>
+					<li><a href="#middleware">Middleware</a></li>
+				</ul>
+				<h2 id="binders">Binders</h2>
+				<p>Describe how your underlying data is reflected in the DOM and vice-versa. All binders create a binding that is automatically updated when model data changes or when the user interacts with the DOM.</p>
+				<h3 id="html">html</h3>
+				<p>Sets the element&#39;s HTML content.</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">section</span> <span class="hljs-attr">mc-html</span>=<span class="hljs-string">"scope.item.summary"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+</code></pre>
+				<h3 id="show">show</h3>
+				<p>Shows the element when the value evaluates to true and hides the element when the value evaluates to false.</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">mc-show</span>=<span class="hljs-string">"scope.user.admin"</span>&gt;</span>Remove<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">mc-show</span>=<span class="hljs-string">"scope.user.ix &gt; 0"</span>&gt;</span>Remove<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+</code></pre>
+				<h3 id="hide">hide</h3>
+				<p>Hides the element when the value evaluates to true and shows the element when the value evaluates to false.</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">section</span> <span class="hljs-attr">mc-hide</span>=<span class="hljs-string">"scope.feature.disabled"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+</code></pre>
+				<h3 id="if">if</h3>
+				<p>Inserts and binds the element as well as it&#39;s child nodes into the DOM when the value evaluates to true and removes the element when the value evaluates to false.</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">section</span> <span class="hljs-attr">mc-if</span>=<span class="hljs-string">"scope.item.editable"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">section</span> <span class="hljs-attr">mc-if</span>=<span class="hljs-string">"scope.item.editable || scope.item.ix &gt; 0"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">section</span> <span class="hljs-attr">mc-if</span>=<span class="hljs-string">"scope.item.editable &amp;&amp; scope.item.ix != 0"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">section</span> <span class="hljs-attr">mc-if</span>=<span class="hljs-string">"(scope.item.editable &amp;&amp; scope.item.ix != 0) || scope.show"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+</code></pre>
+				<h3 id="for">for</h3>
+				<p>Each Array or Object</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">mc-for</span>=<span class="hljs-string">"v in scope.arrayData"</span>&gt;</span>
+        {v}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">mc-for</span>=<span class="hljs-string">"v, i in scope.arrayData"</span>&gt;</span>
+        {v} index: {i}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">mc-for</span>=<span class="hljs-string">"v of scope.objectData"</span>&gt;</span>
+        {v}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">mc-for</span>=<span class="hljs-string">"v, key of scope.objectData"</span>&gt;</span>
+        {v} key: {key}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">mc-for</span>=<span class="hljs-string">"v in (scope.arrayData || scope.otherData)"</span>&gt;</span>
+        {v}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+</code></pre>
+				<h3 id="on-event-">on-[event]</h3>
+				<p>Binds an event listener on the element using the event specified in [event]</p>
+				<blockquote>
+					<p>注： callback 至小有二个参数， 参数1: event 参数2: element (跟 jQuery 的事件回调参数一样)</p>
+				</blockquote>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">mc-on-click</span>=<span class="hljs-string">"edit"</span>&gt;</span>Remove<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+</code></pre>
+				<p>在事件中，传递上下文</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">mc-for</span>=<span class="hljs-string">"v, i in scope.list"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">mc-on-click</span>=<span class="hljs-string">"show(v, i)"</span>&gt;</span>{v.title}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+				<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Edit</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">mcore</span>.<span class="hljs-title">Veiw</span> </span>{
+    show(event, el, v, i){
+        <span class="hljs-built_in">console</span>.log(v, i);
+    }
+}
+</code></pre>
+				<h3 id="class-classname-">class-[classname]</h3>
+				<blockquote>
+					<p>version added: 3.0</p>
+				</blockquote>
+				<p>Adds a class (whatever value is in place of [classname]) on the element when the value evaluates to true and removes that class if the value evaluates to false.</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">mc-class-completed</span>=<span class="hljs-string">"scope.todo.done"</span>&gt;</span>{ scope.todo.name }<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+</code></pre>
+				<h3 id="-attribute-">[attribute]</h3>
+				<p>Sets the value of an attribute (whatever value is in place of [attribute]) on the element.</p>
+				<p>If your binding declaration does not match any of the above routines, it will fallback to use this binding.</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">mc-placeholder</span>=<span class="hljs-string">"scope.field.placeholder"</span>&gt;</span>
+</code></pre>
+				<h2 id="formatters">Formatters</h2>
+				<p>Formatters are functions that mutate the incoming and/or outgoing value of a binding. You can use them to format dates, numbers, currencies, etc. and because they work in a similar fashion to the Unix pipeline, the output of each feeds directly as input to the next one, so you can stack as many of them together as you like.</p>
+				<pre><code class="lang-js">mcore.Template.formatters.date = <span class="hljs-function">(<span class="hljs-params">value</span>)=&gt;</span>{
+    <span class="hljs-keyword">return</span> moment(value).format(<span class="hljs-string">'YYYY-MM-DD'</span>);
+};
+</code></pre>
+				<p>Formatters are applied by piping them to binding declarations using | as a delimiter.</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">mc-value</span>=<span class="hljs-string">"scope.startDate | date"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> /&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>{scope.startDate | date}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+</code></pre>
+				<h3 id="formatter-arguments">Formatter arguments</h3>
+				<p>Formatters can accept any number of arguments in the form of keypaths or primitives. Keypath arguments get observed and will recompute the binding when any intermediary key changes. A primitive can be a string, number, boolean, null or undefined.</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>{ scope.alarm.time | time scope.user.timezone 'hh:mm' }<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+</code></pre>
+				<p>The value of each argument in the binding declaration will be evaluated and passed into the formatter function as an additional argument.</p>
+				<pre><code class="lang-js">mcore.Template.formatters.time = <span class="hljs-function">(<span class="hljs-params">value, timezone, format</span>)=&gt;</span>{
+    <span class="hljs-keyword">return</span> moment(value).tz(timezone).format(format);
+};
+</code></pre>
+				<h2 id="components">Components</h2>
+				<p>Components let you define reusable views that can be used within any of your templates. For some perspective on where components fit into your templates in relation to binders; binders define custom attributes, while components define custom elements.</p>
+				<pre><code class="lang-html"><span class="hljs-comment">&lt;!-- time.html --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>{scope.time}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+</code></pre>
+				<pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Time</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">mcore</span>.<span class="hljs-title">Component</span> </span>{
+    init(){
+        <span class="hljs-keyword">this</span>.render(<span class="hljs-built_in">require</span>(<span class="hljs-string">'time.html'</span>),{
+            <span class="hljs-attr">time</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>()
+        });
+
+        setInterval(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+            <span class="hljs-keyword">this</span>.scope.time = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+        }, <span class="hljs-number">1000</span>);
+    }
+}
+mcore.Template.components.time = Time;
+</code></pre>
+				<p>Use Components</p>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">time</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">time</span>&gt;</span>
+</code></pre>
+				<h2 id="view">View</h2>
+				<blockquote>
+					<p>extends Components</p>
+				</blockquote>
+				<pre><code class="lang-html"><span class="hljs-comment">&lt;!-- home.html --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span> Hello {scope.name} !<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+</code></pre>
+				<pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">mcore</span>.<span class="hljs-title">View</span> </span>{
+    run(){
+        <span class="hljs-keyword">this</span>.render(<span class="hljs-built_in">require</span>(<span class="hljs-string">'home.html'</span>), {
+            <span class="hljs-attr">name</span>: <span class="hljs-string">'freddy'</span>
+        });
+    }
+}
+</code></pre>
+				<h2 id="route">Route</h2>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_app_.html">"app"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_component_.html">"component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_diff_.html">"diff"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_element_.html">"element"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_es5_.html">"es5"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_eventemitter_.html">"event<wbr>Emitter"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_helper_.html">"helper"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_http_.html">"http"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_ie8_.html">"ie8"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_patch_.html">"patch"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_route_.html">"route"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_template_.html">"template"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_template_binders_.html">"template/binders"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_template_formatters_.html">"template/formatters"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_util_.html">"util"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_view_.html">"view"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_watch_.html">"watch"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.io" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
