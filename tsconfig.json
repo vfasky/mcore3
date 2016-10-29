@@ -1,18 +1,15 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
+        "moduleResolution": "node",
         "sourceMap": true,
         "declaration":true,
         "removeComments": true,
-        "typeRoots" : [ "./definition", "./node_modules/@types"],
         "outDir": "tsd"
     },
     "exclude": [
         "node_modules"
-    ],
-    "include": [
-        // "./loader/**/*.ts",
-        // "./src/**/*.ts"
     ]
 }

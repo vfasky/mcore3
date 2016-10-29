@@ -3,6 +3,7 @@
 const path = require('path')
 const distPath = path.join(__dirname, '../dist')
 const TypedocWebpackPlugin = require('typedoc-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
     entry: {
@@ -22,9 +23,7 @@ module.exports = {
     },
     ts: {
         'compilerOptions': {
-            'target': 'es5',
-            'sourceMap': true,
-            'declaration': true
+            'target': 'es5'
         }
     },
     resolve: {
@@ -41,6 +40,9 @@ module.exports = {
         }
     },
     plugins: [
+        new CleanWebpackPlugin('./dist/tsd', {
+            root: path.join(__dirname, '../')
+        }),
         new TypedocWebpackPlugin({
             name: 'mcore3',
             out: '../docs',
@@ -51,6 +53,5 @@ module.exports = {
             includeDeclarations: false,
             ignoreCompilerErrors: true
         })
-     
     ]
 }

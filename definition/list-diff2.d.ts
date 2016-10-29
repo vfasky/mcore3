@@ -1,5 +1,3 @@
-
-// function listDiff (oldList:any[], newList: any[], key?: string): any[] {}
 interface listDiffStatic {
     (oldList:any[], newList: any[], key?: string): any
 }

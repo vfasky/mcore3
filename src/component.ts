@@ -429,7 +429,7 @@ export default class Component extends EventEmitter {
         scopeKeys.forEach((attr) => {
             promiseVals.push(scope[attr])
         })
-        return Promise.all(promiseVals).then((results) => {
+        return <any>Promise.all(promiseVals).then((results) => {
             scopeKeys.forEach((attr, ix) => {
                 this.set(attr, results[ix])
             })

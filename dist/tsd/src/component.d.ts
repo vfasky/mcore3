@@ -1,4 +1,4 @@
-/// <reference path="../node_modules/typescript/lib/lib.es6.d.ts" />
+/// <reference path="../../node_modules/typescript/lib/lib.es6.d.ts" />
 /// <reference types="eventemitter3" />
 import EventEmitter from './eventEmitter';
 import * as util from './util';
@@ -44,5 +44,5 @@ export default class Component extends EventEmitter {
     get(attr: any, defaultVal?: any): any;
     remove(attr: any, doneOrAsync?: any): void;
     update(attr: any, value: any, status: any): void;
-    render(virtualDomDefine: any, scope?: {}, doneOrAsync?: any): Promise<{}>;
+    render(virtualDomDefine: any, scope?: {}, doneOrAsync?: any): any;
 }

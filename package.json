@@ -3,7 +3,7 @@
   "version": "3.1.7",
   "description": "virtual-dom ",
   "main": "dist/mcore3.es5.js",
-  "typings": "dist/tsd/es5.d.ts",
+  "typings": "dist/tsd/src/es5.d.ts",
   "scripts": {
     "es5": "webpack --config ./build/es5.js --display-error-details",
     "ie8": "webpack --config ./build/ie8.js --display-error-details",
@@ -54,6 +54,9 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "@types/js-beautify": "^0.0.28",
+    "@types/promise": "^7.1.30",
+    "clean-webpack-plugin": "^0.1.13",
     "htmlparser2": "^3.9.1",
     "js-beautify": "^1.6.3",
     "loader-utils": "^0.2.15",
