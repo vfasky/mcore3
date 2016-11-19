@@ -3129,8 +3129,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var scopeKeys = Object.keys(scope);
 	        var promiseVals = [];
 	        scopeKeys.forEach(function (attr) {
-	            promiseVals.push(scope[attr]);
+	            if (scope[attr].then) {
+	                promiseVals.push(scope[attr]);
+	            }
+	            else {
+	                _this.set(attr, scope[attr]);
+	            }
 	        });
+	        if (promiseVals.length === 0) {
+	            return new Promise(function (resolve) {
+	                _this.renderQueue(function (refs) {
+	                    if (isFunction(doneOrAsync)) {
+	                        doneOrAsync(refs);
+	                    }
+	                    resolve(refs);
+	                });
+	            });
+	        }
 	        return Promise.all(promiseVals).then(function (results) {
 	            scopeKeys.forEach(function (attr, ix) {
 	                _this.set(attr, results[ix]);

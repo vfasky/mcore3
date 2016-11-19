@@ -216,6 +216,7 @@ export default class Component extends EventEmitter {
             return
         }
         const $ = util.get$()
+        // console.log(this.scope)
 
         let virtualDoms = this.virtualDomDefine(this.scope, this, templateHelper)
         let virtualDom
@@ -228,12 +229,13 @@ export default class Component extends EventEmitter {
         // 未渲染，不用对比
         if (!this.virtualDom) {
             this.virtualDom = virtualDom
+            // console.log(this.virtualDom)
             this.refs = this.virtualDom.render()
             this.$refs = $(this.refs)
             this.mount()
         } else {
             let patches = diff(this.virtualDom, virtualDom)
-            // console.log(patches);
+            // console.log(patches)
             
             // 更新dom
             patch(this.refs, patches)
@@ -427,8 +429,24 @@ export default class Component extends EventEmitter {
         let scopeKeys = Object.keys(scope)
         let promiseVals = []
         scopeKeys.forEach((attr) => {
-            promiseVals.push(scope[attr])
+            if (scope[attr].then) {
+                promiseVals.push(scope[attr])
+            } else {
+                this.set(attr, scope[attr])
+            }
         })
+
+        if (promiseVals.length === 0) {
+            return new Promise((resolve) => {
+                this.renderQueue((refs) => {
+                    if (isFunction(doneOrAsync)) {
+                        doneOrAsync(refs)
+                    }
+                    resolve(refs)
+                })
+            })
+        }
+
         return <any>Promise.all(promiseVals).then((results) => {
             scopeKeys.forEach((attr, ix) => {
                 this.set(attr, results[ix])
