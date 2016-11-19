@@ -428,15 +428,18 @@ export default class Component extends EventEmitter {
         this.virtualDomDefine = virtualDomDefine
         let scopeKeys = Object.keys(scope)
         let promiseVals = []
+        let setKeys = []
         scopeKeys.forEach((attr) => {
-            if (scope[attr].then) {
+            if (isFunction(scope[attr].then)) {
                 promiseVals.push(scope[attr])
+                setKeys.push(attr)
             } else {
                 this.set(attr, scope[attr])
             }
         })
 
         if (promiseVals.length === 0) {
+            // console.log(this.scope)
             return new Promise((resolve) => {
                 this.renderQueue((refs) => {
                     if (isFunction(doneOrAsync)) {
@@ -448,7 +451,7 @@ export default class Component extends EventEmitter {
         }
 
         return <any>Promise.all(promiseVals).then((results) => {
-            scopeKeys.forEach((attr, ix) => {
+            setKeys.forEach((attr, ix) => {
                 this.set(attr, results[ix])
             })
 

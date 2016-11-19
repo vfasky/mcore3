@@ -5770,9 +5770,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.virtualDomDefine = virtualDomDefine;
 	        var scopeKeys = Object.keys(scope);
 	        var promiseVals = [];
+	        var setKeys = [];
 	        scopeKeys.forEach(function (attr) {
-	            if (scope[attr].then) {
+	            if (isFunction(scope[attr].then)) {
 	                promiseVals.push(scope[attr]);
+	                setKeys.push(attr);
 	            }
 	            else {
 	                _this.set(attr, scope[attr]);
@@ -5789,7 +5791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        }
 	        return Promise.all(promiseVals).then(function (results) {
-	            scopeKeys.forEach(function (attr, ix) {
+	            setKeys.forEach(function (attr, ix) {
 	                _this.set(attr, results[ix]);
 	            });
 	            if (doneOrAsync === true) {
