@@ -1,4 +1,3 @@
-/// <reference path="../../node_modules/typescript/lib/lib.es6.d.ts" />
 /// <reference types="eventemitter3" />
 import EventEmitter from './eventEmitter';
 import * as util from './util';

@@ -1,4 +1,3 @@
-/// <reference path="../definition/array.from.d.ts" />
 'use strict'
 
 import 'es5-shim'

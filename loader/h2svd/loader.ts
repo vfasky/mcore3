@@ -1,4 +1,3 @@
-/// <reference path="../../definition/loader-utils.d.ts" />
 /**
  *
  * webpack loader

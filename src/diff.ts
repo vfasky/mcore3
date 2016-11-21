@@ -1,5 +1,3 @@
-/// <reference path="../definition/list-diff2.d.ts" />
-
 /**
  *
  * diff Element
@@ -17,7 +15,7 @@ import { nodeListToArray } from './util'
  */
 function dfsWalk(oldNode: Element, newNode: Element, index: number, patches) {
     let currentPatch = []
-    
+
     // node is removed
     if (newNode === null) {
 
@@ -188,7 +186,7 @@ function diffProps(oldNode: Element, newNode: Element) {
 export default function diff(oldTree: Element, newTree: Element) {
     let index = 0
     let patches = {}
-    
+
     // console.log(oldTree, newTree);
     dfsWalk(oldTree, newTree, index, patches)
     return patches

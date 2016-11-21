@@ -4,6 +4,8 @@
         "target": "es5",
         "module": "commonjs",
         "moduleResolution": "node",
+        "lib": ["dom", "es2015.promise", "es5"],
+        "typeRoots": ["./definition", "./node_modules/@types"],
         "sourceMap": true,
         "declaration":true,
         "removeComments": true,

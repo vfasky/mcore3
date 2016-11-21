@@ -1,4 +1,3 @@
-/// <reference path="../node_modules/typescript/lib/lib.es6.d.ts" />
 /**
  *
  * 组件
@@ -170,7 +169,7 @@ export default class Component extends EventEmitter {
             }
             if (!Array.isArray(args)) {
                 if (args && (<any>args).length !== undefined) {
-                    args = Array.from(args)
+                    args = (<any>Array).from(args)
                 }
                 else {
                     args = []

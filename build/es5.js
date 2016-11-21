@@ -23,7 +23,8 @@ module.exports = {
     },
     ts: {
         'compilerOptions': {
-            'target': 'es5'
+            // 'target': 'es5'
+            'lib': ['dom', 'es2015.promise', 'es5']
         }
     },
     resolve: {
@@ -47,11 +48,14 @@ module.exports = {
             name: 'mcore3',
             out: '../docs',
             module: 'commonjs',
-            target: 'es5',
+            target: 'es6',
+            mode: 'modules',
             exclude: '**/*+(node_modules|h2svd)/**/*.*',
             excludeExternals: true,
             includeDeclarations: false,
-            ignoreCompilerErrors: true
+            ignoreCompilerErrors: true,
+            version: '3.1.x',
+            theme: 'minimal'
         })
     ]
 }

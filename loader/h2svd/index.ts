@@ -1,4 +1,3 @@
-/// <reference path="../../definition/htmlparser2.d.ts" />
 /**
  * html to mcore dom
  * @author vfasky<vfasky@gmail.com>

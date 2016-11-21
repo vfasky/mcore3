@@ -1,3 +1,1 @@
-declare module 'htmlparser2' {
-  export function parseDOM (html: string, option: any): any
-}
+declare module 'htmlparser2'
