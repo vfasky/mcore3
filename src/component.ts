@@ -429,7 +429,7 @@ export default class Component extends EventEmitter {
         let promiseVals = []
         let setKeys = []
         scopeKeys.forEach((attr) => {
-            if (isFunction(scope[attr].then)) {
+            if (scope[attr] && isFunction(scope[attr].then)) {
                 promiseVals.push(scope[attr])
                 setKeys.push(attr)
             } else {

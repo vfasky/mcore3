@@ -3130,7 +3130,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var promiseVals = [];
 	        var setKeys = [];
 	        scopeKeys.forEach(function (attr) {
-	            if (isFunction(scope[attr].then)) {
+	            if (scope[attr] && isFunction(scope[attr].then)) {
 	                promiseVals.push(scope[attr]);
 	                setKeys.push(attr);
 	            }
