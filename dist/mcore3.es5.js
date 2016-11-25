@@ -3105,7 +3105,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var isChange = this.scope[attr] !== value;
 	            if (isChange) {
 	                this.scope[attr] = value;
-	                this.emit('update:' + attr, value);
 	            }
 	            this.emit('changeScope', this.scope, attr, value);
 	            this.emit('change:' + attr, value);

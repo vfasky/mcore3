@@ -386,7 +386,7 @@ export default class Component extends EventEmitter {
             if (isChange) {
                 this.scope[attr] = value
                 // for mcore3
-                this.emit('update:' + attr, value)
+                // this.emit('update:' + attr, value)
             }
             // else{
             //     this.renderQueue(doneOrAsync);
