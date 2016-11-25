@@ -3394,8 +3394,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // console.log(isChange)
 	            if (isChange) {
 	                this.scope[attr] = value;
-	                // for mcore3
-	                this.emit('update:' + attr, value);
 	            }
 	            // else{
 	            //     this.renderQueue(doneOrAsync);
