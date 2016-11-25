@@ -8,7 +8,6 @@
         "typeRoots": ["./definition", "./node_modules/@types"],
         "sourceMap": true,
         "declaration":true,
-        "removeComments": true,
         "outDir": "tsd"
     },
     "exclude": [

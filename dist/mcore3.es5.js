@@ -54,6 +54,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * es5 兼容包
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	__webpack_require__(1);
 	var array_from_1 = __webpack_require__(4);
@@ -1847,6 +1852,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * mcore version 3
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var util = __webpack_require__(30);
 	var element_1 = __webpack_require__(32);
@@ -1878,11 +1888,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * 工具类
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var jquery = __webpack_require__(31);
 	var VAR_REG = /(^[a-zA-Z0-9_-]+)$/;
 	var _isIOS = null;
 	var _isWeixinBrowser = null;
+	/**
+	 * 是否 ios
+	 */
 	function isIOS() {
 	    if (_isIOS === null) {
 	        _isIOS = typeof window === 'object' && (/iphone|ipad/gi).test(window.navigator.appVersion);
@@ -1890,6 +1908,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _isIOS;
 	}
 	exports.isIOS = isIOS;
+	/**
+	 * 是否运行在微信里
+	 */
 	function isWeixinBrowser() {
 	    if (_isWeixinBrowser === null) {
 	        _isWeixinBrowser = typeof window === 'object' && (/MicroMessenger/i).test(window.navigator.userAgent);
@@ -1897,6 +1918,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _isWeixinBrowser;
 	}
 	exports.isWeixinBrowser = isWeixinBrowser;
+	/**
+	 * 返回一个 jquery
+	 */
 	function get$() {
 	    if (typeof $ === 'function') {
 	        return $;
@@ -1904,40 +1928,77 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return jquery;
 	}
 	exports.get$ = get$;
+	/**
+	 * 遍历数组
+	 * @param arr 要遍历的数组
+	 * @param {function} callback 回调函数
+	 */
 	function each(arr, callback) {
 	    get$().each(arr, function (k, v) {
 	        return callback(v, k);
 	    });
 	}
 	exports.each = each;
+	/**
+	 * 是否数组
+	 * @param x 要检查的变量
+	 */
 	function isNumber(x) {
 	    return get$().isNumeric(x);
 	}
 	exports.isNumber = isNumber;
+	/**
+	 * 是否数组
+	 * @param x 要检查的变量
+	 */
 	function isArray(x) {
 	    return get$().isArray(x);
 	}
 	exports.isArray = isArray;
+	/**
+	 * 是否文本
+	 * @param x 要检查的变量
+	 */
 	function isString(x) {
 	    return get$().type(x) === 'string';
 	}
 	exports.isString = isString;
+	/**
+	 * 返回类型
+	 * @param x 要检查的变量
+	 */
 	function type(x) {
 	    return get$().type(x);
 	}
 	exports.type = type;
+	/**
+	 * 是否函数
+	 * @param x 要检查的变量
+	 */
 	function isFunction(x) {
 	    return get$().isFunction(x);
 	}
 	exports.isFunction = isFunction;
+	/**
+	 * 是否一个简单对象
+	 * @param x 要检查的变量
+	 */
 	function isObject(x) {
 	    return get$().isPlainObject(x);
 	}
 	exports.isObject = isObject;
+	/**
+	 * 是否一个简单对象
+	 * @param x 要检查的变量
+	 */
 	function isPlainObject(x) {
 	    return get$().isPlainObject(x);
 	}
 	exports.isPlainObject = isPlainObject;
+	/**
+	 * clone 对象
+	 * @param x 要 clone 的变量
+	 */
 	function clone(x) {
 	    if (isArray(x)) {
 	        return get$().extend(true, [], x);
@@ -1952,6 +2013,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return clone(x);
 	}
 	exports.extend = extend;
+	/**
+	 * 取 mcore element 的所有事件 （含子树）
+	 * @param element mcore Element
+	 * @param events 事件数据
+	 */
 	function getEvents(element, events) {
 	    if (events === void 0) { events = {}; }
 	    if (element.children) {
@@ -1968,6 +2034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            funName: curEvent.funName,
 	            args: curEvent.args,
 	            target: function () {
+	                // console.log(element);
 	                return element.refs;
 	            },
 	            element: element
@@ -1976,6 +2043,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return events;
 	}
 	exports.getEvents = getEvents;
+	/**
+	 * 取 mcore element 的所有组件 （含子树）
+	 * @param element mcore Element
+	 * @param components 组件列表
+	 */
 	function getComponents(element, components) {
 	    if (components === void 0) { components = []; }
 	    if (!element) {
@@ -1992,6 +2064,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return components;
 	}
 	exports.getComponents = getComponents;
+	/**
+	 * 根据属性路径从对象中取值
+	 * @param path 属性路径
+	 * @param obj 对象
+	 */
 	function getObjAttrByPath(path, obj) {
 	    if (obj === void 0) { obj = {}; }
 	    if (path.indexOf('.') === -1) {
@@ -2023,6 +2100,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return curObj;
 	}
 	exports.getObjAttrByPath = getObjAttrByPath;
+	/**
+	 * 解释动态值
+	 * @param dynamicCode 动态表达式
+	 * @param dynamicCodeStr 静态代码
+	 * @param view 对应的 view
+	 */
 	function parseDynamicVal(dynamicCode, dynamicCodeStr, view) {
 	    if (type(dynamicCode) === 'function') {
 	        type(console) !== 'undefined' && console.error('dynamicCode can not be a function');
@@ -2044,6 +2127,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 	exports.parseDynamicVal = parseDynamicVal;
+	/**
+	 * 调用过滤函数
+	 * @param formatterName 函数名
+	 * @param mcore
+	 */
 	function callFormatter(formatterName, mcore) {
 	    if (mcore.Template.formatters.hasOwnProperty(formatterName)) {
 	        return mcore.Template.formatters[formatterName];
@@ -2051,6 +2139,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function () { };
 	}
 	exports.callFormatter = callFormatter;
+	/**
+	 * NodeList to Array
+	 */
 	function nodeListToArray(nodeList) {
 	    var list = [];
 	    for (var i = 0, len = nodeList.length; i < len; i++) {
@@ -2059,6 +2150,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return list;
 	}
 	exports.nodeListToArray = nodeListToArray;
+	/**
+	 * 放到下一帧执行
+	 */
 	var NextTick = (function () {
 	    function NextTick() {
 	    }
@@ -2068,11 +2162,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    NextTick.cancelAnimationFrame = function () {
 	        return typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame : clearTimeout;
 	    };
+	    /**
+	     * 放到下一帧执行
+	     * @param {function} fun 任务
+	     * @return 任务id
+	     */
 	    NextTick.next = function (fun) {
 	        return NextTick.requestAnimationFrame()(function () {
 	            fun();
 	        });
 	    };
+	    /**
+	     * 清除需要下一帧执行的任务
+	     * @param id 任务id
+	     */
 	    NextTick.clear = function (id) {
 	        return NextTick.cancelAnimationFrame()(id);
 	    };
@@ -2091,9 +2194,20 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * mcore element
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var template_1 = __webpack_require__(33);
+	/**
+	 * mcore element
+	 */
 	var Element = (function () {
+	    // get refs() {
+	    //     return this.template ? this.template.refs : null
+	    // }
 	    function Element(tagName, key, props, dynamicProps, children, events, view) {
 	        var _this = this;
 	        if (props === void 0) { props = {}; }
@@ -2101,7 +2215,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (children === void 0) { children = []; }
 	        if (events === void 0) { events = {}; }
 	        if (view === void 0) { view = null; }
+	        /**
+	         * 不 diff 节元素
+	         */
 	        this._noDiffChild = false;
+	        /**
+	         * 是否有绑定 binder
+	         */
 	        this._binder = false;
 	        this.tagName = tagName.trim().toLowerCase();
 	        this.key = key;
@@ -2117,13 +2237,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var count = 0;
 	        children.forEach(function (child, i) {
 	            if (child instanceof Element) {
+	                // 指定上级
 	                child.parentElement = _this;
 	                count += child.count;
 	            }
 	            count++;
 	        });
+	        // 子节点数量
 	        this.count = count;
 	    }
+	    /**
+	     * 复制已经渲染的 element
+	     */
 	    Element.prototype.cloneElement = function (element) {
 	        var _this = this;
 	        this._component = element._component;
@@ -2131,9 +2256,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._binder = element._binder;
 	        this.refs = element.refs;
 	        this.view = element.view;
+	        // this.children = element.children
+	        // this.count = element.count
 	        this.template = element.template;
 	        this.template.element = this;
 	        element = null;
+	        // 设置动态属性
 	        Object.keys(this.dynamicProps).forEach(function (attr) {
 	            _this.template.setAttr(attr.toLowerCase(), _this.dynamicProps[attr], true, 'update');
 	        });
@@ -2159,6 +2287,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * 模板渲染
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2171,18 +2304,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	var formatters_1 = __webpack_require__(37);
 	var util = __webpack_require__(30);
 	var getComponents = util.getComponents;
+	/**
+	 * 模板引擎
+	 */
 	var Template = (function (_super) {
 	    __extends(Template, _super);
 	    function Template(element) {
 	        _super.call(this);
 	        this._isWatchEvent = false;
 	        this.element = element;
+	        // this.childrenComponent = []
 	    }
 	    Template.prototype.destroy = function (notRemove) {
 	        if (notRemove === void 0) { notRemove = false; }
 	        getComponents(this.element).forEach(function (component) {
 	            component.destroy();
 	        });
+	        // 移除自身
 	        if (!notRemove) {
 	            if (this.refs && this.refs.parentNode && this.refs.parentNode.removeChild) {
 	                this.refs.parentNode.removeChild(this.refs);
@@ -2190,6 +2328,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        this.emit('destroy');
 	    };
+	    /**
+	     * 渲染 node
+	     * @method render
+	     * @return {Element}
+	     */
 	    Template.prototype.render = function () {
 	        var _this = this;
 	        var node;
@@ -2201,17 +2344,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	                node = document.createTextNode(this.element.props.text);
 	            }
 	            node._key = this.element.key;
+	            // console.log(this.element.key, this.element);
 	            this.refs = node;
+	            // node._element = this.element;
 	            return node;
 	        }
 	        node = document.createElement(this.element.tagName);
 	        node._key = this.element.key;
 	        node._element = this.element;
 	        this.refs = node;
+	        // 自定义组件初始化，子元素由 自定义组件 自己管理
 	        if (Template.components.hasOwnProperty(this.element.tagName)) {
+	            // 自定义组件，先设置静态属性
 	            Object.keys(this.element.props).forEach(function (attr) {
 	                _this.setAttr(attr.toLowerCase(), _this.element.props[attr]);
 	            });
+	            // 设置动态属性
 	            Object.keys(this.element.dynamicProps).forEach(function (attr) {
 	                _this.setAttr(attr.toLowerCase(), _this.element.dynamicProps[attr], true);
 	            });
@@ -2236,15 +2384,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    throw new Error('child not Mcore Element');
 	                }
 	            });
+	            // 设置静态属性
 	            Object.keys(this.element.props).forEach(function (attr) {
 	                _this.setAttr(attr.toLowerCase(), _this.element.props[attr]);
 	            });
+	            // 设置动态属性
 	            Object.keys(this.element.dynamicProps).forEach(function (attr) {
 	                _this.setAttr(attr.toLowerCase(), _this.element.dynamicProps[attr], true);
 	            });
 	        }
 	        return this.refs;
 	    };
+	    /**
+	     * 调用自定义属性
+	     */
 	    Template.prototype.callBinder = function (binder, status, value, attrValue) {
 	        if (attrValue === void 0) { attrValue = null; }
 	        if (util_1.isFunction(binder)) {
@@ -2256,6 +2409,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.element._binder = true;
 	                binder.init(this.refs, value, attrValue);
 	            }
+	            // 兼容mcore2
 	            if (util_1.isFunction(binder.rendered)) {
 	                this.element._binder = true;
 	                binder.rendered(this.refs, value, attrValue);
@@ -2269,6 +2423,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    };
+	    /**
+	     * 通知更新的值
+	     */
 	    Template.prototype.update = function (attr, value, status) {
 	        if (this.element._component) {
 	            this.element._component.update(attr, value, status);
@@ -2276,9 +2433,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.emit(status, attr, value);
 	        this.emit('change:' + attr, value);
 	    };
+	    /**
+	     * 设置 node 属性
+	     */
 	    Template.prototype.setAttr = function (attr, value, isDynamic, status) {
 	        if (isDynamic === void 0) { isDynamic = false; }
 	        if (status === void 0) { status = 'init'; }
+	        // 处理动态属性
 	        if (isDynamic) {
 	            if (this.element.dynamicProps.hasOwnProperty(attr) === false) {
 	                return;
@@ -2288,6 +2449,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.callBinder(binder, status, value);
 	                return;
 	            }
+	            // 处理 mc-class-* (mc-class-test="true" => 'class-test': true)的情况
 	            var TemplateBinderKeys = Object.keys(Template.binders);
 	            for (var _i = 0, TemplateBinderKeys_1 = TemplateBinderKeys; _i < TemplateBinderKeys_1.length; _i++) {
 	                var binderAttr = TemplateBinderKeys_1[_i];
@@ -2317,6 +2479,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.refs.style.cssText = value;
 	            return;
 	        }
+	        // else if(attr === '_key'){
+	        //     return;
+	        // }
 	        var tagName = this.element.tagName;
 	        if (attr === 'value' && ['input', 'textarea', 'select'].indexOf(tagName) !== -1) {
 	            this.refs.value = value;
@@ -2326,9 +2491,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.refs.setAttribute(attr, value);
 	        }
 	    };
+	    /**
+	     * 绑定的自定义组件
+	     */
 	    Template.components = {};
+	    /**
+	     * binders
+	     */
 	    Template.binders = binders_1.default;
+	    /**
+	     * 过滤函数
+	     */
 	    Template.formatters = formatters_1.default;
+	    /**
+	     * 通过 function name 取 function
+	     */
 	    Template.strToFun = function (el, value) {
 	        if (!el._element || !el._element.view || !el._element.view[value]) {
 	            return function () { };
@@ -2337,6 +2514,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return el._element.view[value].apply(el._element.view, arguments);
 	        };
 	    };
+	    /**
+	     * 取模板对应的 view
+	     */
 	    Template.getEnv = function (el) {
 	        return el._element.view;
 	    };
@@ -2350,6 +2530,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * event Emitter
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var EventEmitter = __webpack_require__(35);
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -2655,9 +2840,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * 模板自定义属性
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var util_1 = __webpack_require__(30);
 	var binder = {
+	    // /**
+	    //  * 显示 dom
+	    //  */
+	    // show: function (el: HTMLElement, value) {
+	    //     el.style.display = value ? '' : 'none'
+	    // },
+	    // /**
+	    //  * 隐藏
+	    //  */
+	    // hide: function (el: HTMLElement, value) {
+	    //     el.style.display = value ? 'none' : ''
+	    // },
+	    /**
+	     * 选中
+	     */
 	    checked: function (el, value) {
 	        if (value) {
 	            el.checked = true;
@@ -2666,6 +2871,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            el.checked = false;
 	        }
 	    },
+	    /**
+	     * 禁用
+	     */
 	    disabled: function (el, value) {
 	        if (value) {
 	            el.disabled = true;
@@ -2674,6 +2882,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            el.disabled = false;
 	        }
 	    },
+	    /**
+	     * 取得焦点
+	     */
 	    focus: function (el, value) {
 	        if (el.focus && value) {
 	            el.focus();
@@ -2682,6 +2893,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            el.blur();
 	        }
 	    },
+	    /**
+	     * 失去焦点
+	     */
 	    blur: function (el, value) {
 	        if (el.focus && !value) {
 	            el.focus();
@@ -2690,13 +2904,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	            el.blur();
 	        }
 	    },
+	    /**
+	     * html 内容
+	     */
 	    html: function (el, value) {
 	        el.innerHTML = value || '';
 	        el._element._noDiffChild = true;
 	    },
+	    /**
+	     * 声明不要diff子节点
+	     */
 	    'no-diff-child': function (el, value) {
 	        el._element._noDiffChild = value;
 	    },
+	    /**
+	     * 值为真是，设置 dom class
+	     */
 	    'class-*': function (el, value, attrValue) {
 	        var classNames = String(el.className || '').split(' ').filter(function (name) {
 	            return name.trim().length;
@@ -2715,6 +2938,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            el.className = classNames.join(' ');
 	        }
 	    },
+	    /**
+	     * 根据表单的name值，取 data 对应的属性值
+	     */
 	    'form-load-data': {
 	        init: function (el, data) {
 	            if (data === void 0) { data = {}; }
@@ -2735,6 +2961,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        }
 	    },
+	    /**
+	     * 当 from 中的元素触发 change 事件，
+	     * 且该元素的 name 值与 dataKey 的属性对上
+	     * 则自动更新 dataKey 属性的值
+	     */
 	    'form-sync': {
 	        init: function (el, dataKey) {
 	            if (el.tagName.toLowerCase() !== 'form' || !el._element || !el._element.view) {
@@ -2763,6 +2994,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	};
+	// 兼容 mcore2 
 	binder['load-data'] = binder['form-load-data'];
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = binder;
@@ -2772,6 +3004,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * 过滤函数
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var util_1 = __webpack_require__(30);
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -2819,6 +3056,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * 组件
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2865,28 +3107,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (parentElement === void 0) { parentElement = {}; }
 	        if (args === void 0) { args = {}; }
 	        _super.call(this);
+	        // 渲染完成，回调队列
 	        this._queueCallbacks = [];
+	        // 正在排队的渲染队列id
 	        this._queueId = null;
+	        // 存放注册事件
 	        this._regEvents = [];
+	        // 是否在观察 scope
 	        this._initWatchScope = false;
 	        this.util = util;
 	        this.nextTick = nextTick;
+	        // 是否在微信中打开
 	        this.isWeixinBrowser = util.isWeixinBrowser();
+	        // 是否在ios中打开
 	        this.isIOS = util.isIOS();
 	        Object.keys(args).forEach(function (key) {
 	            _this[key] = args[key];
 	        });
 	        this.parentNode = parentNode;
+	        // 兼容mcore2
 	        this.el = parentNode;
 	        this.parentElement = parentElement;
 	        this._initWatchScope = false;
 	        this.id = _id++;
+	        // this.virtualDom = null
+	        // 存放 window 及 body 引用
 	        if ($_win === null || $_body === null) {
 	            $_win = util.get$()(window);
 	            $_body = util.get$()('body');
 	        }
 	        this.$win = $_win;
 	        this.$body = $_body;
+	        // 模板 scope
 	        this.scope = parentElement.props || {};
 	        Object.keys(parentElement.dynamicProps || {}).forEach(function (attr) {
 	            _this.scope[attr] = parentElement.dynamicProps[attr];
@@ -2920,11 +3172,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else if (this.$refs) {
 	            this.$refs.off();
 	        }
+	        // 渲染完成，回调队列
 	        this._queueCallbacks = [];
 	    };
+	    /**
+	     * 取调用自定组件的上级view
+	     */
 	    Component.prototype.parentView = function () {
 	        return this.parentElement.view;
 	    };
+	    /**
+	     * 触发组件的自定义事件
+	     */
 	    Component.prototype.emitEvent = function (eventName, args) {
 	        var parentView = this.parentView();
 	        if (parentView && this.parentElement.events.hasOwnProperty(eventName)) {
@@ -2941,21 +3200,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    args = [];
 	                }
 	            }
+	            // 如果模板事件有参数，追加在最后一个参数
 	            if (Array.isArray(eventCtx.args) && eventCtx.args.length) {
 	                args = args.concat(eventCtx.args);
 	            }
 	            callback.apply(parentView, args);
 	        }
 	    };
+	    /**
+	     * 放入渲染队列
+	     */
 	    Component.prototype.renderQueue = function (doneOrAsync) {
 	        var _this = this;
 	        if (doneOrAsync === void 0) { doneOrAsync = null; }
+	        // 加入成功回调队列
 	        if (isFunction(doneOrAsync)) {
 	            this._queueCallbacks.push(doneOrAsync);
 	        }
 	        if (this._queueId) {
 	            nextTick.clear(this._queueId);
 	        }
+	        // 马上渲染，不进队列
 	        if (doneOrAsync === true) {
 	            return this._render();
 	        }
@@ -2965,12 +3230,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        }
 	    };
+	    /**
+	     * 真实的渲染操作
+	     * @method _render
+	     * @return {[type]} [description]
+	     */
 	    Component.prototype._render = function () {
 	        var _this = this;
 	        if (!this.virtualDomDefine) {
 	            return;
 	        }
 	        var $ = util.get$();
+	        // console.log(this.scope)
 	        var virtualDoms = this.virtualDomDefine(this.scope, this, templateHelper);
 	        var virtualDom;
 	        if (virtualDoms.length == 1) {
@@ -2979,17 +3250,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else {
 	            virtualDom = new element_1.default('mc-vd', '0', {}, {}, virtualDoms);
 	        }
+	        // 未渲染，不用对比
 	        if (!this.virtualDom) {
 	            this.virtualDom = virtualDom;
+	            // console.log(this.virtualDom)
 	            this.refs = this.virtualDom.render();
 	            this.$refs = $(this.refs);
 	            this.mount();
 	        }
 	        else {
 	            var patches = diff_1.default(this.virtualDom, virtualDom);
+	            // console.log(patches)
+	            // 更新dom
 	            patch_1.patch(this.refs, patches);
 	            this.virtualDom = virtualDom;
 	        }
+	        // 绑定事件
 	        this.bindEvents();
 	        this.emit('rendered', this.refs);
 	        this._queueCallbacks.forEach(function (done, ix) {
@@ -3000,6 +3276,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	        if (!this._initWatchScope) {
 	            this._initWatchScope = true;
+	            // 观察scope, 如果改动，渲染模板
 	            this.watchScope = new watch_1.default(this.scope, function () {
 	                _this.renderQueue();
 	            });
@@ -3015,6 +3292,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            for (var i = 0, len = eventData.length; i < len; i++) {
 	                var ctx = eventData[i];
 	                var ctxTarget = ctx.target();
+	                // console.log(ctxTarget, target)
 	                if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
 	                    var callback = this[ctx.funName];
 	                    if (isFunction(callback)) {
@@ -3067,8 +3345,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return;
 	        }
 	        var $ = util.get$();
+	        // if (this.events) {
+	        //     this.oldEvents = this.events
+	        // }
 	        this.events = getEvents(this.virtualDom);
 	        var curEvents = Object.keys(this.events);
+	        // console.log(curEvents, this.events);
 	        this._regEvents.forEach(function (regEventName) {
 	            if (curEvents.indexOf(regEventName) === -1) {
 	                _this.unRegEvent(regEventName);
@@ -3078,6 +3360,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _this.regEvent(eventName);
 	        });
 	    };
+	    /**
+	     * 更新 scope
+	     * @method set
+	     * @param  {String} attr
+	     * @param  {Mixed} value
+	     * @param  {Function | Boolean} doneOrAsync
+	     */
 	    Component.prototype.set = function (attr, value, doneOrAsync, isPromeisCallback) {
 	        var _this = this;
 	        if (doneOrAsync === void 0) { doneOrAsync = null; }
@@ -3086,8 +3375,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var isChange = this.scope[attr] !== value;
 	            if (isChange) {
 	                this.scope[attr] = value;
+	                // for mcore3
 	                this.emit('update:' + attr, value);
 	            }
+	            // else{
+	            //     this.renderQueue(doneOrAsync);
+	            // }
 	            this.emit('changeScope', this.scope, attr, value);
 	            this.emit('change:' + attr, value);
 	            return isChange;
@@ -3099,6 +3392,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        }
 	    };
+	    /**
+	     * 取 scope 值， 兼容 mcore2
+	     * @method get
+	     * @param  {String} attr
+	     * @param  {Mixed} defaultVal = null
+	     * @return {Mixed}
+	     */
 	    Component.prototype.get = function (attr, defaultVal) {
 	        if (defaultVal === void 0) { defaultVal = null; }
 	        if (this.scope.hasOwnProperty(attr)) {
@@ -3106,6 +3406,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return defaultVal;
 	    };
+	    /**
+	     * 移除属性
+	     * @method remove
+	     * @param  {String} attr
+	     * @param  {Mixed} doneOrAsync = null
+	     * @return {Void}
+	     */
 	    Component.prototype.remove = function (attr, doneOrAsync) {
 	        if (doneOrAsync === void 0) { doneOrAsync = null; }
 	        if (this.scope.hasOwnProperty(attr)) {
@@ -3115,6 +3422,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        this.renderQueue(doneOrAsync);
 	    };
+	    /**
+	     * 对外接口
+	     * @method update
+	     * @param  {String} attr
+	     * @param  {Mixed} value
+	     * @param  {String} status
+	     * @return {Void}
+	     */
 	    Component.prototype.update = function (attr, value, status) {
 	        if (status === 'remove') {
 	            return this.remove(attr);
@@ -3139,6 +3454,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        });
 	        if (promiseVals.length === 0) {
+	            // console.log(this.scope)
 	            return new Promise(function (resolve) {
 	                _this.renderQueue(function (refs) {
 	                    if (isFunction(doneOrAsync)) {
@@ -3152,6 +3468,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            setKeys.forEach(function (attr, ix) {
 	                _this.set(attr, results[ix]);
 	            });
+	            // 马上渲染
 	            if (doneOrAsync === true) {
 	                return _this.renderQueue(doneOrAsync);
 	            }
@@ -3175,11 +3492,20 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * diff Element
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var patch = __webpack_require__(40);
 	var listDiff = __webpack_require__(41);
+	/**
+	 * 比对两个虚拟dom, 标出变更部分
+	 */
 	function dfsWalk(oldNode, newNode, index, patches) {
 	    var currentPatch = [];
+	    // node is removed
 	    if (newNode === null) {
 	    }
 	    else if (oldNode.tagName === '_textnode' && oldNode.tagName === newNode.tagName) {
@@ -3193,8 +3519,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	    else if (oldNode.tagName === newNode.tagName && oldNode.key === newNode.key) {
+	        // 变更静态属性
 	        diffAndPatchStaticProps(oldNode, newNode);
 	        var propsPatches = diffProps(oldNode, newNode);
+	        // console.log(propsPatches)
 	        if (propsPatches) {
 	            currentPatch.push({
 	                type: patch.PROPS,
@@ -3204,6 +3532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!newNode.refs && oldNode.refs) {
 	            newNode.cloneElement(oldNode);
 	        }
+	        // 没有声明不要 diff 子元素
 	        if (!oldNode || !oldNode._noDiffChild || !newNode._noDiffChild) {
 	            diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
 	        }
@@ -3221,11 +3550,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	function diffChildren(oldChildren, newChildren, index, patches, currentPatch) {
 	    var diffs = listDiff(oldChildren, newChildren, 'key');
 	    newChildren = diffs.children;
+	    // 有移动
 	    if (diffs.moves.length) {
 	        var reorderPatch = {
 	            type: patch.REORDER,
 	            moves: diffs.moves
 	        };
+	        // console.log(diffs, oldChildren, newChildren);
 	        currentPatch.push(reorderPatch);
 	    }
 	    var leftNode = null;
@@ -3242,7 +3573,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        leftNode = child;
 	    });
 	}
+	/**
+	 * 检查并更新静态属性
+	 */
 	function diffAndPatchStaticProps(oldNode, newNode) {
+	    // if(oldNode._noDiffChild || oldNode._component){
+	    //     return;
+	    // }
 	    var oldProps = oldNode.props;
 	    var newProps = newNode.props;
 	    var node = oldNode.refs;
@@ -3251,7 +3588,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        console.log(oldNode._element);
 	        throw new Error('node not inexistence');
 	    }
+	    // 判断旧值变更或删除
 	    Object.keys(oldProps).forEach(function (attr) {
+	        // if(attr === '_key'){
+	        //     return;
+	        // }
 	        var value = oldProps[attr];
 	        if (newProps[attr] !== value) {
 	            propsPatches[attr] = newProps[attr];
@@ -3263,6 +3604,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    });
+	    // 查找新添加的值
 	    Object.keys(newProps).forEach(function (attr) {
 	        if (propsPatches.hasOwnProperty(attr) === false) {
 	            node.setAttribute(attr, newProps[attr]);
@@ -3271,17 +3613,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (oldNode._binder) {
 	        for (var i = node.attributes.length - 1; i >= 0; i--) {
 	            var attr = String(node.attributes[i].name);
+	            // if(attr === '_key'){
+	            //     return;
+	            // }
 	            if (newProps.hasOwnProperty(attr) === false) {
 	                node.removeAttribute(attr);
 	            }
 	        }
 	    }
 	}
+	/**
+	 * 检查属性变更
+	 * @method diffProps
+	 * @param  {Element}  oldNode
+	 * @param  {Element}  newNode
+	 * @return {Object | Null}  [description]
+	 */
 	function diffProps(oldNode, newNode) {
 	    var count = 0;
 	    var oldProps = oldNode.dynamicProps;
 	    var newProps = newNode.dynamicProps;
 	    var propsPatches = {};
+	    // console.log(newProps);
+	    // 判断旧值变更或删除
 	    Object.keys(oldProps).forEach(function (attr) {
 	        var value = oldProps[attr];
 	        if (newProps[attr] !== value) {
@@ -3289,6 +3643,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            propsPatches[attr] = newProps[attr];
 	        }
 	    });
+	    // 查找新添加的值
 	    Object.keys(newProps).forEach(function (attr) {
 	        if (propsPatches.hasOwnProperty(attr) === false) {
 	            count++;
@@ -3303,6 +3658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function diff(oldTree, newTree) {
 	    var index = 0;
 	    var patches = {};
+	    // console.log(oldTree, newTree);
 	    dfsWalk(oldTree, newTree, index, patches);
 	    return patches;
 	}
@@ -3314,19 +3670,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * 应用比对结果
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var util_1 = __webpack_require__(30);
+	// 替换
 	var REPLACE = 0;
 	exports.REPLACE = REPLACE;
+	// 重新排序
 	var REORDER = 1;
 	exports.REORDER = REORDER;
+	// 属性变更
 	var PROPS = 2;
 	exports.PROPS = PROPS;
+	// 文字
 	var TEXT = 3;
 	exports.TEXT = TEXT;
 	function dfsWalk(node, walker, patches) {
 	    if (patches === void 0) { patches = {}; }
 	    var currentPatches = patches[walker.index];
+	    // 计算子节点数量
 	    var len;
 	    if ((!node.childNodes) || (node._element && node._element._noDiffChild)) {
 	        len = 0;
@@ -3347,6 +3713,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var _i = 0, currentPatches_1 = currentPatches; _i < currentPatches_1.length; _i++) {
 	        var currentPatch = currentPatches_1[_i];
 	        switch (currentPatch.type) {
+	            // 替换
 	            case REPLACE:
 	                var newNode = void 0;
 	                if (currentPatch.node.render) {
@@ -3365,14 +3732,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                }
 	                break;
+	            // 重新排序
 	            case REORDER:
 	                reorderChildren(node, currentPatch.moves);
 	                break;
+	            // 属性变更
 	            case PROPS:
 	                if (node._element) {
 	                    var propkeys = Object.keys(currentPatch.props);
 	                    for (var _a = 0, propkeys_1 = propkeys; _a < propkeys_1.length; _a++) {
 	                        var attr = propkeys_1[_a];
+	                        // console.log(attr, currentPatch.props[attr])
 	                        var value = currentPatch.props[attr];
 	                        var status_1 = value !== undefined ? 'update' : 'remove';
 	                        if (node._element.template) {
@@ -3394,7 +3764,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    throw new Error('not mcore Element:' + node);
 	                }
 	                break;
+	            // 变更文本
 	            case TEXT:
+	                // console.log(node.textContent, currentPatch);
 	                if (node.textContent) {
 	                    node.textContent = currentPatch.content;
 	                }
@@ -3407,6 +3779,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	}
+	/**
+	 * 重新排序
+	 * @method reorderChildren
+	 * @param  node
+	 * @param  moves
+	 */
 	function reorderChildren(node, moves) {
 	    var staticNodeList = util_1.nodeListToArray(node.childNodes);
 	    var maps = {};
@@ -3436,6 +3814,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else if (move.type === 1) {
 	            var insertNode = void 0;
 	            var oldNode = maps[move.item.key];
+	            // 使用旧节点
 	            if (oldNode && oldNode._element == move.item) {
 	                insertNode = maps[move.item.key];
 	                if (insertNode._element && insertNode._element.template) {
@@ -3627,6 +4006,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * watch
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	__webpack_require__(44);
 	__webpack_require__(45);
@@ -3644,6 +4028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            nextTickTime = util_1.NextTick.next(function () {
 	                callback(path);
 	            });
+	            // console.log(path);
 	        };
 	        this._watchReg = {};
 	        this._watchTotal = 0;
@@ -3708,6 +4093,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!watchType) {
 	            return;
 	        }
+	        // 已经在观察列表
 	        if (this._watchReg[path]) {
 	            return;
 	        }
@@ -4598,6 +4984,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * 路由
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var pathToRegexp = __webpack_require__(47);
 	var util_1 = __webpack_require__(30);
@@ -5184,6 +5575,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * view
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5238,6 +5634,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * app es6
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5258,14 +5659,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            viewClass: 'mcore-app-view',
 	            routeChange: route_1.Route.changeByLocationHash
 	        }, options);
+	        // 路由
 	        this.router = new route_1.Route(this.options.routeChange);
+	        // 当前的 view
 	        this.curView = null;
+	        // 中间件
 	        this._middlewares = [];
+	        // url map
 	        this._viewUrlMap = {};
+	        // 过场动画
 	        this._changeViewEvent = {
+	            // 移除 view 之前
 	            before: function (oldView, done, app) {
 	                done();
 	            },
+	            // 插入新 view 之后
 	            after: function (newView, done, app) {
 	                done();
 	            }
@@ -5273,6 +5681,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    App.prototype.route = function (path, View) {
 	        var _this = this;
+	        // 兼容 esModule
 	        if (View.default) {
 	            View = View.default;
 	        }
@@ -5291,6 +5700,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	        return this;
 	    };
+	    // 添加中间件
 	    App.prototype.use = function (middleware) {
 	        this._middlewares.push(middleware);
 	        return this;
@@ -5300,6 +5710,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.curView.instantiate.context = this.env.context;
 	        this.curView.instantiate.run.apply(this.curView.instantiate, this.env.args);
 	        this.emit('runView', this.curView);
+	        // console.log(this.curView.instantiate);
 	        done(err, this.curView.instantiate);
 	    };
 	    App.prototype.stack = function (ix, err, done) {
@@ -5318,6 +5729,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.env.view = this.curView.instantiate;
 	        middleware.call(this.env, err, next);
 	    };
+	    // 调用中间件
 	    App.prototype.runMiddlewares = function (done) {
 	        if (this._middlewares.length === 0) {
 	            return this._runView(done);
@@ -5342,6 +5754,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        });
 	    };
+	    // 启动view
 	    App.prototype.runView = function (View, route, args) {
 	        var _this = this;
 	        var viewName = View.viewName;
@@ -5356,6 +5769,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            app: this
 	        };
 	        if (this.curView) {
+	            // 已经初始化，只调用run方法
 	            if (this.curView.name === viewName) {
 	                this.runMiddlewares(function (err, instantiate) {
 	                    if (!err) {
@@ -5367,6 +5781,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._changeViewEvent.before(this.curView, function () {
 	                _this.emit('destroyView', _this.curView);
 	                _this.curView.instantiate.destroy();
+	                // console.log(this.curView.instantiate.$el);
 	                _this.curView.instantiate.$el.remove();
 	                _this._initView(View, viewName);
 	            }, this);
@@ -5388,8 +5803,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 *
+	 * http
+	 * @author vfasky <vfasky@gmail.com>
+	 **/
 	'use strict';
 	var util_1 = __webpack_require__(30);
+	// 兼容mcore2
 	if (typeof Promise.prototype.done == 'undefined') {
 	    Promise.prototype.done = function (onFulfilled, onRejected) {
 	        return this.then(onFulfilled, onRejected).catch(function (error) {
@@ -5418,6 +5839,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (hideError === void 0) { hideError = false; }
 	    var msg = 'Network Error';
 	    var $ = util_1.get$();
+	    // 后端是否返回错误信息
 	    if (xhr.responseText)
 	        try {
 	            var res = $.parseJSON(xhr.responseText);
@@ -5430,6 +5852,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (httpCode) {
 	        msg = msg + ' ( code: ' + httpCode + ' )';
 	    }
+	    // 是否需要隐藏
 	    if (!hideError) {
 	        if (window.alert) {
 	            window.alert(msg);
@@ -5439,10 +5862,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        console.log(msg);
 	    }
 	};
+	// 默认： 业务层面的出错处理
 	var _errCallback = function (res, hideError, xhr) {
 	    if (res === void 0) { res = {}; }
 	    if (hideError === void 0) { hideError = false; }
 	    var msg = res.error || res.msg || 'An unknown error occurred';
+	    // 是否需要隐藏
 	    if (!hideError) {
 	        if (window.alert) {
 	            window.alert(msg);
@@ -5457,9 +5882,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    sendDataFormat: function (data) {
 	        return data;
 	    },
+	    // 返回数据的处理
 	    responseFormat: function (res) {
 	        return res;
 	    },
+	    // 注册错误处理
 	    regErrCallback: function (type, fun) {
 	        if (type === 'network') {
 	            _networkErrCallback = fun;
@@ -5468,10 +5895,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _errCallback = fun;
 	        }
 	    },
+	    // 构造请求头
 	    buildHeaders: function () {
 	        return {};
 	    },
+	    // 判断请求是否成功
 	    isSuccess: function (res) { return Number(res.code) === 1; },
+	    // 注册请求完成事件（无论成功与否）
 	    onComplete: function (xhr) { }
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -5543,6 +5973,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * 增加一些辅助 mcore 的 方法
+	 * @author vfasky<vfasky@gmail.com>
+	 *
+	 **/
 	'use strict';
 	var util_1 = __webpack_require__(30);
 	function buildCss() {
