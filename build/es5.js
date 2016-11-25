@@ -22,7 +22,8 @@ module.exports = {
         }]
     },
     ts: {
-        'compilerOptions': {
+        // transpileOnly: true,
+        compilerOptions: {
             // 'target': 'es5'
             'lib': ['dom', 'es2015.promise', 'es5']
         }

@@ -1,0 +1,24 @@
+export declare const variable: {
+    scopeName: string;
+    treeName: string;
+    childrenName: string;
+    attrName: string;
+    tmpAttrName: string;
+    dynamicAttrName: string;
+    eventName: string;
+    utilName: string;
+    pathName: string;
+    forArrayName: string;
+    forIName: string;
+    forIxName: string;
+    forVName: string;
+    forObjKeysName: string;
+    strValsName: string;
+    strName: string;
+    mcoreName: string;
+    viewName: string;
+    pathIName: string;
+    pathSubIName: string;
+    pathSubArr: string;
+    pathStaticIName: string;
+};

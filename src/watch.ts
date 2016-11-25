@@ -5,12 +5,13 @@
  **/
 'use strict'
 
+import EventEmitter from './eventEmitter'
 import 'object.observe'
 import 'array.observe'
 
 import { isPlainObject, isArray, NextTick } from './util'
 
-export default class Watch {
+export default class Watch extends EventEmitter {
     private _watchReg: any
     private _watchTotal: number
 
@@ -18,6 +19,8 @@ export default class Watch {
     scope: any
 
     constructor(scope = {}, callback = (path: string) => { }) {
+        super()
+
         let nextTickTime = null
         this.scope = scope
 
@@ -34,11 +37,15 @@ export default class Watch {
         this._watchReg = {}
         this._watchTotal = 0
         this.watch(this.scope)
+
     }
 
     observer(changes: any[], x: any, path: string) {
         changes.forEach((change) => {
+
             let curPath = path + '.' + change.name
+            this.emit('update', curPath, change.object)
+
             if (change.type === 'add') {
                 this.watch(x[change.name], curPath)
             }

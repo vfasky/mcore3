@@ -82,7 +82,7 @@ export default class Component extends EventEmitter {
     isIOS = util.isIOS()
 
 
-    constructor(parentNode: HTMLElement, parentElement: any = {} , args = {}) {
+    constructor(parentNode: HTMLElement, parentElement: any = {}, args = {}) {
         super()
         Object.keys(args).forEach((key) => {
             this[key] = args[key]
@@ -131,6 +131,7 @@ export default class Component extends EventEmitter {
     destroy(notRemove: boolean = false) {
         if (this._initWatchScope) {
             this.watchScope.unwatch()
+            this.watchScope.off('update')
         }
 
         getComponents(this.virtualDom).forEach((component) => {
@@ -235,7 +236,7 @@ export default class Component extends EventEmitter {
         } else {
             let patches = diff(this.virtualDom, virtualDom)
             // console.log(patches)
-            
+
             // 更新dom
             patch(this.refs, patches)
             this.virtualDom = virtualDom
@@ -255,7 +256,30 @@ export default class Component extends EventEmitter {
             this._initWatchScope = true
             // 观察scope, 如果改动，渲染模板
             this.watchScope = new Watch(this.scope, () => {
+
                 this.renderQueue()
+            })
+
+            let times = {}
+            this.watchScope.on('update', (path, val) => {
+                if (path !== 'scope') {
+                    path = path.replace('scope.', '')
+
+                    let now = (new Date()).getTime()
+                    let paths = path.split('.')
+
+                    paths.forEach((v, index) => {
+                        let curPath = paths.slice(0, paths.length - index).join('.')
+                        let value = util.getObjAttrByPath(curPath, this.scope)
+
+                        if (times[curPath] && now - times[curPath] < 100) {
+                            return false
+                        }
+
+                        times[curPath] = (new Date()).getTime()
+                        this.emit('update:' + curPath, value)
+                    })
+                }
             })
         }
 
@@ -263,21 +287,21 @@ export default class Component extends EventEmitter {
     }
 
     callEvent(event, eventName: string) {
-        
+
         const $ = util.get$()
         var res = null
         let target = event.target
         let eventData = this.events[eventName]
-        
+
         if (Array.isArray(eventData)) {
             for (let i = 0, len = eventData.length; i < len; i++) {
                 let ctx = eventData[i]
                 let ctxTarget = ctx.target()
                 // console.log(ctxTarget, target)
-                
+
                 if (ctxTarget && (ctxTarget === target || $.contains(ctxTarget, target))) {
                     let callback = this[ctx.funName]
-                    
+
                     if (isFunction(callback)) {
                         let args = [event, ctxTarget]
                         args = args.concat(ctx.args)
@@ -358,6 +382,7 @@ export default class Component extends EventEmitter {
     set(attr, value, doneOrAsync = null, isPromeisCallback = false) {
         if (isPromeisCallback || !value || !isFunction(value.then)) {
             let isChange = this.scope[attr] !== value
+            // console.log(isChange)
             if (isChange) {
                 this.scope[attr] = value
                 // for mcore3

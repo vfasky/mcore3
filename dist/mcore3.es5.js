@@ -3161,6 +3161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (notRemove === void 0) { notRemove = false; }
 	        if (this._initWatchScope) {
 	            this.watchScope.unwatch();
+	            this.watchScope.off('update');
 	        }
 	        getComponents(this.virtualDom).forEach(function (component) {
 	            component.destroy();
@@ -3280,6 +3281,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.watchScope = new watch_1.default(this.scope, function () {
 	                _this.renderQueue();
 	            });
+	            var times_1 = {};
+	            this.watchScope.on('update', function (path, val) {
+	                if (path !== 'scope') {
+	                    path = path.replace('scope.', '');
+	                    var now_1 = (new Date()).getTime();
+	                    var paths_1 = path.split('.');
+	                    paths_1.forEach(function (v, index) {
+	                        var curPath = paths_1.slice(0, paths_1.length - index).join('.');
+	                        var value = util.getObjAttrByPath(curPath, _this.scope);
+	                        if (times_1[curPath] && now_1 - times_1[curPath] < 100) {
+	                            return false;
+	                        }
+	                        times_1[curPath] = (new Date()).getTime();
+	                        _this.emit('update:' + curPath, value);
+	                    });
+	                }
+	            });
 	        }
 	        return this.refs;
 	    };
@@ -3373,6 +3391,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (isPromeisCallback === void 0) { isPromeisCallback = false; }
 	        if (isPromeisCallback || !value || !isFunction(value.then)) {
 	            var isChange = this.scope[attr] !== value;
+	            // console.log(isChange)
 	            if (isChange) {
 	                this.scope[attr] = value;
 	                // for mcore3
@@ -4012,13 +4031,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var eventEmitter_1 = __webpack_require__(34);
 	__webpack_require__(44);
 	__webpack_require__(45);
 	var util_1 = __webpack_require__(30);
-	var Watch = (function () {
+	var Watch = (function (_super) {
+	    __extends(Watch, _super);
 	    function Watch(scope, callback) {
 	        if (scope === void 0) { scope = {}; }
 	        if (callback === void 0) { callback = function (path) { }; }
+	        _super.call(this);
 	        var nextTickTime = null;
 	        this.scope = scope;
 	        this.callback = function (path) {
@@ -4038,6 +4065,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var _this = this;
 	        changes.forEach(function (change) {
 	            var curPath = path + '.' + change.name;
+	            _this.emit('update', curPath, change.object);
 	            if (change.type === 'add') {
 	                _this.watch(x[change.name], curPath);
 	            }
@@ -4127,7 +4155,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._watchReg = {};
 	    };
 	    return Watch;
-	}());
+	}(eventEmitter_1.default));
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Watch;
 
