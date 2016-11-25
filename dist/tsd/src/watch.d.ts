@@ -1,6 +1,8 @@
+/// <reference types="eventemitter3" />
+import EventEmitter from './eventEmitter';
 import 'object.observe';
 import 'array.observe';
-export default class Watch {
+export default class Watch extends EventEmitter {
     private _watchReg;
     private _watchTotal;
     callback: any;

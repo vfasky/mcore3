@@ -2095,12 +2095,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var template_1 = __webpack_require__(33);
 	var Element = (function () {
 	    function Element(tagName, key, props, dynamicProps, children, events, view) {
-	        var _this = this;
 	        if (props === void 0) { props = {}; }
 	        if (dynamicProps === void 0) { dynamicProps = {}; }
 	        if (children === void 0) { children = []; }
 	        if (events === void 0) { events = {}; }
 	        if (view === void 0) { view = null; }
+	        var _this = this;
 	        this._noDiffChild = false;
 	        this._binder = false;
 	        this.tagName = tagName.trim().toLowerCase();
@@ -2174,9 +2174,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Template = (function (_super) {
 	    __extends(Template, _super);
 	    function Template(element) {
-	        _super.call(this);
-	        this._isWatchEvent = false;
-	        this.element = element;
+	        var _this = _super.call(this) || this;
+	        _this._isWatchEvent = false;
+	        _this.element = element;
+	        return _this;
 	    }
 	    Template.prototype.destroy = function (notRemove) {
 	        if (notRemove === void 0) { notRemove = false; }
@@ -2326,24 +2327,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.refs.setAttribute(attr, value);
 	        }
 	    };
-	    Template.components = {};
-	    Template.binders = binders_1.default;
-	    Template.formatters = formatters_1.default;
-	    Template.strToFun = function (el, value) {
-	        if (!el._element || !el._element.view || !el._element.view[value]) {
-	            return function () { };
-	        }
-	        return function () {
-	            return el._element.view[value].apply(el._element.view, arguments);
-	        };
-	    };
-	    Template.getEnv = function (el) {
-	        return el._element.view;
-	    };
 	    return Template;
 	}(eventEmitter_1.default));
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Template;
+	Template.components = {};
+	Template.binders = binders_1.default;
+	Template.formatters = formatters_1.default;
+	Template.strToFun = function (el, value) {
+	    if (!el._element || !el._element.view || !el._element.view[value]) {
+	        return function () { };
+	    }
+	    return function () {
+	        return el._element.view[value].apply(el._element.view, arguments);
+	    };
+	};
+	Template.getEnv = function (el) {
+	    return el._element.view;
+	};
 
 
 /***/ },
@@ -2861,39 +2862,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Component = (function (_super) {
 	    __extends(Component, _super);
 	    function Component(parentNode, parentElement, args) {
-	        var _this = this;
 	        if (parentElement === void 0) { parentElement = {}; }
 	        if (args === void 0) { args = {}; }
-	        _super.call(this);
-	        this._queueCallbacks = [];
-	        this._queueId = null;
-	        this._regEvents = [];
-	        this._initWatchScope = false;
-	        this.util = util;
-	        this.nextTick = nextTick;
-	        this.isWeixinBrowser = util.isWeixinBrowser();
-	        this.isIOS = util.isIOS();
+	        var _this = _super.call(this) || this;
+	        _this._queueCallbacks = [];
+	        _this._queueId = null;
+	        _this._regEvents = [];
+	        _this._initWatchScope = false;
+	        _this.util = util;
+	        _this.nextTick = nextTick;
+	        _this.isWeixinBrowser = util.isWeixinBrowser();
+	        _this.isIOS = util.isIOS();
 	        Object.keys(args).forEach(function (key) {
 	            _this[key] = args[key];
 	        });
-	        this.parentNode = parentNode;
-	        this.el = parentNode;
-	        this.parentElement = parentElement;
-	        this._initWatchScope = false;
-	        this.id = _id++;
+	        _this.parentNode = parentNode;
+	        _this.el = parentNode;
+	        _this.parentElement = parentElement;
+	        _this._initWatchScope = false;
+	        _this.id = _id++;
 	        if ($_win === null || $_body === null) {
 	            $_win = util.get$()(window);
 	            $_body = util.get$()('body');
 	        }
-	        this.$win = $_win;
-	        this.$body = $_body;
-	        this.scope = parentElement.props || {};
+	        _this.$win = $_win;
+	        _this.$body = $_body;
+	        _this.scope = parentElement.props || {};
 	        Object.keys(parentElement.dynamicProps || {}).forEach(function (attr) {
 	            _this.scope[attr] = parentElement.dynamicProps[attr];
 	        });
-	        this.beforeInit();
-	        this.init();
-	        this.watch();
+	        _this.beforeInit();
+	        _this.init();
+	        _this.watch();
+	        return _this;
 	    }
 	    Component.prototype.beforeInit = function () { };
 	    Component.prototype.init = function () { };
@@ -2909,6 +2910,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (notRemove === void 0) { notRemove = false; }
 	        if (this._initWatchScope) {
 	            this.watchScope.unwatch();
+	            this.watchScope.off();
 	        }
 	        getComponents(this.virtualDom).forEach(function (component) {
 	            component.destroy();
@@ -3002,6 +3004,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._initWatchScope = true;
 	            this.watchScope = new watch_1.default(this.scope, function () {
 	                _this.renderQueue();
+	            });
+	            var times_1 = {};
+	            this.watchScope.on('update', function (path, val) {
+	                if (path !== 'scope') {
+	                    path = path.replace('scope.', '');
+	                    var now_1 = (new Date()).getTime();
+	                    var paths_1 = path.split('.');
+	                    paths_1.forEach(function (v, index) {
+	                        var curPath = paths_1.slice(0, paths_1.length - index).join('.');
+	                        var value = util.getObjAttrByPath(curPath, _this.scope);
+	                        if (times_1[curPath] && now_1 - times_1[curPath] < 100) {
+	                            return false;
+	                        }
+	                        times_1[curPath] = (new Date()).getTime();
+	                        _this.emit('update:' + curPath, value);
+	                    });
+	                }
 	            });
 	        }
 	        return this.refs;
@@ -3628,16 +3647,24 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var eventEmitter_1 = __webpack_require__(34);
 	__webpack_require__(44);
 	__webpack_require__(45);
 	var util_1 = __webpack_require__(30);
-	var Watch = (function () {
+	var Watch = (function (_super) {
+	    __extends(Watch, _super);
 	    function Watch(scope, callback) {
 	        if (scope === void 0) { scope = {}; }
 	        if (callback === void 0) { callback = function (path) { }; }
+	        var _this = _super.call(this) || this;
 	        var nextTickTime = null;
-	        this.scope = scope;
-	        this.callback = function (path) {
+	        _this.scope = scope;
+	        _this.callback = function (path) {
 	            if (nextTickTime) {
 	                util_1.NextTick.clear(nextTickTime);
 	            }
@@ -3645,14 +3672,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                callback(path);
 	            });
 	        };
-	        this._watchReg = {};
-	        this._watchTotal = 0;
-	        this.watch(this.scope);
+	        _this._watchReg = {};
+	        _this._watchTotal = 0;
+	        _this.watch(_this.scope);
+	        return _this;
 	    }
 	    Watch.prototype.observer = function (changes, x, path) {
 	        var _this = this;
 	        changes.forEach(function (change) {
 	            var curPath = path + '.' + change.name;
+	            _this.emit('update', curPath, change.object);
 	            if (change.type === 'add') {
 	                _this.watch(x[change.name], curPath);
 	            }
@@ -3741,7 +3770,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._watchReg = {};
 	    };
 	    return Watch;
-	}());
+	}(eventEmitter_1.default));
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Watch;
 
@@ -5087,8 +5116,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var strict = options.strict
 	  var end = options.end !== false
 	  var route = ''
-	  var lastToken = tokens[tokens.length - 1]
-	  var endsWithSlash = typeof lastToken === 'string' && /\/$/.test(lastToken)
 	
 	  // Iterate over the tokens and create our regexp string.
 	  for (var i = 0; i < tokens.length; i++) {
@@ -5120,12 +5147,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	
+	  var delimiter = escapeString(options.delimiter || '/')
+	  var endsWithDelimiter = route.slice(-delimiter.length) === delimiter
+	
 	  // In non-strict mode we allow a slash at the end of match. If the path to
 	  // match already ends with a slash, we remove it for consistency. The slash
 	  // is valid at the end of a path match, not in the middle. This is important
 	  // in non-ending mode, where "/test/" shouldn't match "/test//route".
 	  if (!strict) {
-	    route = (endsWithSlash ? route.slice(0, -2) : route) + '(?:\\/(?=$))?'
+	    route = (endsWithDelimiter ? route.slice(0, -delimiter.length) : route) + '(?:' + delimiter + '(?=$))?'
 	  }
 	
 	  if (end) {
@@ -5133,7 +5163,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else {
 	    // In non-ending mode, we need the capturing groups to match as much as
 	    // possible by using a positive lookahead to the end or next path segment.
-	    route += strict && endsWithSlash ? '' : '(?=\\/|$)'
+	    route += strict && endsWithDelimiter ? '' : '(?=' + delimiter + '|$)'
 	  }
 	
 	  return attachKeys(new RegExp('^' + route, flags(options)), keys)
@@ -5195,8 +5225,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var View = (function (_super) {
 	    __extends(View, _super);
 	    function View($el, app) {
-	        _super.call(this, $el[0], {}, { app: app });
-	        this.$el = $el;
+	        var _this = _super.call(this, $el[0], {}, { app: app }) || this;
+	        _this.$el = $el;
+	        return _this;
 	    }
 	    View.prototype.setTitle = function (title) {
 	        var _this = this;
@@ -5251,18 +5282,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __extends(App, _super);
 	    function App($el, options) {
 	        if (options === void 0) { options = {}; }
+	        var _this;
 	        var $ = util_1.get$();
-	        _super.call(this);
-	        this.$el = $el;
-	        this.options = $.extend({
+	        _this = _super.call(this) || this;
+	        _this.$el = $el;
+	        _this.options = $.extend({
 	            viewClass: 'mcore-app-view',
 	            routeChange: route_1.Route.changeByLocationHash
 	        }, options);
-	        this.router = new route_1.Route(this.options.routeChange);
-	        this.curView = null;
-	        this._middlewares = [];
-	        this._viewUrlMap = {};
-	        this._changeViewEvent = {
+	        _this.router = new route_1.Route(_this.options.routeChange);
+	        _this.curView = null;
+	        _this._middlewares = [];
+	        _this._viewUrlMap = {};
+	        _this._changeViewEvent = {
 	            before: function (oldView, done, app) {
 	                done();
 	            },
@@ -5270,6 +5302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                done();
 	            }
 	        };
+	        return _this;
 	    }
 	    App.prototype.route = function (path, View) {
 	        var _this = this;

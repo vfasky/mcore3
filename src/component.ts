@@ -131,6 +131,7 @@ export default class Component extends EventEmitter {
     destroy(notRemove: boolean = false) {
         if (this._initWatchScope) {
             this.watchScope.unwatch()
+            this.watchScope.off()
         }
 
         getComponents(this.virtualDom).forEach((component) => {
@@ -255,7 +256,30 @@ export default class Component extends EventEmitter {
             this._initWatchScope = true
             // 观察scope, 如果改动，渲染模板
             this.watchScope = new Watch(this.scope, () => {
+                
                 this.renderQueue()
+            })
+
+            let times = {}
+            this.watchScope.on('update', (path, val) => {
+                if (path !== 'scope') {
+                    path = path.replace('scope.', '')
+
+                    let now = (new Date()).getTime()
+                    let paths = path.split('.')
+
+                    paths.forEach((v, index) => {
+                        let curPath = paths.slice(0, paths.length - index).join('.')
+                        let value = util.getObjAttrByPath(curPath, this.scope)
+
+                        if (times[curPath] && now - times[curPath] < 100) {
+                            return false
+                        }
+                        
+                        times[curPath] = (new Date()).getTime()
+                        this.emit('update:' + curPath, value)
+                    })
+                }
             })
         }
 
@@ -358,6 +382,7 @@ export default class Component extends EventEmitter {
     set(attr, value, doneOrAsync = null, isPromeisCallback = false) {
         if (isPromeisCallback || !value || !isFunction(value.then)) {
             let isChange = this.scope[attr] !== value
+            // console.log(isChange)
             if (isChange) {
                 this.scope[attr] = value
                 // for mcore3

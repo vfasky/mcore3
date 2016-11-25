@@ -17,7 +17,7 @@ export declare function getComponents(element: any, components?: any[]): any[];
 export declare function getObjAttrByPath(path: string, obj?: {}): any;
 export declare function parseDynamicVal(dynamicCode: any, dynamicCodeStr: string, view: any): any;
 export declare function callFormatter(formatterName: string, mcore: any): any;
-export declare function nodeListToArray(nodeList: NodeList): any[];
+export declare function nodeListToArray(nodeList: NodeList): Node[];
 export declare class NextTick {
     static requestAnimationFrame(): typeof requestAnimationFrame;
     static cancelAnimationFrame(): typeof cancelAnimationFrame;
