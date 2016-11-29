@@ -92,7 +92,7 @@ export declare function callFormatter(formatterName: string, mcore: any): any;
 /**
  * NodeList to Array
  */
-export declare function nodeListToArray(nodeList: NodeList): any[];
+export declare function nodeListToArray(nodeList: NodeList): Node[];
 /**
  * 放到下一帧执行
  */

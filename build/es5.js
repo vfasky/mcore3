@@ -41,22 +41,22 @@ module.exports = {
             amd: 'jquery'
         }
     },
-    plugins: [
+    plugins: process.env.ENV !== 'dev' ? [
         new CleanWebpackPlugin('./dist/tsd', {
             root: path.join(__dirname, '../')
-        }),
-        new TypedocWebpackPlugin({
-            name: 'mcore3',
-            out: '../docs',
-            module: 'commonjs',
-            target: 'es6',
-            mode: 'modules',
-            exclude: '**/*+(node_modules|h2svd)/**/*.*',
-            excludeExternals: true,
-            includeDeclarations: false,
-            ignoreCompilerErrors: true,
-            version: '3.1.x',
-            theme: 'minimal'
         })
-    ]
+        // new TypedocWebpackPlugin({
+        //     name: 'mcore3',
+        //     out: '../docs',
+        //     module: 'commonjs',
+        //     target: 'es6',
+        //     mode: 'modules',
+        //     exclude: '**/*+(node_modules|h2svd)/**/*.*',
+        //     excludeExternals: true,
+        //     includeDeclarations: false,
+        //     ignoreCompilerErrors: true,
+        //     version: '3.1.x',
+        //     theme: 'minimal'
+        // })
+    ] : []
 }

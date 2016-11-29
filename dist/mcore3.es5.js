@@ -2209,12 +2209,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    //     return this.template ? this.template.refs : null
 	    // }
 	    function Element(tagName, key, props, dynamicProps, children, events, view) {
-	        var _this = this;
 	        if (props === void 0) { props = {}; }
 	        if (dynamicProps === void 0) { dynamicProps = {}; }
 	        if (children === void 0) { children = []; }
 	        if (events === void 0) { events = {}; }
 	        if (view === void 0) { view = null; }
+	        var _this = this;
 	        /**
 	         * 不 diff 节元素
 	         */
@@ -2265,6 +2265,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        Object.keys(this.dynamicProps).forEach(function (attr) {
 	            _this.template.setAttr(attr.toLowerCase(), _this.dynamicProps[attr], true, 'update');
 	        });
+	        return this.refs;
 	    };
 	    Element.prototype.render = function () {
 	        this.template = new template_1.default(this);
@@ -2280,6 +2281,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Element;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
+	/**
+	 * mcore element
+	 */
 	exports.default = Element;
 
 
@@ -2310,9 +2314,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Template = (function (_super) {
 	    __extends(Template, _super);
 	    function Template(element) {
-	        _super.call(this);
-	        this._isWatchEvent = false;
-	        this.element = element;
+	        var _this = _super.call(this) || this;
+	        _this._isWatchEvent = false;
+	        _this.element = element;
+	        return _this;
 	        // this.childrenComponent = []
 	    }
 	    Template.prototype.destroy = function (notRemove) {
@@ -2491,39 +2496,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.refs.setAttribute(attr, value);
 	        }
 	    };
-	    /**
-	     * 绑定的自定义组件
-	     */
-	    Template.components = {};
-	    /**
-	     * binders
-	     */
-	    Template.binders = binders_1.default;
-	    /**
-	     * 过滤函数
-	     */
-	    Template.formatters = formatters_1.default;
-	    /**
-	     * 通过 function name 取 function
-	     */
-	    Template.strToFun = function (el, value) {
-	        if (!el._element || !el._element.view || !el._element.view[value]) {
-	            return function () { };
-	        }
-	        return function () {
-	            return el._element.view[value].apply(el._element.view, arguments);
-	        };
-	    };
-	    /**
-	     * 取模板对应的 view
-	     */
-	    Template.getEnv = function (el) {
-	        return el._element.view;
-	    };
 	    return Template;
 	}(eventEmitter_1.default));
 	Object.defineProperty(exports, "__esModule", { value: true });
+	/**
+	 * 模板引擎
+	 */
 	exports.default = Template;
+	/**
+	 * 绑定的自定义组件
+	 */
+	Template.components = {};
+	/**
+	 * binders
+	 */
+	Template.binders = binders_1.default;
+	/**
+	 * 过滤函数
+	 */
+	Template.formatters = formatters_1.default;
+	/**
+	 * 通过 function name 取 function
+	 */
+	Template.strToFun = function (el, value) {
+	    if (!el._element || !el._element.view || !el._element.view[value]) {
+	        return function () { };
+	    }
+	    return function () {
+	        return el._element.view[value].apply(el._element.view, arguments);
+	    };
+	};
+	/**
+	 * 取模板对应的 view
+	 */
+	Template.getEnv = function (el) {
+	    return el._element.view;
+	};
 
 
 /***/ },
@@ -3103,49 +3111,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Component = (function (_super) {
 	    __extends(Component, _super);
 	    function Component(parentNode, parentElement, args) {
-	        var _this = this;
 	        if (parentElement === void 0) { parentElement = {}; }
 	        if (args === void 0) { args = {}; }
-	        _super.call(this);
+	        var _this = _super.call(this) || this;
 	        // 渲染完成，回调队列
-	        this._queueCallbacks = [];
+	        _this._queueCallbacks = [];
 	        // 正在排队的渲染队列id
-	        this._queueId = null;
+	        _this._queueId = null;
 	        // 存放注册事件
-	        this._regEvents = [];
+	        _this._regEvents = [];
 	        // 是否在观察 scope
-	        this._initWatchScope = false;
-	        this.util = util;
-	        this.nextTick = nextTick;
+	        _this._initWatchScope = false;
+	        _this.util = util;
+	        _this.nextTick = nextTick;
 	        // 是否在微信中打开
-	        this.isWeixinBrowser = util.isWeixinBrowser();
+	        _this.isWeixinBrowser = util.isWeixinBrowser();
 	        // 是否在ios中打开
-	        this.isIOS = util.isIOS();
+	        _this.isIOS = util.isIOS();
 	        Object.keys(args).forEach(function (key) {
 	            _this[key] = args[key];
 	        });
-	        this.parentNode = parentNode;
+	        _this.parentNode = parentNode;
 	        // 兼容mcore2
-	        this.el = parentNode;
-	        this.parentElement = parentElement;
-	        this._initWatchScope = false;
-	        this.id = _id++;
+	        _this.el = parentNode;
+	        _this.parentElement = parentElement;
+	        _this._initWatchScope = false;
+	        _this.id = _id++;
 	        // this.virtualDom = null
 	        // 存放 window 及 body 引用
 	        if ($_win === null || $_body === null) {
 	            $_win = util.get$()(window);
 	            $_body = util.get$()('body');
 	        }
-	        this.$win = $_win;
-	        this.$body = $_body;
+	        _this.$win = $_win;
+	        _this.$body = $_body;
 	        // 模板 scope
-	        this.scope = parentElement.props || {};
+	        _this.scope = parentElement.props || {};
 	        Object.keys(parentElement.dynamicProps || {}).forEach(function (attr) {
 	            _this.scope[attr] = parentElement.dynamicProps[attr];
 	        });
-	        this.beforeInit();
-	        this.init();
-	        this.watch();
+	        _this.beforeInit();
+	        _this.init();
+	        _this.watch();
+	        return _this;
 	    }
 	    Component.prototype.beforeInit = function () { };
 	    Component.prototype.init = function () { };
@@ -3520,7 +3528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * 比对两个虚拟dom, 标出变更部分
 	 */
-	function dfsWalk(oldNode, newNode, index, patches) {
+	function dfsWalk(oldNode, newNode, index, patches, oldNodeIx) {
 	    var currentPatch = [];
 	    // node is removed
 	    if (newNode === null) {
@@ -3557,7 +3565,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    else {
 	        currentPatch.push({
 	            type: patch.REPLACE,
-	            node: newNode
+	            node: newNode,
+	            oldNode: oldNode,
+	            index: oldNodeIx
 	        });
 	    }
 	    if (currentPatch.length) {
@@ -3569,6 +3579,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    newChildren = diffs.children;
 	    // 有移动
 	    if (diffs.moves.length) {
+	        // console.log(diffs.moves)
 	        var reorderPatch = {
 	            type: patch.REORDER,
 	            moves: diffs.moves
@@ -3586,7 +3597,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else {
 	            currentNodeIndex++;
 	        }
-	        dfsWalk(child, newChild, currentNodeIndex, patches);
+	        dfsWalk(child, newChild, currentNodeIndex, patches, i);
 	        leftNode = child;
 	    });
 	}
@@ -3676,7 +3687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var index = 0;
 	    var patches = {};
 	    // console.log(oldTree, newTree);
-	    dfsWalk(oldTree, newTree, index, patches);
+	    dfsWalk(oldTree, newTree, index, patches, -1);
 	    return patches;
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -3708,10 +3719,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.TEXT = TEXT;
 	function dfsWalk(node, walker, patches) {
 	    if (patches === void 0) { patches = {}; }
+	    if (!node)
+	        return;
 	    var currentPatches = patches[walker.index];
 	    // 计算子节点数量
 	    var len;
-	    if ((!node.childNodes) || (node._element && node._element._noDiffChild)) {
+	    if (!node.childNodes || (node._element && node._element._noDiffChild)) {
 	        len = 0;
 	    }
 	    else {
@@ -3733,21 +3746,56 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // 替换
 	            case REPLACE:
 	                var newNode = void 0;
-	                if (currentPatch.node.render) {
-	                    newNode = currentPatch.node.render();
-	                }
-	                else if (typeof currentPatch.node == 'string') {
-	                    newNode = document.createTextNode(currentPatch.node);
-	                }
-	                if (newNode) {
-	                    var element = node._element;
-	                    if (node.parentNode) {
+	                // if(currentPatch.node) {
+	                //     console.log(currentPatch.node._component)
+	                // }
+	                // if (!currentPatch.node._component || !currentPatch.node.refs) {
+	                //     newNode = currentPatch.node.render()
+	                // }
+	                // else {
+	                //     console.log(currentPatch.node)
+	                //     newNode = currentPatch.node.refs
+	                // }
+	                // neNode = currentPatch.node.render()
+	                // else if (typeof currentPatch.node == 'string') {
+	                //     newNode = document.createTextNode(currentPatch.node)
+	                //     console.log(newNode)
+	                // }
+	                if (node.parentNode) {
+	                    var childNodes = util_1.nodeListToArray(node.parentNode.childNodes);
+	                    // console.log('replace: %s -> %s', currentPatch.node.tagName, node._element.tagName)
+	                    // console.log(childNodes)
+	                    var isMatch = false;
+	                    // let oldNode = <MCElement>childNodes[currentPatch.index]
+	                    for (var i = currentPatch.index; i < childNodes.length; i++) {
+	                        var childNode = childNodes[i];
+	                        // console.log(childNode._element, currentPatch.node)
+	                        if (childNode._element && childNode._element.tagName == currentPatch.node.tagName && childNode._element._component) {
+	                            isMatch = true;
+	                            // childNode._element.key = currentPatch.node.key
+	                            // currentPatch.node = childNode._element
+	                            // newNode = childNode
+	                            newNode = currentPatch.node.cloneElement(childNode._element);
+	                            // console.log(newNode.childNodes)
+	                            break;
+	                        }
+	                    }
+	                    if (isMatch === false) {
+	                        newNode = currentPatch.node.render();
+	                    }
+	                    if (newNode) {
 	                        node.parentNode.replaceChild(newNode, node);
 	                    }
-	                    if (element && element.destroy) {
-	                        element.destroy();
-	                    }
 	                }
+	                // if (newNode) {
+	                //     // let element = node._element
+	                //     if (node.parentNode) {
+	                //         node.parentNode.replaceChild(newNode, node)
+	                //     }
+	                //     // if (element && element.destroy) {
+	                //     //     element.destroy()
+	                //     // }
+	                // }
 	                break;
 	            // 重新排序
 	            case REORDER:
@@ -3816,6 +3864,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    moves.forEach(function (move) {
 	        var index = move.index;
+	        // 删除
 	        if (move.type === 0) {
 	            if (staticNodeList[index] == node.childNodes[index]) {
 	                var childNode = node.childNodes[index];
@@ -4043,10 +4092,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function Watch(scope, callback) {
 	        if (scope === void 0) { scope = {}; }
 	        if (callback === void 0) { callback = function (path) { }; }
-	        _super.call(this);
+	        var _this = _super.call(this) || this;
 	        var nextTickTime = null;
-	        this.scope = scope;
-	        this.callback = function (path) {
+	        _this.scope = scope;
+	        _this.callback = function (path) {
 	            if (nextTickTime) {
 	                util_1.NextTick.clear(nextTickTime);
 	            }
@@ -4055,9 +4104,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	            // console.log(path);
 	        };
-	        this._watchReg = {};
-	        this._watchTotal = 0;
-	        this.watch(this.scope);
+	        _this._watchReg = {};
+	        _this._watchTotal = 0;
+	        _this.watch(_this.scope);
+	        return _this;
 	    }
 	    Watch.prototype.observer = function (changes, x, path) {
 	        var _this = this;
@@ -5617,8 +5667,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var View = (function (_super) {
 	    __extends(View, _super);
 	    function View($el, app) {
-	        _super.call(this, $el[0], {}, { app: app });
-	        this.$el = $el;
+	        var _this = _super.call(this, $el[0], {}, { app: app }) || this;
+	        _this.$el = $el;
+	        return _this;
 	    }
 	    View.prototype.setTitle = function (title) {
 	        var _this = this;
@@ -5678,23 +5729,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __extends(App, _super);
 	    function App($el, options) {
 	        if (options === void 0) { options = {}; }
+	        var _this;
 	        var $ = util_1.get$();
-	        _super.call(this);
-	        this.$el = $el;
-	        this.options = $.extend({
+	        _this = _super.call(this) || this;
+	        _this.$el = $el;
+	        _this.options = $.extend({
 	            viewClass: 'mcore-app-view',
 	            routeChange: route_1.Route.changeByLocationHash
 	        }, options);
 	        // 路由
-	        this.router = new route_1.Route(this.options.routeChange);
+	        _this.router = new route_1.Route(_this.options.routeChange);
 	        // 当前的 view
-	        this.curView = null;
+	        _this.curView = null;
 	        // 中间件
-	        this._middlewares = [];
+	        _this._middlewares = [];
 	        // url map
-	        this._viewUrlMap = {};
+	        _this._viewUrlMap = {};
 	        // 过场动画
-	        this._changeViewEvent = {
+	        _this._changeViewEvent = {
 	            // 移除 view 之前
 	            before: function (oldView, done, app) {
 	                done();
@@ -5704,6 +5756,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                done();
 	            }
 	        };
+	        return _this;
 	    }
 	    App.prototype.route = function (path, View) {
 	        var _this = this;

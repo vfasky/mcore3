@@ -68,7 +68,7 @@ export default class Element {
     /**
      * 真实 DOM
      */
-    refs: HTMLElement
+    refs: MCElement
     // get refs() {
     //     return this.template ? this.template.refs : null
     // }
@@ -121,6 +121,8 @@ export default class Element {
         Object.keys(this.dynamicProps).forEach((attr) => {
             this.template.setAttr(attr.toLowerCase(), this.dynamicProps[attr], true, 'update')
         })
+
+        return this.refs
     }
 
     render() {
@@ -135,4 +137,9 @@ export default class Element {
         }
     }
 
+}
+
+
+export interface MCElement extends HTMLInputElement {
+    _element: Element,
 }

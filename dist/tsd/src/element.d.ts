@@ -53,12 +53,15 @@ export default class Element {
     /**
      * 真实 DOM
      */
-    refs: HTMLElement;
+    refs: MCElement;
     constructor(tagName: string, key: string, props?: {}, dynamicProps?: {}, children?: any[], events?: {}, view?: any);
     /**
      * 复制已经渲染的 element
      */
-    cloneElement(element: Element): void;
-    render(): HTMLElement;
+    cloneElement(element: Element): MCElement;
+    render(): MCElement;
     destroy(notRemove?: boolean): void;
+}
+export interface MCElement extends HTMLInputElement {
+    _element: Element;
 }

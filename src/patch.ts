@@ -6,6 +6,8 @@
 'use strict'
 
 import { nodeListToArray } from './util'
+import { MCElement } from './element'
+import Element from './element'
 
 // 替换
 const REPLACE = 0
@@ -21,20 +23,19 @@ interface WalkerConfig {
 }
 
 
-function dfsWalk(node, walker: WalkerConfig, patches = {}) {
+function dfsWalk(node: MCElement, walker: WalkerConfig, patches = {}) {
+    if (!node) return
     let currentPatches = patches[walker.index]
     // 计算子节点数量
     let len
-
-    if ((!node.childNodes) || (node._element && node._element._noDiffChild)) {
+    if (!node.childNodes || (node._element && node._element._noDiffChild)) {
         len = 0
-    }
-    else {
+    } else {
         len = node.childNodes.length
     }
 
     for (let i = 0; i < len; i++) {
-        let child = node.childNodes[i]
+        let child = <MCElement>node.childNodes[i]
         walker.index++
         dfsWalk(child, walker, patches)
     }
@@ -43,27 +44,78 @@ function dfsWalk(node, walker: WalkerConfig, patches = {}) {
     }
 }
 
-function applyPatches(node, currentPatches) {
+interface PatchInfo {
+    type: number;
+    node: Element;
+    moves: any;
+    props: any;
+    index?: number;
+    content?: string;
+    oldNode?: Element;
+}
+
+function applyPatches(node: MCElement, currentPatches: PatchInfo[]) {
     for (let currentPatch of currentPatches) {
         switch (currentPatch.type) {
             // 替换
             case REPLACE:
-                let newNode
-                if (currentPatch.node.render) {
-                    newNode = currentPatch.node.render()
-                }
-                else if (typeof currentPatch.node == 'string') {
-                    newNode = document.createTextNode(currentPatch.node)
-                }
-                if (newNode) {
-                    let element = node._element
-                    if (node.parentNode) {
+                let newNode: MCElement
+                // if(currentPatch.node) {
+                //     console.log(currentPatch.node._component)
+                // }
+                // if (!currentPatch.node._component || !currentPatch.node.refs) {
+                //     newNode = currentPatch.node.render()
+                // }
+                // else {
+                //     console.log(currentPatch.node)
+                //     newNode = currentPatch.node.refs
+                // }
+                // neNode = currentPatch.node.render()
+                // else if (typeof currentPatch.node == 'string') {
+                //     newNode = document.createTextNode(currentPatch.node)
+                //     console.log(newNode)
+                // }
+                if (node.parentNode) {
+                    let childNodes = nodeListToArray(node.parentNode.childNodes)
+                    // console.log('replace: %s -> %s', currentPatch.node.tagName, node._element.tagName)
+                    // console.log(childNodes)
+                    let isMatch = false
+                    // let oldNode = <MCElement>childNodes[currentPatch.index]
+                    for(let i = currentPatch.index; i < childNodes.length; i++) {
+                        let childNode = <MCElement>childNodes[i]
+                   
+                        // console.log(childNode._element, currentPatch.node)
+                        if(childNode._element && childNode._element.tagName == currentPatch.node.tagName && childNode._element._component){
+                            isMatch = true
+                            // childNode._element.key = currentPatch.node.key
+                            // currentPatch.node = childNode._element
+                            // newNode = childNode
+
+                            newNode = currentPatch.node.cloneElement(childNode._element)
+                            // console.log(newNode.childNodes)
+                            break
+                            // console.log(childNode._element.tagName, currentPatch.oldNode.tagName, currentPatch.node.tagName)
+                        }
+                    }
+
+                    if (isMatch === false) {
+                        newNode = currentPatch.node.render()
+                    }
+
+                    if (newNode) {
                         node.parentNode.replaceChild(newNode, node)
                     }
-                    if (element && element.destroy) {
-                        element.destroy()
-                    }
                 }
+
+                // if (newNode) {
+                //     // let element = node._element
+                //     if (node.parentNode) {
+                //         node.parentNode.replaceChild(newNode, node)
+                //     }
+                //     // if (element && element.destroy) {
+                //     //     element.destroy()
+                //     // }
+                // }
                 break
             // 重新排序
             case REORDER:
@@ -119,10 +171,10 @@ function applyPatches(node, currentPatches) {
  * @param  node
  * @param  moves
  */
-function reorderChildren(node, moves: any[]) {
+function reorderChildren(node: MCElement, moves: any[]) {
     let staticNodeList = nodeListToArray(node.childNodes)
     let maps = {}
-    staticNodeList.forEach((node) => {
+    staticNodeList.forEach((node: MCElement) => {
         let key = null
         if (node._element && node._element.key) {
             key = node._element.key
@@ -133,9 +185,10 @@ function reorderChildren(node, moves: any[]) {
     })
     moves.forEach((move) => {
         let index = move.index
+        // 删除
         if (move.type === 0) {
             if (staticNodeList[index] == node.childNodes[index]) {
-                let childNode = node.childNodes[index]
+                let childNode = (<MCElement>node.childNodes[index])
                 if (childNode) {
                     if (childNode._element) {
                         childNode._element.destroy(true)

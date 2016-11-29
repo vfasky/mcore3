@@ -8,7 +8,7 @@
     "es5": "webpack --config ./build/es5.js --display-error-details",
     "ie8": "webpack --config ./build/ie8.js --display-error-details",
     "h2svd": "webpack --config ./build/h2svd.js --display-error-details",
-    "dev": "webpack --config ./build/test.js --display-error-details -w",
+    "dev": "ENV=dev webpack --config ./build/es5.js --display-error-details -w",
     "test": "mocha test/*.test.js",
     "test-browser": "browser-sync start --server --startPath test --files test/* & webpack --config ./build/test.js --display-error-details -w"
   },

@@ -13,7 +13,7 @@ import { nodeListToArray } from './util'
 /**
  * 比对两个虚拟dom, 标出变更部分
  */
-function dfsWalk(oldNode: Element, newNode: Element, index: number, patches) {
+function dfsWalk(oldNode: Element, newNode: Element, index: number, patches, oldNodeIx: number) {
     let currentPatch = []
 
     // node is removed
@@ -57,7 +57,9 @@ function dfsWalk(oldNode: Element, newNode: Element, index: number, patches) {
     else {
         currentPatch.push({
             type: patch.REPLACE,
-            node: newNode
+            node: newNode,
+            oldNode: oldNode,
+            index: oldNodeIx
         })
     }
 
@@ -71,6 +73,7 @@ function diffChildren(oldChildren: Element[], newChildren: Element[], index: num
     newChildren = diffs.children
     // 有移动
     if (diffs.moves.length) {
+        // console.log(diffs.moves)
         let reorderPatch = {
             type: patch.REORDER,
             moves: diffs.moves
@@ -88,7 +91,7 @@ function diffChildren(oldChildren: Element[], newChildren: Element[], index: num
         else {
             currentNodeIndex++
         }
-        dfsWalk(child, newChild, currentNodeIndex, patches)
+        dfsWalk(child, newChild, currentNodeIndex, patches, i)
         leftNode = child
     })
 }
@@ -188,6 +191,6 @@ export default function diff(oldTree: Element, newTree: Element) {
     let patches = {}
 
     // console.log(oldTree, newTree);
-    dfsWalk(oldTree, newTree, index, patches)
+    dfsWalk(oldTree, newTree, index, patches, -1)
     return patches
 }
