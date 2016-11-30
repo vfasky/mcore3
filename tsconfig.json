@@ -7,7 +7,8 @@
         "lib": ["dom", "es2015.promise", "es5"],
         "sourceMap": true,
         "declaration": true,
-        "outDir": "tsd"
+        "outDir": "tsd",
+        "importHelpers": true
     },
     "exclude": [
         "node_modules"

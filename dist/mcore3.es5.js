@@ -1861,13 +1861,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var util = __webpack_require__(30);
 	var element_1 = __webpack_require__(32);
 	var template_1 = __webpack_require__(33);
-	var eventEmitter_1 = __webpack_require__(34);
-	var component_1 = __webpack_require__(38);
-	var route = __webpack_require__(46);
-	var view_1 = __webpack_require__(49);
-	var app_1 = __webpack_require__(50);
-	var http_1 = __webpack_require__(51);
-	var helper_1 = __webpack_require__(52);
+	var eventEmitter_1 = __webpack_require__(35);
+	var component_1 = __webpack_require__(39);
+	var route = __webpack_require__(47);
+	var view_1 = __webpack_require__(50);
+	var app_1 = __webpack_require__(51);
+	var http_1 = __webpack_require__(52);
+	var helper_1 = __webpack_require__(53);
 	helper_1.buildCss();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = {
@@ -2297,22 +2297,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
+	var tslib_1 = __webpack_require__(34);
 	var util_1 = __webpack_require__(30);
-	var eventEmitter_1 = __webpack_require__(34);
-	var binders_1 = __webpack_require__(36);
-	var formatters_1 = __webpack_require__(37);
+	var eventEmitter_1 = __webpack_require__(35);
+	var binders_1 = __webpack_require__(37);
+	var formatters_1 = __webpack_require__(38);
 	var util = __webpack_require__(30);
 	var getComponents = util.getComponents;
 	/**
 	 * 模板引擎
 	 */
 	var Template = (function (_super) {
-	    __extends(Template, _super);
+	    tslib_1.__extends(Template, _super);
 	    function Template(element) {
 	        var _this = _super.call(this) || this;
 	        _this._isWatchEvent = false;
@@ -2538,19 +2534,157 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*! *****************************************************************************
+	Copyright (c) Microsoft Corporation. All rights reserved.
+	Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+	this file except in compliance with the License. You may obtain a copy of the
+	License at http://www.apache.org/licenses/LICENSE-2.0
+	
+	THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+	WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+	MERCHANTABLITY OR NON-INFRINGEMENT.
+	
+	See the Apache Version 2.0 License for specific language governing permissions
+	and limitations under the License.
+	***************************************************************************** */
+	/* global global, define, System, Reflect, Promise */
+	var __extends;
+	var __assign;
+	var __rest;
+	var __decorate;
+	var __param;
+	var __metadata;
+	var __awaiter;
+	var __generator;
+	(function (factory) {
+	    var root = typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : {};
+	    if (typeof System === "object" && typeof System.register === "function") {
+	        System.register("tslib", [], function (exporter) {
+	            factory(createExporter(root, exporter));
+	            return { setters: [], execute: function() { } };
+	        });
+	    }
+	    else if (true) {
+	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) { factory(createExporter(root, createExporter(exports))); }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    }
+	    else if (typeof module === "object" && typeof module.exports === "object") {
+	        factory(createExporter(root, createExporter(module.exports)));
+	    }
+	    else {
+	        factory(createExporter(root));
+	    }
+	
+	    function createExporter(exports, previous) {
+	        return function (id, v) { return exports[id] = previous ? previous(id, v) : v; };
+	    }
+	})
+	(function (exporter) {
+	    __extends = function (d, b) {
+	        for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	        function __() { this.constructor = d; }
+	        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	    };
+	
+	    __assign = Object.assign || function (t) {
+	        for (var s, i = 1, n = arguments.length; i < n; i++) {
+	            s = arguments[i];
+	            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+	        }
+	        return t;
+	    };
+	
+	    __rest = function (s, e) {
+	        var t = {};
+	        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+	            t[p] = s[p];
+	        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+	            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
+	                t[p[i]] = s[p[i]];
+	        return t;
+	    };
+	
+	    __decorate = function (decorators, target, key, desc) {
+	        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	        return c > 3 && r && Object.defineProperty(target, key, r), r;
+	    };
+	
+	    __param = function (paramIndex, decorator) {
+	        return function (target, key) { decorator(target, key, paramIndex); }
+	    };
+	
+	    __metadata = function (metadataKey, metadataValue) {
+	        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+	    };
+	
+	    __awaiter = function (thisArg, _arguments, P, generator) {
+	        return new (P || (P = Promise))(function (resolve, reject) {
+	            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+	            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+	            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+	            step((generator = generator.apply(thisArg, _arguments)).next());
+	        });
+	    };
+	
+	    __generator = function (thisArg, body) {
+	        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t;
+	        return { next: verb(0), "throw": verb(1), "return": verb(2) };
+	        function verb(n) { return function (v) { return step([n, v]); }; }
+	        function step(op) {
+	            if (f) throw new TypeError("Generator is already executing.");
+	            while (_) try {
+	                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+	                if (y = 0, t) op = [0, t.value];
+	                switch (op[0]) {
+	                    case 0: case 1: t = op; break;
+	                    case 4: _.label++; return { value: op[1], done: false };
+	                    case 5: _.label++; y = op[1]; op = [0]; continue;
+	                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+	                    default:
+	                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+	                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+	                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+	                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+	                        if (t[2]) _.ops.pop();
+	                        _.trys.pop(); continue;
+	                }
+	                op = body.call(thisArg, _);
+	            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+	            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+	        }
+	    };
+	
+	    exporter("__extends", __extends);
+	    exporter("__assign", __assign);
+	    exporter("__rest", __rest);
+	    exporter("__decorate", __decorate);
+	    exporter("__param", __param);
+	    exporter("__metadata", __metadata);
+	    exporter("__awaiter", __awaiter);
+	    exporter("__generator", __generator);
+	});
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/**
 	 *
 	 * event Emitter
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
-	var EventEmitter = __webpack_require__(35);
+	var EventEmitter = __webpack_require__(36);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = EventEmitter;
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2845,7 +2979,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -3009,7 +3143,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -3061,7 +3195,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -3070,18 +3204,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var eventEmitter_1 = __webpack_require__(34);
+	var tslib_1 = __webpack_require__(34);
+	var eventEmitter_1 = __webpack_require__(35);
 	var util = __webpack_require__(30);
 	var template_1 = __webpack_require__(33);
 	var element_1 = __webpack_require__(32);
-	var diff_1 = __webpack_require__(39);
-	var patch_1 = __webpack_require__(40);
-	var watch_1 = __webpack_require__(43);
+	var diff_1 = __webpack_require__(40);
+	var patch_1 = __webpack_require__(41);
+	var watch_1 = __webpack_require__(44);
 	var isFunction = util.isFunction;
 	var nextTick = util.NextTick;
 	var getEvents = util.getEvents;
@@ -3109,7 +3239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _id = 0;
 	var notProxyEvents = ['focus', 'blur'];
 	var Component = (function (_super) {
-	    __extends(Component, _super);
+	    tslib_1.__extends(Component, _super);
 	    function Component(parentNode, parentElement, args) {
 	        if (parentElement === void 0) { parentElement = {}; }
 	        if (args === void 0) { args = {}; }
@@ -3514,7 +3644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -3523,8 +3653,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
-	var patch = __webpack_require__(40);
-	var listDiff = __webpack_require__(41);
+	var patch = __webpack_require__(41);
+	var listDiff = __webpack_require__(42);
 	/**
 	 * 比对两个虚拟dom, 标出变更部分
 	 */
@@ -3695,7 +3825,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -3910,14 +4040,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(42).diff
+	module.exports = __webpack_require__(43).diff
 
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports) {
 
 	/**
@@ -4069,7 +4199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -4078,17 +4208,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var eventEmitter_1 = __webpack_require__(34);
-	__webpack_require__(44);
+	var tslib_1 = __webpack_require__(34);
+	var eventEmitter_1 = __webpack_require__(35);
 	__webpack_require__(45);
+	__webpack_require__(46);
 	var util_1 = __webpack_require__(30);
 	var Watch = (function (_super) {
-	    __extends(Watch, _super);
+	    tslib_1.__extends(Watch, _super);
 	    function Watch(scope, callback) {
 	        if (scope === void 0) { scope = {}; }
 	        if (callback === void 0) { callback = function (path) { }; }
@@ -4209,7 +4335,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports) {
 
 	/*!
@@ -4956,7 +5082,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports) {
 
 	Object.observe && !Array.observe && (function(O, A) {
@@ -5057,7 +5183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5066,7 +5192,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
-	var pathToRegexp = __webpack_require__(47);
+	var pathToRegexp = __webpack_require__(48);
 	var util_1 = __webpack_require__(30);
 	function pathToObject(path) {
 	    var url = String(path).trim();
@@ -5208,10 +5334,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isarray = __webpack_require__(48)
+	var isarray = __webpack_require__(49)
 	
 	/**
 	 * Expose `pathToRegexp`.
@@ -5639,7 +5765,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
@@ -5648,7 +5774,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5657,15 +5783,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var component_1 = __webpack_require__(38);
+	var tslib_1 = __webpack_require__(34);
+	var component_1 = __webpack_require__(39);
 	var _$iframe = null;
 	var View = (function (_super) {
-	    __extends(View, _super);
+	    tslib_1.__extends(View, _super);
 	    function View($el, app) {
 	        var _this = _super.call(this, $el[0], {}, { app: app }) || this;
 	        _this.$el = $el;
@@ -5708,7 +5830,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5717,16 +5839,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @author vfasky <vfasky@gmail.com>
 	 **/
 	'use strict';
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var route_1 = __webpack_require__(46);
-	var eventEmitter_1 = __webpack_require__(34);
+	var tslib_1 = __webpack_require__(34);
+	var route_1 = __webpack_require__(47);
+	var eventEmitter_1 = __webpack_require__(35);
 	var util_1 = __webpack_require__(30);
 	var App = (function (_super) {
-	    __extends(App, _super);
+	    tslib_1.__extends(App, _super);
 	    function App($el, options) {
 	        if (options === void 0) { options = {}; }
 	        var _this;
@@ -5879,7 +5997,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -6049,7 +6167,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**

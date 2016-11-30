@@ -45,7 +45,6 @@ module.exports =
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/// <reference path="../../definition/loader-utils.d.ts" />
 	/**
 	 *
 	 * webpack loader
@@ -72,7 +71,6 @@ module.exports =
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/// <reference path="../../definition/htmlparser2.d.ts" />
 	/**
 	 * html to mcore dom
 	 * @author vfasky<vfasky@gmail.com>
@@ -165,6 +163,10 @@ module.exports =
 	    return code;
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
+	/**
+	 * 解释并生成 virtual-dom 定义
+	 * @return Array
+	 */
 	exports.default = default_1;
 
 
