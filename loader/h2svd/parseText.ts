@@ -29,7 +29,7 @@ export default function parseText(domAttr: htmlParserDom): string {
         code += `var ${variable.strValsName} = {}`
         let mapTree: mapTreeConfig[] = []
         let mapTreeId = 0
-        let runtimeCode = text.replace(/\s+/g, ' ').replace(SIGN_REG, (key, val) => {
+        let runtimeCode = text.replace(/\s+/g, ' ').replace(SIGN_REG, (key: string, val: string) => {
             let reKey = `rp_${mapTreeId++}`
             mapTree.push({
                 key: reKey,

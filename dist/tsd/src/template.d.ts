@@ -8,34 +8,15 @@ export default class Template extends EventEmitter {
     /**
      * 绑定的自定义组件
      */
-    static components: {};
+    static components: any;
     /**
      * binders
      */
-    static binders: {
-        checked: (el: HTMLInputElement, value: any) => void;
-        disabled: (el: HTMLInputElement, value: any) => void;
-        focus: (el: any, value: any) => void;
-        blur: (el: any, value: any) => void;
-        html: (el: any, value: any) => void;
-        'no-diff-child': (el: any, value: any) => void;
-        'class-*': (el: HTMLElement, value: boolean, attrValue: string) => void;
-        'form-load-data': {
-            init: (el: any, data?: {}) => any;
-        };
-        'form-sync': {
-            init: (el: any, dataKey: any) => any;
-        };
-    };
+    static binders: any;
     /**
      * 过滤函数
      */
-    static formatters: {
-        toNumber: (x: any) => number;
-        toFixed: (x: any, len?: number) => number;
-        in: (x: any, ...arr: any[]) => boolean;
-        objToStyle: (value: any) => string;
-    };
+    static formatters: any;
     /**
      * 通过 function name 取 function
      */

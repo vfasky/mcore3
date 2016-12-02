@@ -22,7 +22,7 @@ export function parseFormatters(name: string, dynamicVal: string, dynamicAttrNam
     let formatterCode = ''
 
     funcs.forEach((fun) => {
-        let args = []
+        let args: any[] = []
         fun = String(fun)
 
         if (fun.indexOf('(') === -1) {

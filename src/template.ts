@@ -21,17 +21,17 @@ export default class Template extends EventEmitter {
     /**
      * 绑定的自定义组件
      */
-    static components = {}
+    static components: any = {}
 
     /**
      * binders
      */
-    static binders = binders
+    static binders: any = binders
 
     /**
      * 过滤函数
      */
-    static formatters = formatters
+    static formatters: any = formatters
 
     /**
      * 通过 function name 取 function
