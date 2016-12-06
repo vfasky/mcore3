@@ -15,7 +15,8 @@ import { variable } from './config'
 
 export default function (html: string, options = {}): string {
     let domTree = filter(htmlparser.parseDOM(html, {
-        decodeEntities: true
+        decodeEntities: true,
+        normalizeWhitespace: false
     }))
 
     let forCode = ''

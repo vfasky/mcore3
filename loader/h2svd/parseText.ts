@@ -18,7 +18,7 @@ interface mapTreeConfig {
 }
 
 export default function parseText(domAttr: htmlParserDom): string {
-    domAttr.data = domAttr.data.replace(/\n/g, ' ')
+    domAttr.data = domAttr.data.replace(/\n/g, '\\n')
     let text = domAttr.data
     let code = `
         // parseText

@@ -85,7 +85,8 @@ module.exports =
 	function default_1(html, options) {
 	    if (options === void 0) { options = {}; }
 	    var domTree = filter_1.default(htmlparser.parseDOM(html, {
-	        decodeEntities: true
+	        decodeEntities: true,
+	        normalizeWhitespace: false
 	    }));
 	    var forCode = '';
 	    domTree.forEach(function (domAttr, k) {
@@ -524,7 +525,7 @@ module.exports =
 	var SIGN_REG = /\{([^}]+)\}/g;
 	var STREND_REG = /[^]+""$/;
 	function parseText(domAttr) {
-	    domAttr.data = domAttr.data.replace(/\n/g, ' ');
+	    domAttr.data = domAttr.data.replace(/\n/g, '\\n');
 	    var text = domAttr.data;
 	    var code = "\n        // parseText\n        var " + config_1.variable.pathStaticIName + " = " + config_1.variable.pathName + " + '.' + " + config_1.variable.treeName + ".length\n    ";
 	    if (SIGN_REG.test(text)) {
