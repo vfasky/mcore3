@@ -2251,6 +2251,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Element.prototype.cloneElement = function (element) {
 	        var _this = this;
+	        // if (element._component) {
+	        //     console.log(this._component)
+	        //     console.log(element._component)
+	        // }
 	        this._component = element._component;
 	        this._noDiffChild = element._noDiffChild;
 	        this._binder = element._binder;
@@ -2260,6 +2264,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // this.count = element.count
 	        this.template = element.template;
 	        this.template.element = this;
+	        if (this._component) {
+	            this._component.bindEvents();
+	        }
 	        element = null;
 	        // 设置动态属性
 	        Object.keys(this.dynamicProps).forEach(function (attr) {
@@ -3288,6 +3295,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Component.prototype.beforeInit = function () { };
 	    Component.prototype.init = function () { };
 	    Component.prototype.watch = function () { };
+	    /**
+	     * 取自定义组件子自的子节点
+	     */
+	    Component.prototype.getSoureChildrens = function () {
+	        if (!this.parentNode || !this.parentNode._element) {
+	            return [];
+	        }
+	        return this.parentNode._element.template.element.children;
+	    };
 	    Component.prototype.mount = function (parentEl) {
 	        if (parentEl === void 0) { parentEl = this.parentNode; }
 	        if (this.refs && parentEl.appendChild && !(util.get$().contains(parentEl, this.refs))) {
@@ -3383,11 +3399,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // console.log(this.scope)
 	        var virtualDoms = this.virtualDomDefine(this.scope, this, templateHelper);
 	        var virtualDom;
-	        if (virtualDoms.length == 1) {
+	        var soureChildrens = this.getSoureChildrens();
+	        var soureChildrensLen = soureChildrens.length;
+	        if (virtualDoms.length == 1 && soureChildrensLen === 0) {
 	            virtualDom = virtualDoms[0];
 	        }
+	        else if (soureChildrensLen) {
+	            virtualDom = new element_1.default('mc-vd', '0', {}, {}, virtualDoms.concat(soureChildrens), {}, this);
+	        }
 	        else {
-	            virtualDom = new element_1.default('mc-vd', '0', {}, {}, virtualDoms);
+	            // console.log(this)
+	            virtualDom = new element_1.default('mc-vd', '0', {}, {}, virtualDoms, {}, this);
+	        }
+	        if (!virtualDom.parentElement) {
+	            virtualDom.parentElement = this.parentElement;
+	        }
+	        if (this.virtualDom && this.virtualDom.tagName !== virtualDom.tagName) {
+	            if (this.$refs)
+	                this.$refs.remove();
+	            if (this._initWatchScope) {
+	                this.watchScope.unwatch();
+	                this.watchScope.off('update');
+	                this._initWatchScope = false;
+	            }
+	            this._regEvents = [];
+	            this.virtualDom = null;
 	        }
 	        // 未渲染，不用对比
 	        if (!this.virtualDom) {
@@ -3399,7 +3435,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else {
 	            var patches = diff_1.default(this.virtualDom, virtualDom);
-	            // console.log(patches)
+	            // if(this.getSoureChildrens().length) {
+	            //     console.log(patches)
+	            // }
+	            // // console.log(patches)
 	            // 更新dom
 	            patch_1.patch(this.refs, patches);
 	            this.virtualDom = virtualDom;
@@ -3494,6 +3533,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.$refs.off(eventName);
 	            this._regEvents.splice(ix, 1);
 	        }
+	        if (this.getSoureChildrens().length) {
+	            console.log('unReg', eventName);
+	        }
 	    };
 	    Component.prototype.bindEvents = function () {
 	        var _this = this;
@@ -3506,7 +3548,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // }
 	        this.events = getEvents(this.virtualDom);
 	        var curEvents = Object.keys(this.events);
-	        // console.log(curEvents, this.events);
 	        this._regEvents.forEach(function (regEventName) {
 	            if (curEvents.indexOf(regEventName) === -1) {
 	                _this.unRegEvent(regEventName);
@@ -3891,7 +3932,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                //     newNode = document.createTextNode(currentPatch.node)
 	                //     console.log(newNode)
 	                // }
-	                if (node.parentNode) {
+	                if (node.parentNode && node.parentNode.replaceChild) {
 	                    var childNodes = util_1.nodeListToArray(node.parentNode.childNodes);
 	                    // console.log('replace: %s -> %s', currentPatch.node.tagName, node._element.tagName)
 	                    // console.log(childNodes)
@@ -3900,7 +3941,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    for (var i = currentPatch.index; i < childNodes.length; i++) {
 	                        var childNode = childNodes[i];
 	                        // console.log(childNode._element, currentPatch.node)
-	                        if (childNode._element && childNode._element.tagName == currentPatch.node.tagName && childNode._element._component) {
+	                        if (childNode && childNode._element && childNode._element.tagName == currentPatch.node.tagName && childNode._element._component) {
 	                            isMatch = true;
 	                            // childNode._element.key = currentPatch.node.key
 	                            // currentPatch.node = childNode._element
@@ -3914,7 +3955,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        newNode = currentPatch.node.render();
 	                    }
 	                    if (newNode) {
-	                        node.parentNode.replaceChild(newNode, node);
+	                        try {
+	                            node.parentNode.replaceChild(newNode, node);
+	                        }
+	                        catch (error) {
+	                            console.log(node, newNode, currentPatches);
+	                        }
 	                    }
 	                }
 	                // if (newNode) {

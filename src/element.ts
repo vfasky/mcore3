@@ -104,6 +104,10 @@ export default class Element {
      * 复制已经渲染的 element
      */
     cloneElement(element: Element) {
+        // if (element._component) {
+        //     console.log(this._component)
+        //     console.log(element._component)
+        // }
         this._component = element._component
         this._noDiffChild = element._noDiffChild
         this._binder = element._binder
@@ -114,6 +118,10 @@ export default class Element {
         // this.count = element.count
         this.template = element.template
         this.template.element = this
+
+        if (this._component) {
+            this._component.bindEvents()
+        }
         
         element = null
 

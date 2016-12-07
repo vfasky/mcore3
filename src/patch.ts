@@ -75,7 +75,7 @@ function applyPatches(node: MCElement, currentPatches: PatchInfo[]) {
                 //     newNode = document.createTextNode(currentPatch.node)
                 //     console.log(newNode)
                 // }
-                if (node.parentNode) {
+                if (node.parentNode && node.parentNode.replaceChild) {
                     let childNodes = nodeListToArray(node.parentNode.childNodes)
                     // console.log('replace: %s -> %s', currentPatch.node.tagName, node._element.tagName)
                     // console.log(childNodes)
@@ -85,7 +85,7 @@ function applyPatches(node: MCElement, currentPatches: PatchInfo[]) {
                         let childNode = <MCElement>childNodes[i]
                    
                         // console.log(childNode._element, currentPatch.node)
-                        if(childNode._element && childNode._element.tagName == currentPatch.node.tagName && childNode._element._component){
+                        if(childNode && childNode._element && childNode._element.tagName == currentPatch.node.tagName && childNode._element._component){
                             isMatch = true
                             // childNode._element.key = currentPatch.node.key
                             // currentPatch.node = childNode._element
@@ -103,7 +103,11 @@ function applyPatches(node: MCElement, currentPatches: PatchInfo[]) {
                     }
 
                     if (newNode) {
-                        node.parentNode.replaceChild(newNode, node)
+                        try {
+                            node.parentNode.replaceChild(newNode, node)
+                        } catch (error) {
+                            console.log(node, newNode, currentPatches)                            
+                        }
                     }
                 }
 

@@ -2,6 +2,7 @@
 import EventEmitter from './eventEmitter';
 import * as util from './util';
 import Element from './element';
+import { MCElement } from './element';
 import Watch from './watch';
 export default class Component extends EventEmitter {
     private _queueCallbacks;
@@ -10,9 +11,9 @@ export default class Component extends EventEmitter {
     private _initWatchScope;
     id: number;
     watchScope: Watch;
-    parentNode: HTMLElement;
+    parentNode: MCElement;
     el: HTMLElement;
-    refs: HTMLElement;
+    refs: MCElement;
     parentElement: Element;
     virtualDom: Element;
     scope: any;
@@ -25,11 +26,15 @@ export default class Component extends EventEmitter {
     nextTick: typeof util.NextTick;
     isWeixinBrowser: boolean;
     isIOS: boolean;
-    constructor(parentNode: HTMLElement, parentElement?: any, args?: {});
+    constructor(parentNode: MCElement, parentElement?: any, args?: {});
     beforeInit(): void;
     init(): void;
     watch(): void;
-    mount(parentEl?: HTMLElement): void;
+    /**
+     * 取自定义组件子自的子节点
+     */
+    getSoureChildrens(): Element[];
+    mount(parentEl?: MCElement): void;
     destroy(notRemove?: boolean): void;
     /**
      * 取调用自定组件的上级view
@@ -42,7 +47,7 @@ export default class Component extends EventEmitter {
     /**
      * 放入渲染队列
      */
-    renderQueue(doneOrAsync?: any): HTMLElement;
+    renderQueue(doneOrAsync?: any): MCElement;
     /**
      * 真实的渲染操作
      * @method _render

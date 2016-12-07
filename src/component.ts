@@ -9,6 +9,7 @@ import EventEmitter from './eventEmitter'
 import * as util from './util'
 import Template from './template'
 import Element from './element'
+import { MCElement } from './element'
 import diff from './diff'
 import { patch } from './patch'
 import Watch from './watch'
@@ -60,9 +61,9 @@ export default class Component extends EventEmitter {
     id: number
 
     watchScope: Watch
-    parentNode: HTMLElement
+    parentNode: MCElement
     el: HTMLElement
-    refs: HTMLElement
+    refs: MCElement
     parentElement: Element
     virtualDom: Element
     scope: any
@@ -82,7 +83,7 @@ export default class Component extends EventEmitter {
     isIOS = util.isIOS()
 
 
-    constructor(parentNode: HTMLElement, parentElement: any = {}, args = {}) {
+    constructor(parentNode: MCElement, parentElement: any = {}, args = {}) {
         super()
         Object.keys(args).forEach((key) => {
             this[key] = args[key]
@@ -120,6 +121,16 @@ export default class Component extends EventEmitter {
     beforeInit() { }
     init() { }
     watch() { }
+
+    /**
+     * 取自定义组件子自的子节点
+     */
+    getSoureChildrens () {
+        if(!this.parentNode || !this.parentNode._element) {
+            return []
+        }
+        return this.parentNode._element.template.element.children
+    }
 
     mount(parentEl = this.parentNode) {
         if (this.refs && parentEl.appendChild && !(util.get$().contains(parentEl, this.refs))) {
@@ -220,11 +231,31 @@ export default class Component extends EventEmitter {
 
         let virtualDoms = this.virtualDomDefine(this.scope, this, templateHelper)
         let virtualDom
-        if (virtualDoms.length == 1) {
+        let soureChildrens = this.getSoureChildrens()
+        let soureChildrensLen = soureChildrens.length 
+
+        if (virtualDoms.length == 1 && soureChildrensLen === 0) {
             virtualDom = virtualDoms[0]
+        } else if (soureChildrensLen) {
+            virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms.concat(soureChildrens), {}, this)
+        } else {
+            // console.log(this)
+            virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms, {}, this)
         }
-        else {
-            virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms)
+        if (!virtualDom.parentElement){
+            virtualDom.parentElement = this.parentElement
+            // console.log(this)
+        }
+        
+        if (this.virtualDom && this.virtualDom.tagName !== virtualDom.tagName){
+            if (this.$refs) this.$refs.remove()
+            if (this._initWatchScope) {
+                this.watchScope.unwatch()
+                this.watchScope.off('update')
+                this._initWatchScope = false
+            }
+            this._regEvents = []
+            this.virtualDom = null
         }
         // 未渲染，不用对比
         if (!this.virtualDom) {
@@ -234,8 +265,12 @@ export default class Component extends EventEmitter {
             this.$refs = $(this.refs)
             this.mount()
         } else {
+            
             let patches = diff(this.virtualDom, virtualDom)
-            // console.log(patches)
+            // if(this.getSoureChildrens().length) {
+            //     console.log(patches)
+            // }
+            // // console.log(patches)
 
             // 更新dom
             patch(this.refs, patches)
@@ -243,6 +278,7 @@ export default class Component extends EventEmitter {
         }
         // 绑定事件
         this.bindEvents()
+      
 
         this.emit('rendered', this.refs)
         this._queueCallbacks.forEach((done, ix) => {
@@ -318,6 +354,7 @@ export default class Component extends EventEmitter {
 
     regEvent(eventName) {
         const $ = util.get$()
+
         if (this._regEvents.indexOf(eventName) === -1) {
             this._regEvents.push(eventName)
 
@@ -347,6 +384,10 @@ export default class Component extends EventEmitter {
             this.$refs.off(eventName)
             this._regEvents.splice(ix, 1)
         }
+
+        if(this.getSoureChildrens().length) {
+            console.log('unReg', eventName)
+        }
     }
 
     bindEvents() {
@@ -358,8 +399,9 @@ export default class Component extends EventEmitter {
         //     this.oldEvents = this.events
         // }
         this.events = getEvents(this.virtualDom)
+        
         let curEvents = Object.keys(this.events)
-        // console.log(curEvents, this.events);
+
 
         this._regEvents.forEach((regEventName) => {
             if (curEvents.indexOf(regEventName) === -1) {
