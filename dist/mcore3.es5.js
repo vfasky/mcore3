@@ -2047,7 +2047,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * 如果组件指定 mc-children-container="true", 返回特定 MCElement
 	 */
-	function getComponentsContainer(elements, maxLevel, level) {
+	function getComponentContainer(elements, maxLevel, level) {
 	    if (maxLevel === void 0) { maxLevel = 100; }
 	    if (level === void 0) { level = 0; }
 	    if (maxLevel === level) {
@@ -2058,14 +2058,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (el.dynamicProps['children-container']) {
 	            return el;
 	        }
-	        var findChildren = getComponentsContainer(el.children, maxLevel, level + 1);
+	        var findChildren = getComponentContainer(el.children, maxLevel, level + 1);
 	        if (findChildren) {
 	            return findChildren;
 	        }
 	    }
 	    return null;
 	}
-	exports.getComponentsContainer = getComponentsContainer;
+	exports.getComponentContainer = getComponentContainer;
 	/**
 	 * 取 mcore element 的所有组件 （含子树）
 	 * @param element mcore Element
@@ -2341,7 +2341,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    Template.prototype.destroy = function (notRemove) {
 	        if (notRemove === void 0) { notRemove = false; }
-	        getComponents(this.element).forEach(function (component) {
+	        util.getComponents(this.element).forEach(function (component) {
 	            component.destroy();
 	        });
 	        // 移除自身
@@ -3416,7 +3416,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            virtualDom = virtualDoms[0];
 	        }
 	        else if (soureChildrensLen) {
-	            var container = util.getComponentsContainer(virtualDoms);
+	            var container = util.getComponentContainer(virtualDoms);
 	            if (container) {
 	                container.children = container.children.concat(soureChildrens);
 	                if (virtualDoms.length === 1) {

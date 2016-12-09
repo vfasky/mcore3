@@ -12,8 +12,6 @@ import formatters from './template/formatters'
 import * as util from './util'
 import Element from './element'
 
-const getComponents = util.getComponents
-
 /**
  * 模板引擎
  */
@@ -76,7 +74,7 @@ export default class Template extends EventEmitter {
     }
 
     destroy(notRemove = false) {
-        getComponents(this.element).forEach((component) => {
+        util.getComponents(this.element).forEach((component) => {
             component.destroy()
         })
 

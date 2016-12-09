@@ -172,7 +172,7 @@ export function getEvents(element, events: any = {}): {} {
 /**
  * 如果组件指定 mc-children-container="true", 返回特定 MCElement
  */
-export function getComponentsContainer(elements: Element[], maxLevel = 100, level = 0): Element | null {
+export function getComponentContainer(elements: Element[], maxLevel = 100, level = 0): Element | null {
     
     if (maxLevel === level) {
         return null
@@ -182,7 +182,7 @@ export function getComponentsContainer(elements: Element[], maxLevel = 100, leve
         if (el.dynamicProps['children-container']) {
             return el
         }
-        let findChildren = getComponentsContainer(el.children, maxLevel, level + 1)
+        let findChildren = getComponentContainer(el.children, maxLevel, level + 1)
 
         if (findChildren) {
             return findChildren

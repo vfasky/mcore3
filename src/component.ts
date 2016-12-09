@@ -237,7 +237,7 @@ export default class Component extends EventEmitter {
         if (virtualDoms.length === 1 && soureChildrensLen === 0) {
             virtualDom = virtualDoms[0]
         } else if (soureChildrensLen) {
-            let container = util.getComponentsContainer(virtualDoms)
+            let container = util.getComponentContainer(virtualDoms)
             if (container) {
                 container.children = container.children.concat(soureChildrens)
                 if (virtualDoms.length === 1) {

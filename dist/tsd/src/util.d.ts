@@ -68,7 +68,7 @@ export declare function getEvents(element: any, events?: any): {};
 /**
  * 如果组件指定 mc-children-container="true", 返回特定 MCElement
  */
-export declare function getComponentsContainer(elements: Element[], maxLevel?: number, level?: number): Element | null;
+export declare function getComponentContainer(elements: Element[], maxLevel?: number, level?: number): Element | null;
 /**
  * 取 mcore element 的所有组件 （含子树）
  * @param element mcore Element
