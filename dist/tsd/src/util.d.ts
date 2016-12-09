@@ -1,4 +1,5 @@
 /// <reference types="jquery" />
+import Element from './element';
 /**
  * 是否 ios
  */
@@ -65,6 +66,10 @@ export declare function extend(x: any): any;
  */
 export declare function getEvents(element: any, events?: any): {};
 /**
+ * 如果组件指定 mc-children-container="true", 返回特定 MCElement
+ */
+export declare function getComponentsContainer(elements: Element[], maxLevel?: number, level?: number): Element | null;
+/**
  * 取 mcore element 的所有组件 （含子树）
  * @param element mcore Element
  * @param components 组件列表
@@ -92,7 +97,7 @@ export declare function callFormatter(formatterName: string, mcore: any): any;
 /**
  * NodeList to Array
  */
-export declare function nodeListToArray(nodeList: NodeList): Node[];
+export declare function nodeListToArray(nodeList: NodeList): any[];
 /**
  * 放到下一帧执行
  */

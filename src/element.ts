@@ -82,6 +82,7 @@ export default class Element {
         this.events = events
         this.parentElement = null
         this.view = view
+      
 
         if (Array.isArray(children) === false) {
             children = []
@@ -104,10 +105,6 @@ export default class Element {
      * 复制已经渲染的 element
      */
     cloneElement(element: Element) {
-        // if (element._component) {
-        //     console.log(this._component)
-        //     console.log(element._component)
-        // }
         this._component = element._component
         this._noDiffChild = element._noDiffChild
         this._binder = element._binder

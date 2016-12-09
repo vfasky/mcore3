@@ -11,7 +11,7 @@ export default class Component extends EventEmitter {
     private _initWatchScope;
     id: number;
     watchScope: Watch;
-    parentNode: MCElement;
+    parentNode: MCElement | HTMLElement;
     el: HTMLElement;
     refs: MCElement;
     parentElement: Element;
@@ -26,7 +26,7 @@ export default class Component extends EventEmitter {
     nextTick: typeof util.NextTick;
     isWeixinBrowser: boolean;
     isIOS: boolean;
-    constructor(parentNode: MCElement, parentElement?: any, args?: {});
+    constructor(parentNode: MCElement | HTMLElement, parentElement?: any, args?: {});
     beforeInit(): void;
     init(): void;
     watch(): void;
@@ -34,7 +34,7 @@ export default class Component extends EventEmitter {
      * 取自定义组件子自的子节点
      */
     getSoureChildrens(): Element[];
-    mount(parentEl?: MCElement): void;
+    mount(parentEl?: MCElement | HTMLElement): void;
     destroy(notRemove?: boolean): void;
     /**
      * 取调用自定组件的上级view

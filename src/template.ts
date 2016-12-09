@@ -127,8 +127,8 @@ export default class Template extends EventEmitter {
 
             this.element._component = new Template.components[this.element.tagName](node, this.element)
             this.element._noDiffChild = true
-            this.element.children = []
-            this.element.count = 0
+            // this.element.children = []
+            // this.element.count = 0
 
             // node._component = this.element._component
 

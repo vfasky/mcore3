@@ -61,7 +61,7 @@ export default class Component extends EventEmitter {
     id: number
 
     watchScope: Watch
-    parentNode: MCElement
+    parentNode: MCElement | HTMLElement
     el: HTMLElement
     refs: MCElement
     parentElement: Element
@@ -83,7 +83,7 @@ export default class Component extends EventEmitter {
     isIOS = util.isIOS()
 
 
-    constructor(parentNode: MCElement, parentElement: any = {}, args = {}) {
+    constructor(parentNode: MCElement | HTMLElement, parentElement: any = {}, args = {}) {
         super()
         Object.keys(args).forEach((key) => {
             this[key] = args[key]
@@ -126,10 +126,10 @@ export default class Component extends EventEmitter {
      * 取自定义组件子自的子节点
      */
     getSoureChildrens () {
-        if(!this.parentNode || !this.parentNode._element) {
+        if(!this.parentNode || !this.parentNode.hasOwnProperty('_element')) {
             return []
         }
-        return this.parentNode._element.template.element.children
+        return (<MCElement>this.parentNode)._element.template.element.children
     }
 
     mount(parentEl = this.parentNode) {
@@ -234,10 +234,20 @@ export default class Component extends EventEmitter {
         let soureChildrens = this.getSoureChildrens()
         let soureChildrensLen = soureChildrens.length 
 
-        if (virtualDoms.length == 1 && soureChildrensLen === 0) {
+        if (virtualDoms.length === 1 && soureChildrensLen === 0) {
             virtualDom = virtualDoms[0]
         } else if (soureChildrensLen) {
-            virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms.concat(soureChildrens), {}, this)
+            let container = util.getComponentsContainer(virtualDoms)
+            if (container) {
+                container.children = container.children.concat(soureChildrens)
+                if (virtualDoms.length === 1) {
+                    virtualDom = virtualDoms[0]
+                } else {
+                    virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms, {}, this)
+                }
+            } else {
+                virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms.concat(soureChildrens), {}, this)
+            }
         } else {
             // console.log(this)
             virtualDom = new Element('mc-vd', '0', {}, {}, virtualDoms, {}, this)
@@ -270,7 +280,7 @@ export default class Component extends EventEmitter {
             // if(this.getSoureChildrens().length) {
             //     console.log(patches)
             // }
-            // // console.log(patches)
+            // console.log(patches)
 
             // 更新dom
             patch(this.refs, patches)

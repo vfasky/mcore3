@@ -6,7 +6,8 @@
 'use strict'
 
 import * as jquery from 'jquery'
-
+import Element from './element'
+ 
 const VAR_REG = /(^[a-zA-Z0-9_-]+)$/
 
 let _isIOS: null | boolean = null
@@ -167,6 +168,30 @@ export function getEvents(element, events: any = {}): {} {
 
     return events
 }
+
+/**
+ * 如果组件指定 mc-children-container="true", 返回特定 MCElement
+ */
+export function getComponentsContainer(elements: Element[], maxLevel = 100, level = 0): Element | null {
+    
+    if (maxLevel === level) {
+        return null
+    }
+
+    for (let el of elements) {
+        if (el.dynamicProps['children-container']) {
+            return el
+        }
+        let findChildren = getComponentsContainer(el.children, maxLevel, level + 1)
+
+        if (findChildren) {
+            return findChildren
+        }
+    }
+ 
+    return null
+}
+
 
 /**
  * 取 mcore element 的所有组件 （含子树）

@@ -4532,6 +4532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 **/
 	'use strict';
 	var jquery = __webpack_require__(33);
+	var element_1 = __webpack_require__(34);
 	var VAR_REG = /(^[a-zA-Z0-9_-]+)$/;
 	var _isIOS = null;
 	var _isWeixinBrowser = null;
@@ -4681,6 +4682,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	exports.getEvents = getEvents;
 	/**
+	 * 如果组件指定 mc-children-container="true", 返回特定 MCElement
+	 */
+	function getComponentsContainer(elements, maxLevel, level) {
+	    if (maxLevel === void 0) { maxLevel = 100; }
+	    if (level === void 0) { level = 0; }
+	    if (maxLevel === level) {
+	        return null;
+	    }
+	    for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
+	        var el = elements_1[_i];
+	        if (el.dynamicProps['children-container']) {
+	            return el;
+	        }
+	        var findChildren = getComponentsContainer(el.children, maxLevel, level + 1);
+	        if (findChildren) {
+	            return findChildren;
+	        }
+	    }
+	    return null;
+	}
+	exports.getComponentsContainer = getComponentsContainer;
+	/**
 	 * 取 mcore element 的所有组件 （含子树）
 	 * @param element mcore Element
 	 * @param components 组件列表
@@ -4749,8 +4772,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return '';
 	    }
 	    else if (type(dynamicCode) !== 'undefined'
-	        && ((type(Element) === 'function' || type(Element) === 'object')
-	            && dynamicCode instanceof Element === false)) {
+	        && ((type(element_1.default) === 'function' || type(element_1.default) === 'object')
+	            && dynamicCode instanceof element_1.default === false)) {
 	        return type(dynamicCode) === 'undefined' ? '' : dynamicCode;
 	    }
 	    else if (type(view[dynamicCode]) !== 'undefined') {
@@ -4888,10 +4911,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Element.prototype.cloneElement = function (element) {
 	        var _this = this;
-	        // if (element._component) {
-	        //     console.log(this._component)
-	        //     console.log(element._component)
-	        // }
 	        this._component = element._component;
 	        this._noDiffChild = element._noDiffChild;
 	        this._binder = element._binder;
@@ -4925,9 +4944,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Element;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
-	/**
-	 * mcore element
-	 */
 	exports.default = Element;
 
 
@@ -5010,8 +5026,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	            this.element._component = new Template.components[this.element.tagName](node, this.element);
 	            this.element._noDiffChild = true;
-	            this.element.children = [];
-	            this.element.count = 0;
 	        }
 	        else {
 	            this.element.children.forEach(function (child) {
@@ -5138,11 +5152,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    return Template;
 	}(eventEmitter_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	/**
-	 * 模板引擎
-	 */
-	exports.default = Template;
 	/**
 	 * 绑定的自定义组件
 	 */
@@ -5172,6 +5181,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	Template.getEnv = function (el) {
 	    return el._element.view;
 	};
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Template;
 
 
 /***/ },
@@ -5936,7 +5947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * 取自定义组件子自的子节点
 	     */
 	    Component.prototype.getSoureChildrens = function () {
-	        if (!this.parentNode || !this.parentNode._element) {
+	        if (!this.parentNode || !this.parentNode.hasOwnProperty('_element')) {
 	            return [];
 	        }
 	        return this.parentNode._element.template.element.children;
@@ -6038,11 +6049,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var virtualDom;
 	        var soureChildrens = this.getSoureChildrens();
 	        var soureChildrensLen = soureChildrens.length;
-	        if (virtualDoms.length == 1 && soureChildrensLen === 0) {
+	        if (virtualDoms.length === 1 && soureChildrensLen === 0) {
 	            virtualDom = virtualDoms[0];
 	        }
 	        else if (soureChildrensLen) {
-	            virtualDom = new element_1.default('mc-vd', '0', {}, {}, virtualDoms.concat(soureChildrens), {}, this);
+	            var container = util.getComponentsContainer(virtualDoms);
+	            if (container) {
+	                container.children = container.children.concat(soureChildrens);
+	                if (virtualDoms.length === 1) {
+	                    virtualDom = virtualDoms[0];
+	                }
+	                else {
+	                    virtualDom = new element_1.default('mc-vd', '0', {}, {}, virtualDoms, {}, this);
+	                }
+	            }
+	            else {
+	                virtualDom = new element_1.default('mc-vd', '0', {}, {}, virtualDoms.concat(soureChildrens), {}, this);
+	            }
 	        }
 	        else {
 	            // console.log(this)
@@ -6075,7 +6098,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // if(this.getSoureChildrens().length) {
 	            //     console.log(patches)
 	            // }
-	            // // console.log(patches)
+	            // console.log(patches)
 	            // 更新dom
 	            patch_1.patch(this.refs, patches);
 	            this.virtualDom = virtualDom;
