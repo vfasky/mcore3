@@ -44,6 +44,17 @@ let binder = {
     },
 
     /**
+     * 只读
+     */
+    readonly: function (el: HTMLInputElement, value) {
+        if (value) {
+            el.readOnly = true
+        } else {
+            el.readOnly = false
+        }
+    },
+
+    /**
      * 取得焦点
      */
     focus: function (el: any, value) {
