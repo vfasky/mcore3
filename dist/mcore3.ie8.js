@@ -5679,6 +5679,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    },
 	    /**
+	     * 只读
+	     */
+	    readonly: function (el, value) {
+	        if (value) {
+	            el.readOnly = true;
+	        }
+	        else {
+	            el.readOnly = false;
+	        }
+	    },
+	    /**
 	     * 取得焦点
 	     */
 	    focus: function (el, value) {

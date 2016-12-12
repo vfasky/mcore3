@@ -5759,6 +5759,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var strict = options.strict
 	  var end = options.end !== false
 	  var route = ''
+	  var lastToken = tokens[tokens.length - 1]
+	  var endsWithSlash = typeof lastToken === 'string' && /\/$/.test(lastToken)
 	
 	  // Iterate over the tokens and create our regexp string.
 	  for (var i = 0; i < tokens.length; i++) {
@@ -5790,15 +5792,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	
-	  var delimiter = escapeString(options.delimiter || '/')
-	  var endsWithDelimiter = route.slice(-delimiter.length) === delimiter
-	
 	  // In non-strict mode we allow a slash at the end of match. If the path to
 	  // match already ends with a slash, we remove it for consistency. The slash
 	  // is valid at the end of a path match, not in the middle. This is important
 	  // in non-ending mode, where "/test/" shouldn't match "/test//route".
 	  if (!strict) {
-	    route = (endsWithDelimiter ? route.slice(0, -delimiter.length) : route) + '(?:' + delimiter + '(?=$))?'
+	    route = (endsWithSlash ? route.slice(0, -2) : route) + '(?:\\/(?=$))?'
 	  }
 	
 	  if (end) {
@@ -5806,7 +5805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else {
 	    // In non-ending mode, we need the capturing groups to match as much as
 	    // possible by using a positive lookahead to the end or next path segment.
-	    route += strict && endsWithDelimiter ? '' : '(?=' + delimiter + '|$)'
+	    route += strict && endsWithSlash ? '' : '(?=\\/|$)'
 	  }
 	
 	  return attachKeys(new RegExp('^' + route, flags(options)), keys)
