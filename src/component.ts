@@ -118,9 +118,9 @@ export default class Component extends EventEmitter {
         this.init()
         this.watch()
     }
-    beforeInit() { }
-    init() { }
-    watch() { }
+    beforeInit(): any { }
+    init(): any { }
+    watch(): any { }
 
     /**
      * 取自定义组件子自的子节点
@@ -139,7 +139,7 @@ export default class Component extends EventEmitter {
         }
     }
 
-    destroy(notRemove: boolean = false) {
+    destroy(notRemove: boolean = false): any {
         if (this._initWatchScope) {
             this.watchScope.unwatch()
             this.watchScope.off('update')

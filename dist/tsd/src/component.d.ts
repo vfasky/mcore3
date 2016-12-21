@@ -27,15 +27,15 @@ export default class Component extends EventEmitter {
     isWeixinBrowser: boolean;
     isIOS: boolean;
     constructor(parentNode: MCElement | HTMLElement, parentElement?: any, args?: {});
-    beforeInit(): void;
-    init(): void;
-    watch(): void;
+    beforeInit(): any;
+    init(): any;
+    watch(): any;
     /**
      * 取自定义组件子自的子节点
      */
     getSoureChildrens(): Element[];
     mount(parentEl?: MCElement | HTMLElement): void;
-    destroy(notRemove?: boolean): void;
+    destroy(notRemove?: boolean): any;
     /**
      * 取调用自定组件的上级view
      */

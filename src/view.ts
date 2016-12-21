@@ -48,6 +48,6 @@ export default class View extends Component {
         return false
     }
 
-    run() { }
-    afterRun() { }
+    run(): any { }
+    afterRun(): any { }
 }

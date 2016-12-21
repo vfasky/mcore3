@@ -6,6 +6,6 @@ export default class View extends Component {
     constructor($el: any, app?: App);
     setTitle(title: string): void;
     back(): boolean;
-    run(): void;
-    afterRun(): void;
+    run(): any;
+    afterRun(): any;
 }

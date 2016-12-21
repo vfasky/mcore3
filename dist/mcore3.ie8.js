@@ -4921,6 +4921,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.template = element.template;
 	        this.template.element = this;
 	        if (this._component) {
+	            this._component.parentElement = this;
 	            this._component.bindEvents();
 	        }
 	        element = null;
